@@ -5,6 +5,7 @@ import { authorizeProjectAction } from '../src/auth/authorization.js';
 import { Directory, toIdentityProfile } from '../src/auth/directory.js';
 import { issueIdToken, issueSamlAssertion, verifyIdToken, verifySamlAssertion } from '../src/auth/federation.js';
 import { issueServiceTicket, validateServiceTicket } from '../src/auth/kerberos.js';
+import { createDevicePinFactor, MfaStore, verifyDevicePin } from '../src/auth/mfa.js';
 import { AuthorizationServer } from '../src/auth/oauth.js';
 import { createDemoAuthenticator, PasskeyStore } from '../src/auth/passkey.js';
 import { authenticateWithPassword } from '../src/auth/password.js';
@@ -94,7 +95,20 @@ test('11 oidc id token carries who the user is', () => {
   assert.equal(claims.sub, 'user_alice');
 });
 
-test('12 webauthn-like public key authentication verifies a challenge signature', () => {
+test('12 multi-factor authentication adds a second check after password', () => {
+  const mfa = new MfaStore({ now: () => 1000, codeGenerator: () => '123456' });
+  mfa.enrollCodeFactor({ userId: 'user_alice', factorId: 'alice-authenticator-app', label: 'Authenticator app' });
+
+  const challenge = mfa.startChallenge('user_alice', 'alice-authenticator-app');
+  assert.equal(mfa.verifyChallenge({ challengeId: challenge.challengeId, code: '000000' }), false);
+  assert.equal(mfa.verifyChallenge({ challengeId: challenge.challengeId, code: '123456' }), true);
+
+  const pinFactor = createDevicePinFactor({ userId: 'user_alice', deviceId: 'alice-laptop', pin: '246810' });
+  assert.equal(verifyDevicePin(pinFactor, { userId: 'user_alice', deviceId: 'alice-laptop', pin: '246810' }), true);
+  assert.equal(verifyDevicePin(pinFactor, { userId: 'user_alice', deviceId: 'unknown-device', pin: '246810' }), false);
+});
+
+test('13 webauthn-like public key authentication verifies a challenge signature', () => {
   const store = new PasskeyStore();
   const authenticator = createDemoAuthenticator();
   const registerChallenge = store.startRegistration('user_alice');
@@ -121,7 +135,7 @@ test('12 webauthn-like public key authentication verifies a challenge signature'
   );
 });
 
-test('13 passkey login uses a registered credential instead of a password', () => {
+test('14 passkey login uses a registered credential instead of a password', () => {
   const store = new PasskeyStore();
   const authenticator = createDemoAuthenticator();
   const registration = store.startRegistration('user_bob');
@@ -145,7 +159,7 @@ test('13 passkey login uses a registered credential instead of a password', () =
   );
 });
 
-test('14 client credentials token gives a machine client scoped API access', () => {
+test('15 client credentials token gives a machine client scoped API access', () => {
   const server = new AuthorizationServer({ secret: 'secret' });
   server.registerClient({
     clientId: 'nightly-report-worker',

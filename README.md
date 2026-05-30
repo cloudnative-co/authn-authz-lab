@@ -2,7 +2,7 @@
 
 「認証認可入門」連載で使う小さなサンプルアプリです。
 
-このリポジトリでは、ひとつの `Mini Project App` を少しずつ育てながら、認証、セッション、認可、SSO、OAuth、Passkey などの位置づけを確認します。
+このリポジトリでは、ひとつの `Mini Project App` を少しずつ育てながら、認証、セッション、認可、SSO、多要素認証、OAuth、Passkey などの位置づけを確認します。
 
 ## 目的
 
@@ -22,6 +22,7 @@ src/
     directory.js      LDAP/AD/FreeIPA風のディレクトリ
     kerberos.js       Kerberos風のチケット
     federation.js     SAML/OIDC風の外部IdP連携
+    mfa.js            多要素認証とデバイス紐づきPIN
     oauth.js          OAuthの認可コードとアクセストークン
     passkey.js        WebAuthn/Passkey風のチャレンジ認証
   data/
