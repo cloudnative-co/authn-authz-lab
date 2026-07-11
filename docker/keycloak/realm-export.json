@@ -1,0 +1,54 @@
+{
+  "realm": "example",
+  "enabled": true,
+  "sslRequired": "none",
+  "loginWithEmailAllowed": true,
+  "users": [
+    {
+      "username": "alice",
+      "enabled": true,
+      "email": "alice@example.com",
+      "emailVerified": true,
+      "firstName": "Alice",
+      "lastName": "Anderson",
+      "credentials": [
+        { "type": "password", "value": "password-alice", "temporary": false }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "mini-project-app",
+      "name": "Mini Project App (SAML SP)",
+      "enabled": true,
+      "protocol": "saml",
+      "fullScopeAllowed": true,
+      "frontchannelLogout": true,
+      "redirectUris": ["http://localhost:3000/saml/acs"],
+      "adminUrl": "http://localhost:3000/saml/acs",
+      "attributes": {
+        "saml.assertion.signature": "true",
+        "saml.server.signature": "true",
+        "saml.client.signature": "false",
+        "saml.authnstatement": "true",
+        "saml.signature.algorithm": "RSA_SHA256",
+        "saml_name_id_format": "username",
+        "saml_assertion_consumer_url_post": "http://localhost:3000/saml/acs",
+        "saml_single_logout_service_url_post": "http://localhost:3000/saml/acs"
+      },
+      "protocolMappers": [
+        {
+          "name": "email",
+          "protocol": "saml",
+          "protocolMapper": "saml-user-property-mapper",
+          "consentRequired": false,
+          "config": {
+            "attribute.nameformat": "Basic",
+            "user.attribute": "email",
+            "attribute.name": "email"
+          }
+        }
+      ]
+    }
+  ]
+}

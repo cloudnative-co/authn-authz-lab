@@ -8,6 +8,10 @@ import { parseCookie, sessionCookie, SessionStore } from './auth/session.js';
 import { buildOtpauthUri, generateTotpSecret, verifyTotp } from './auth/totp.js';
 import { createSeedData } from './data/seed.js';
 
+// Distinguishes a malformed request body from any other handler error so the
+// top-level guard can answer 400 instead of 500.
+class InvalidJsonError extends Error {}
+
 export function createApp({ issuer } = {}) {
   const store = createSeedData();
   const sessions = new SessionStore();
@@ -33,7 +37,12 @@ export function createApp({ issuer } = {}) {
 
   async function readJson(req) {
     const raw = await readRawBody(req);
-    return raw ? JSON.parse(raw) : {};
+    if (!raw) return {};
+    try {
+      return JSON.parse(raw);
+    } catch {
+      throw new InvalidJsonError('request body is not valid JSON');
+    }
   }
 
   function send(res, status, value, headers = {}) {
@@ -47,7 +56,33 @@ export function createApp({ issuer } = {}) {
     return store.users.find((user) => user.id === userId) ?? null;
   }
 
+  function ldapConfigFromEnv(env = process.env) {
+    if (!env.LDAP_URL) return null;
+    return {
+      url: env.LDAP_URL,
+      baseDn: env.LDAP_BASE_DN ?? 'dc=example,dc=test',
+      bindDn: env.LDAP_BIND_DN ?? 'cn=admin,dc=example,dc=test',
+      bindPassword: env.LDAP_BIND_PASSWORD ?? 'admin-password',
+    };
+  }
+
+  // The container features (LDAP / Kerberos / SAML) are imported lazily inside
+  // their handlers so `npm start` / `npm test` never load node-saml, ldapts or
+  // the native kerberos module when those services are not configured. The SAML
+  // SP is built once from the environment and cached.
+  let samlProviderResolved = false;
+  let samlProvider = null;
+  async function getSamlProvider() {
+    if (samlProviderResolved) return samlProvider;
+    const { samlConfigFromEnv, createSamlServiceProvider } = await import('./auth/saml.js');
+    const config = samlConfigFromEnv();
+    samlProvider = config ? createSamlServiceProvider(config) : null;
+    samlProviderResolved = true;
+    return samlProvider;
+  }
+
   const server = http.createServer(async (req, res) => {
+   try {
     // Only the path/query of req.url are used; the base host is irrelevant.
     const url = new URL(req.url, oauth.issuer);
 
@@ -160,7 +195,74 @@ export function createApp({ issuer } = {}) {
       return send(res, 200, { verified: true });
     }
 
+    // --- LDAP directory login (06). Requires the slapd container. ---
+    if (req.method === 'POST' && url.pathname === '/login/ldap') {
+      const config = ldapConfigFromEnv();
+      if (!config) return send(res, 503, { error: 'ldap_unavailable' });
+      const body = await readJson(req);
+      const { authenticateWithDirectory } = await import('./auth/ldap.js');
+      let profile;
+      try {
+        profile = await authenticateWithDirectory({ ...config, email: body.email, password: body.password });
+      } catch (error) {
+        return send(res, 502, { error: 'ldap_error', detail: error.message });
+      }
+      if (!profile) return send(res, 401, { error: 'invalid_credentials' });
+      return send(res, 200, { authenticated: true, dn: profile.dn, email: profile.email, groups: profile.groups });
+    }
+
+    // --- SPNEGO / Kerberos protected resource (07). Requires the KDC + keytab. ---
+    if (req.method === 'GET' && url.pathname === '/kerberos/me') {
+      const { createNegotiateHandler } = await import('./auth/spnego.js');
+      const result = await createNegotiateHandler()(req.headers.authorization);
+      if (!result.ok) {
+        return send(res, result.status, result.body ?? { error: 'negotiate_required' }, result.headers ?? {});
+      }
+      return send(res, 200, { principal: result.principal }, result.headers ?? {});
+    }
+
+    // --- SAML SP-initiated SSO (09). Requires the Keycloak IdP. ---
+    if (req.method === 'GET' && url.pathname === '/login/saml') {
+      const sp = await getSamlProvider();
+      if (!sp) return send(res, 503, { error: 'saml_unavailable' });
+      const { getLoginRedirectUrl } = await import('./auth/saml.js');
+      const location = await getLoginRedirectUrl(sp, url.searchParams.get('RelayState') ?? '');
+      res.writeHead(302, { location });
+      return res.end();
+    }
+
+    if (req.method === 'POST' && url.pathname === '/saml/acs') {
+      const sp = await getSamlProvider();
+      if (!sp) return send(res, 503, { error: 'saml_unavailable' });
+      const params = new URLSearchParams(await readRawBody(req));
+      const samlResponse = params.get('SAMLResponse');
+      if (!samlResponse) return send(res, 400, { error: 'missing_saml_response' });
+      const saml = await import('./auth/saml.js');
+      if (process.env.DEBUG_SAML === '1') {
+        console.log('--- decoded SAMLResponse XML ---');
+        console.log(saml.decodeSamlResponseXml(samlResponse));
+      }
+      let profile;
+      try {
+        profile = await saml.validateSamlResponse(sp, samlResponse);
+      } catch (error) {
+        return send(res, 401, { error: 'saml_validation_failed', detail: error.message });
+      }
+      return send(res, 200, { authenticated: true, nameId: profile.nameID, attributes: profile.attributes ?? {} });
+    }
+
     return send(res, 404, { error: 'not_found' });
+   } catch (error) {
+      // Last-resort guard: a handler exception must never crash the process.
+      if (error instanceof InvalidJsonError) {
+        return send(res, 400, { error: 'invalid_json' });
+      }
+      console.error('unhandled request error:', error);
+      if (!res.headersSent) {
+        return send(res, 500, { error: 'internal_error' });
+      }
+      return res.end();
+    }
   });
 
   // Configure the issuer once the real listening origin is known (e.g. an

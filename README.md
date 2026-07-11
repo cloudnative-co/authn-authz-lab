@@ -24,37 +24,47 @@ src/
     jwt.js            RS256 JWT の署名・検証（RFC 7519、node:crypto のみ）
     oauth.js          OAuth 2.0 認可サーバー（RFC 6749 / 7636 / 6750 / 9068 / 7662）
     oidc.js           OpenID Connect OP（OIDC Core / Discovery、RS256 ID Token）
-    directory.js      LDAP/AD/FreeIPA風のディレクトリ（Phase Bで実装差し替え予定）
-    kerberos.js       Kerberos風のチケット（Phase Bで差し替え予定）
-    federation.js     SAML風の外部IdP連携（Phase Bで差し替え予定）
+    ldap.js           LDAP bind/search 認証（RFC 4511、ldapts）
+    spnego.js         Kerberos/SPNEGO acceptor（RFC 4559、kerberos npm・遅延読込）
+    saml.js           SAML 2.0 SP（@node-saml/node-saml、XML-DSig 検証はライブラリ委譲）
     passkey.js        WebAuthn/Passkey風のチャレンジ認証（Phase Cで差し替え予定）
   data/
     seed.js           サンプルユーザー・プロジェクト・OAuthクライアント
   server.js           最小HTTP API
-test/
-  02-05-core-auth.test.js   パスワード / セッション / 認可 / Basic 認証
-  10-oauth.test.js          認可コード + PKCE、Bearer 保護リソース
-  11-oidc.test.js           Discovery / JWKS / ID Token / alg none 拒否
-  12-totp.test.js           RFC 6238 Appendix B テストベクタ
-  15-api-authorization.test.js  client_credentials / introspection / scope
-  auth-flows.test.js        06-09, 13-14（概念モデル、Phase B/Cで置換予定）
-  interop/                  openid-client（認定RP）/ otpauth との相互接続テスト
-test-support/http.js        テスト用のHTTPヘルパー（node --test の対象外）
+docker/
+  ldap/               OpenLDAP slapd（debian bookworm、seed.ldif）
+  kdc/                MIT Kerberos KDC（debian trixie、EXAMPLE.TEST）
+  kdc-client/         kinit + curl --negotiate 演習用クライアント
+  app/                Node アプリ（libkrb5 + ネイティブ kerberos モジュール）
+  keycloak/           Keycloak 26.7.0 realm（SAML IdP）
+  samba-ad/           Samba AD DC（08 演習用・profile "ad"）
+docker-compose.yml
+test/                 コンテナ不要（npm test）
+  02-05-core-auth / 10-oauth / 11-oidc / 12-totp / 13-14-legacy / 15-api-authorization
+  interop/            openid-client（認定RP）/ otpauth との相互接続テスト
+test-integration/     docker compose 前提（npm run test:integration）
+  06-ldap / 07-kerberos / 09-saml
+test-support/http.js  テスト用のHTTPヘルパー（node --test の対象外）
 ```
 
-OAuth / OIDC / TOTP / JWT は追加のランタイム依存なし（`node:crypto` のみ）で実装しています。準拠性は `test/interop/` の相互接続テスト（自前 OP を OpenID Certified な openid-client で叩く、自前 TOTP と otpauth の出力一致）で担保します。openid-client と otpauth は `devDependencies`（テスト専用）です。
+OAuth / OIDC / TOTP / JWT は追加のランタイム依存なし（`node:crypto` のみ）で実装しています。LDAP / Kerberos / SAML は「バグ＝脆弱性」に直結するワイヤ処理（BER/ASN.1・GSSAPI・XML-DSig）を実務標準ライブラリ（`ldapts` / `kerberos` / `@node-saml/node-saml`）に委譲します。準拠性は相互接続テスト（自前 OP ⇔ OpenID Certified な openid-client、自前 TOTP ⇔ otpauth、SP ⇔ Keycloak）で担保します。
 
-## 実行
+## 必要環境
+
+| 章 | 必要環境 |
+|---|---|
+| 01–05, 10–12, 15（パスワード〜OAuth/OIDC/TOTP/API認可） | **Node 24 のみ**（`npm test`） |
+| 06 LDAP / 07 Kerberos / 09 SAML | **+ Docker**（`npm run compose:up` → `npm run test:integration`） |
+| 08 Active Directory（Samba AD DC） | **+ Docker**（`docker compose --profile ad up`、演習のみ） |
+| 13–14 WebAuthn / Passkey | Phase C（ブラウザ）で置換予定 |
+
+## 実行（コンテナ不要）
 
 ```bash
-npm install   # 相互接続テスト用の devDependencies を取得
-npm test
+npm install
+npm test        # 02-05 / 10-12 / 15 / 13-14 legacy / interop（コンテナ不要）
 npm start
-```
 
-サーバーを起動すると、ローカルで `Mini Project App` のAPIを試せます。
-
-```bash
 curl -i -X POST http://localhost:3000/login \
   -H 'content-type: application/json' \
   -d '{"email":"alice@example.com","password":"password-alice"}'
@@ -65,6 +75,50 @@ curl -i -X POST http://localhost:3000/oauth/token \
   -d 'grant_type=client_credentials&client_id=report-app&client_secret=report-app-secret&scope=project:read'
 ```
 
+## 実行（コンテナが必要な章：06 / 07 / 09）
+
+```bash
+npm run compose:up          # docker compose up -d --build --wait（ldap/kdc/app/kdc-client/keycloak）
+npm run test:integration    # 06 LDAP / 07 Kerberos / 09 SAML
+npm run compose:down        # docker compose down -v
+```
+
+### 06 LDAP（OpenLDAP・実 bind/search）
+
+```bash
+# 実 slapd への bind と属性検索（ホストの ldapts から）
+LDAP_URL=ldap://localhost:1389 node -e "import('./src/auth/ldap.js').then(m=>m.authenticateWithDirectory({url:'ldap://localhost:1389',baseDn:'dc=example,dc=test',bindDn:'cn=admin,dc=example,dc=test',bindPassword:'admin-password',email:'alice@example.com',password:'password-alice'})).then(console.log)"
+```
+
+### 07 Kerberos（MIT krb5 KDC + SPNEGO）
+
+```bash
+docker compose exec kdc-client sh -c \
+  'echo password-alice | kinit alice@EXAMPLE.TEST && curl --negotiate -u : http://app.example.test:3000/kerberos/me'
+# => {"principal":"alice@EXAMPLE.TEST"}
+# AS/TGS 交換の観察: KRB5_TRACE=/dev/stdout kinit alice@EXAMPLE.TEST
+```
+
+### 09 SAML（Keycloak IdP、SP-initiated）
+
+- Keycloak 管理コンソール: <http://localhost:8085/admin/>（admin / admin、realm `example`）
+- IdP メタデータ: <http://localhost:8085/realms/example/protocol/saml/descriptor>
+- SP-initiated ログイン: アプリを SAML 設定付きで起動し `GET /login/saml`（302 → Keycloak）。`DEBUG_SAML=1` で ACS 受信時に SAMLResponse XML をログ出力。フル SSO はブラウザ演習。
+
+### 08 Active Directory（Samba AD DC・演習のみ）
+
+```bash
+docker compose --profile ad up -d --build samba-ad
+docker compose exec samba-ad samba-tool user list
+docker compose exec samba-ad samba-tool user create dave 'Passw0rd!'
+docker compose exec samba-ad bash -c 'echo Passw0rd! | kinit Administrator@AD.EXAMPLE.TEST && klist'
+docker compose exec samba-ad ldbsearch -H /var/lib/samba/private/sam.ldb '(sAMAccountName=alice)' dn
+```
+
+FreeIPA は Docker Desktop での動作要件（systemd / cgroup v2）が未検証のため compose に含めません。公式手順は [freeipa-container](https://github.com/freeipa/freeipa-container) を参照してください。
+
 ## 注意
 
 **このアプリは教材専用です。本番利用は禁止します。** 実プロトコル（OAuth 2.0 / OIDC / TOTP など）のワイヤ形式を「コードで見える」ようにするための最小実装であり、認可サーバー・OP は OpenID 認定を受けていません。本番では oidc-provider や IDaaS など認定・実績のある実装を使ってください。学習の都合であえて簡略化した箇所（認可エンドポイントの同意画面省略、refresh_token 未実装、鍵ローテーション非対応など）があります。
+
+XML-DSig（SAML）・GSSAPI（Kerberos）・BER/ASN.1（LDAP）は自作すると「バグ＝認証バイパス脆弱性」に直結するため（xml-crypto CVE-2025-29775 / samlify CVE-2025-47949 が実例）、実務標準ライブラリに委譲しています。コンテナ（Keycloak `start-dev` / Samba AD DC / slapd / KDC）はいずれも **学習用構成**で、認証情報も固定のサンプル値です。本番運用は不可です。

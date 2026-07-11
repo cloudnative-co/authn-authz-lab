@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
 import { after, before, test } from 'node:test';
+import { base64UrlEncode } from '../src/auth/jwt.js';
 import {
   authorizeForCode,
   codeFromAuthorize,
@@ -172,4 +173,35 @@ test('10 authorization request rejects an unsupported response_type', async () =
   const res = await authorize(cookie, query);
   assert.equal(res.status, 302);
   assert.equal(new URL(res.headers.get('location')).searchParams.get('error'), 'unsupported_response_type');
+});
+
+test('10 a Bearer token with CRLF in its alg header is rejected without crashing the server', async () => {
+  // A forged header whose alg embeds CRLF would inject into WWW-Authenticate if
+  // the verifier message were echoed there, crashing res.writeHead.
+  const header = base64UrlEncode(JSON.stringify({ alg: '\r\nInjected-Header: evil', typ: 'at+jwt' }));
+  const payload = base64UrlEncode(JSON.stringify({ sub: 'user_alice', aud: `${baseUrl}/api`, scope: 'project:read' }));
+  const forged = `${header}.${payload}.c2lnbmF0dXJl`;
+
+  const res = await fetch(`${baseUrl}/reports/projects`, { headers: { authorization: `Bearer ${forged}` } });
+  assert.equal(res.status, 401);
+  const challenge = res.headers.get('www-authenticate');
+  assert.ok(challenge && !/[\r\n]/.test(challenge));
+  assert.match(challenge, /error="invalid_token"/);
+
+  // The server survived the crafted request.
+  const health = await fetch(`${baseUrl}/me`);
+  assert.equal(health.status, 401);
+});
+
+test('10 a malformed JSON body is rejected with 400 without crashing the server', async () => {
+  const res = await fetch(`${baseUrl}/login`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: '{',
+  });
+  assert.equal(res.status, 400);
+  assert.equal((await res.json()).error, 'invalid_json');
+
+  const health = await fetch(`${baseUrl}/me`);
+  assert.equal(health.status, 401);
 });

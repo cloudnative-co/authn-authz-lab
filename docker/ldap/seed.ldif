@@ -1,0 +1,48 @@
+dn: ou=people,dc=example,dc=test
+objectClass: organizationalUnit
+ou: people
+
+dn: ou=groups,dc=example,dc=test
+objectClass: organizationalUnit
+ou: groups
+
+dn: uid=alice,ou=people,dc=example,dc=test
+objectClass: inetOrgPerson
+uid: alice
+cn: Alice
+sn: Anderson
+mail: alice@example.com
+userPassword: password-alice
+
+dn: uid=bob,ou=people,dc=example,dc=test
+objectClass: inetOrgPerson
+uid: bob
+cn: Bob
+sn: Baker
+mail: bob@example.com
+userPassword: password-bob
+
+dn: uid=carol,ou=people,dc=example,dc=test
+objectClass: inetOrgPerson
+uid: carol
+cn: Carol
+sn: Clark
+mail: carol@example.com
+userPassword: password-carol
+
+dn: cn=engineering,ou=groups,dc=example,dc=test
+objectClass: groupOfNames
+cn: engineering
+member: uid=alice,ou=people,dc=example,dc=test
+member: uid=carol,ou=people,dc=example,dc=test
+
+dn: cn=security,ou=groups,dc=example,dc=test
+objectClass: groupOfNames
+cn: security
+member: uid=alice,ou=people,dc=example,dc=test
+member: uid=bob,ou=people,dc=example,dc=test
+
+dn: cn=contractors,ou=groups,dc=example,dc=test
+objectClass: groupOfNames
+cn: contractors
+member: uid=carol,ou=people,dc=example,dc=test

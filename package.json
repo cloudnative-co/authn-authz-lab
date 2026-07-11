@@ -5,10 +5,18 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "test": "node --test"
+    "test": "node --test 'test/**/*.test.js'",
+    "test:integration": "node --test 'test-integration/**/*.test.js'",
+    "compose:up": "docker compose up -d --build --wait",
+    "compose:down": "docker compose down -v"
   },
   "engines": {
     "node": ">=22"
+  },
+  "dependencies": {
+    "@node-saml/node-saml": "^5.1.0",
+    "kerberos": "^7.0.0",
+    "ldapts": "^8.1.8"
   },
   "devDependencies": {
     "openid-client": "^6.8.4",

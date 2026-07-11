@@ -9,6 +9,17 @@ function parseScope(scope) {
   return scope ? scope.split(' ').filter(Boolean) : [];
 }
 
+// A fixed WWW-Authenticate challenge for an invalid access token. The JWT
+// verifier's error message can echo attacker-controlled header fields (e.g. the
+// `alg` value), so it must never reach a response header (RFC 6750 §3).
+const INVALID_TOKEN_CHALLENGE = 'Bearer error="invalid_token", error_description="the access token is invalid"';
+
+// Drop CR/LF and double quotes before putting any value into a header, so it
+// cannot break out of the header or the quoted-string of a challenge.
+function sanitizeHeaderValue(value) {
+  return String(value).replace(/[\r\n"]/g, '');
+}
+
 function safeEqual(a, b) {
   const bufA = Buffer.from(String(a));
   const bufB = Buffer.from(String(b));
@@ -326,27 +337,19 @@ export class AuthorizationServer {
     let payload;
     try {
       payload = this.verifyAccessToken(token).payload;
-    } catch (error) {
-      return {
-        ok: false,
-        status: 401,
-        wwwAuthenticate: `Bearer error="invalid_token", error_description="${error.message}"`,
-        error: 'invalid_token',
-      };
+    } catch {
+      // The verifier's message is intentionally discarded here (it can contain
+      // attacker-controlled bytes); the fixed challenge is safe to send.
+      return { ok: false, status: 401, wwwAuthenticate: INVALID_TOKEN_CHALLENGE, error: 'invalid_token' };
     }
     if (payload.aud !== this.resource) {
-      return {
-        ok: false,
-        status: 401,
-        wwwAuthenticate: 'Bearer error="invalid_token", error_description="unexpected audience"',
-        error: 'invalid_token',
-      };
+      return { ok: false, status: 401, wwwAuthenticate: INVALID_TOKEN_CHALLENGE, error: 'invalid_token' };
     }
     if (requiredScope && !parseScope(payload.scope).includes(requiredScope)) {
       return {
         ok: false,
         status: 403,
-        wwwAuthenticate: `Bearer error="insufficient_scope", scope="${requiredScope}"`,
+        wwwAuthenticate: `Bearer error="insufficient_scope", scope="${sanitizeHeaderValue(requiredScope)}"`,
         error: 'insufficient_scope',
       };
     }
