@@ -33,7 +33,9 @@ export function createNegotiateHandler({ servicePrincipal = DEFAULT_SERVICE_PRIN
         headers: responseToken ? { 'www-authenticate': `Negotiate ${responseToken}` } : {},
       };
     } catch (error) {
-      return { ok: false, status: 401, headers: { 'www-authenticate': 'Negotiate' }, body: { error: 'spnego_failed', detail: error.message } };
+      // The GSSAPI failure reason stays in the server log, not the response.
+      console.error('SPNEGO acceptor error:', error.message);
+      return { ok: false, status: 401, headers: { 'www-authenticate': 'Negotiate' }, body: { error: 'spnego_failed' } };
     }
   };
 }

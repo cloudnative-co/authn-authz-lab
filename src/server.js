@@ -222,7 +222,9 @@ export function createApp({ issuer } = {}) {
       try {
         profile = await authenticateWithDirectory({ ...config, email: body.email, password: body.password });
       } catch (error) {
-        return send(res, 502, { error: 'ldap_error', detail: error.message });
+        // Keep the detail in the server log only; the response is a fixed code.
+        console.error('LDAP request failed:', error.message);
+        return send(res, 502, { error: 'directory_unavailable' });
       }
       if (!profile) return send(res, 401, { error: 'invalid_credentials' });
       return send(res, 200, { authenticated: true, dn: profile.dn, email: profile.email, groups: profile.groups });
@@ -263,7 +265,9 @@ export function createApp({ issuer } = {}) {
       try {
         profile = await saml.validateSamlResponse(sp, samlResponse);
       } catch (error) {
-        return send(res, 401, { error: 'saml_validation_failed', detail: error.message });
+        // Keep the detail in the server log only; the response is a fixed code.
+        console.error('SAML validation failed:', error.message);
+        return send(res, 401, { error: 'saml_validation_failed' });
       }
       return send(res, 200, { authenticated: true, nameId: profile.nameID, attributes: profile.attributes ?? {} });
     }
