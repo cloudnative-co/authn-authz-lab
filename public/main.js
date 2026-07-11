@@ -84,11 +84,15 @@ async function registerPasskey() {
 }
 
 async function loginWithPasskey(overrides = {}) {
+  // `tamperUserHandle` mutates the response (for negative tests); the rest are
+  // request-option overrides (e.g. a tampered challenge or a foreign rpId).
+  const { tamperUserHandle, ...requestOverrides } = overrides;
   const options = await postJSON('/webauthn/authenticate/options');
   if (options.status !== 200) return { ok: false, step: 'options', status: options.status };
 
-  const credential = await navigator.credentials.get({ publicKey: toRequestOptions({ ...options.data, ...overrides }) });
+  const credential = await navigator.credentials.get({ publicKey: toRequestOptions({ ...options.data, ...requestOverrides }) });
   const response = credential.toJSON();
+  if (tamperUserHandle) response.response.userHandle = tamperUserHandle;
   const inspect = {
     clientData: decodeClientData(response.response.clientDataJSON),
     authenticatorData: parseAuthenticatorData(response.response.authenticatorData),

@@ -72,3 +72,17 @@ test('14 the browser refuses an assertion scoped to a foreign RP ID', async ({ p
   // evil.example is not a registrable suffix of the localhost origin.
   await expect(page.evaluate(() => window.webauthnDemo.loginWithPasskey({ rpId: 'evil.example' }))).rejects.toThrow();
 });
+
+test('14 rejects an assertion whose userHandle does not match the credential account', async ({ page }) => {
+  await addVirtualAuthenticator(page);
+  await page.goto('/');
+  await registerPasskey(page);
+
+  await page.context().clearCookies();
+  // 'c29tZW9uZS1lbHNl' is base64url("someone-else") — a user handle that does
+  // not belong to the account that owns this credential.
+  const result = await page.evaluate(() =>
+    window.webauthnDemo.loginWithPasskey({ tamperUserHandle: 'c29tZW9uZS1lbHNl' }),
+  );
+  expect(result.ok).toBe(false);
+});

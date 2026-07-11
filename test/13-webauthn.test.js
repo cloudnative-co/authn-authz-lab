@@ -43,3 +43,37 @@ test('14 authentication options omit allowCredentials for discoverable login', a
   assert.ok(!options.allowCredentials || options.allowCredentials.length === 0);
   assert.ok(challengeId);
 });
+
+test('13 an expired registration challenge is rejected', async () => {
+  const service = new WebAuthnService({ rpID: 'localhost' });
+  const user = { id: 'user_alice', email: 'alice@example.com' };
+  await service.startRegistration(user, { now: 0 });
+  // The registration challenge TTL is 60s.
+  const result = await service.finishRegistration(user, {}, { expectedOrigin: 'http://localhost:3100', now: 60_001 });
+  assert.equal(result.verified, false);
+});
+
+test('14 an assertion without a userHandle is rejected (discoverable login needs it)', async () => {
+  const service = new WebAuthnService({ rpID: 'localhost' });
+  service.credentials.set('cred-1', { userId: 'user_alice', credential: { id: 'cred-1', publicKey: new Uint8Array(), counter: 0 } });
+  const { challengeId } = await service.startAuthentication({ now: 0 });
+  const result = await service.finishAuthentication(
+    challengeId,
+    { id: 'cred-1', response: {} },
+    { expectedOrigin: 'http://localhost:3100', now: 1000 },
+  );
+  assert.equal(result.verified, false);
+});
+
+test('14 an assertion whose userHandle does not match the credential account is rejected', async () => {
+  const service = new WebAuthnService({ rpID: 'localhost' });
+  service.credentials.set('cred-1', { userId: 'user_alice', credential: { id: 'cred-1', publicKey: new Uint8Array(), counter: 0 } });
+  const { challengeId } = await service.startAuthentication({ now: 0 });
+  const foreignHandle = Buffer.from('someone-else').toString('base64url');
+  const result = await service.finishAuthentication(
+    challengeId,
+    { id: 'cred-1', response: { userHandle: foreignHandle } },
+    { expectedOrigin: 'http://localhost:3100', now: 1000 },
+  );
+  assert.equal(result.verified, false);
+});
