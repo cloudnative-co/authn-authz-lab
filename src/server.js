@@ -8,12 +8,17 @@ import { parseCookie, sessionCookie, SessionStore } from './auth/session.js';
 import { buildOtpauthUri, generateTotpSecret, verifyTotp } from './auth/totp.js';
 import { createSeedData } from './data/seed.js';
 
-export function createApp() {
+export function createApp({ issuer } = {}) {
   const store = createSeedData();
   const sessions = new SessionStore();
   const totpSecrets = new Map();
 
+  // The issuer is a static, trusted configuration value. It is never derived
+  // from the request Host, which a caller could spoof to forge iss/aud and the
+  // discovery document.
+  const resolvedIssuer = issuer ?? `http://localhost:${process.env.PORT ?? '3000'}`;
   const oauth = new AuthorizationServer({
+    issuer: resolvedIssuer,
     resolveUser: (userId) => store.users.find((user) => user.id === userId) ?? null,
   });
   for (const client of store.oauthClients) {
@@ -42,14 +47,9 @@ export function createApp() {
     return store.users.find((user) => user.id === userId) ?? null;
   }
 
-  return http.createServer(async (req, res) => {
-    // Derive the issuer from the request Host so tokens, discovery and the
-    // JWKS agree with the origin the server is actually reachable at (the tests
-    // listen on an ephemeral port). All clients hit a single origin.
-    const issuer = `http://${req.headers.host}`;
-    oauth.issuer = issuer;
-    oauth.resource = `${issuer}/api`;
-    const url = new URL(req.url, issuer);
+  const server = http.createServer(async (req, res) => {
+    // Only the path/query of req.url are used; the base host is irrelevant.
+    const url = new URL(req.url, oauth.issuer);
 
     if (req.method === 'POST' && url.pathname === '/login') {
       const body = await readJson(req);
@@ -87,7 +87,7 @@ export function createApp() {
     }
 
     if (req.method === 'GET' && url.pathname === '/.well-known/openid-configuration') {
-      return send(res, 200, buildDiscoveryDocument(issuer));
+      return send(res, 200, buildDiscoveryDocument(oauth.issuer));
     }
 
     if (req.method === 'GET' && url.pathname === '/oauth/jwks') {
@@ -100,7 +100,7 @@ export function createApp() {
       // consent to keep the authorization-code + PKCE flow readable.
       const user = currentUser(req);
       if (!user) return send(res, 401, { error: 'login_required' });
-      const result = oauth.handleAuthorizationRequest(Object.fromEntries(url.searchParams), user.id);
+      const result = oauth.handleAuthorizationRequest(url.searchParams, user.id);
       if (result.redirect) {
         res.writeHead(302, { location: result.location });
         return res.end();
@@ -124,7 +124,19 @@ export function createApp() {
         const headers = result.wwwAuthenticate ? { 'www-authenticate': result.wwwAuthenticate } : {};
         return send(res, result.status, { error: result.error ?? 'unauthorized' }, headers);
       }
-      return send(res, 200, { projects: listReadableProjects(store, 'user_alice').map((project) => project.name) });
+      // Scope the response to the token subject (RFC 9068). A delegated user
+      // token only sees what that user may read; a machine client
+      // (client_credentials, sub === client_id) gets an org-wide report view.
+      const { sub, client_id: clientId } = result.payload;
+      let projects;
+      if (store.users.some((user) => user.id === sub)) {
+        projects = listReadableProjects(store, sub).map((project) => project.name);
+      } else if (sub === clientId) {
+        projects = store.projects.map((project) => project.name);
+      } else {
+        projects = [];
+      }
+      return send(res, 200, { projects });
     }
 
     if (req.method === 'POST' && url.pathname === '/mfa/totp/setup') {
@@ -150,11 +162,20 @@ export function createApp() {
 
     return send(res, 404, { error: 'not_found' });
   });
+
+  // Configure the issuer once the real listening origin is known (e.g. an
+  // ephemeral test port). Still a static, trusted value set at startup.
+  server.setIssuer = (value) => {
+    oauth.issuer = value;
+    oauth.resource = `${value}/api`;
+  };
+
+  return server;
 }
 
 if (import.meta.url === `file://${process.argv[1]}`) {
   const port = Number.parseInt(process.env.PORT ?? '3000', 10);
-  createApp().listen(port, () => {
+  createApp({ issuer: `http://localhost:${port}` }).listen(port, () => {
     console.log(`Mini Project App listening on http://localhost:${port}`);
   });
 }

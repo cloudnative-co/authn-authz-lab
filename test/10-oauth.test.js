@@ -133,3 +133,43 @@ test('10 the bearer access token grants access to the protected resource', async
   assert.equal(anonymous.status, 401);
   assert.match(anonymous.headers.get('www-authenticate'), /Bearer/);
 });
+
+async function authorize(cookie, query) {
+  return fetch(`${baseUrl}/oauth/authorize?${query}`, { headers: { cookie }, redirect: 'manual' });
+}
+
+test('10 authorization request rejects a duplicated client_id without redirecting', async () => {
+  const cookie = await login(baseUrl, 'alice@example.com', 'password-alice');
+  const { challenge } = pkcePair();
+  const query = `response_type=code&client_id=web-app&client_id=web-app&redirect_uri=${encodeURIComponent(WEB_APP_REDIRECT_URI)}&code_challenge=${challenge}&code_challenge_method=S256&scope=project:read`;
+  const res = await authorize(cookie, query);
+  assert.equal(res.status, 400);
+  assert.equal((await res.json()).error, 'invalid_request');
+});
+
+test('10 authorization request reports a duplicated parameter via redirect', async () => {
+  const cookie = await login(baseUrl, 'alice@example.com', 'password-alice');
+  const { challenge } = pkcePair();
+  const query = `response_type=code&client_id=web-app&redirect_uri=${encodeURIComponent(WEB_APP_REDIRECT_URI)}&code_challenge=${challenge}&code_challenge_method=S256&scope=project:read&scope=openid`;
+  const res = await authorize(cookie, query);
+  assert.equal(res.status, 302);
+  assert.equal(new URL(res.headers.get('location')).searchParams.get('error'), 'invalid_request');
+});
+
+test('10 authorization request requires response_type', async () => {
+  const cookie = await login(baseUrl, 'alice@example.com', 'password-alice');
+  const { challenge } = pkcePair();
+  const query = `client_id=web-app&redirect_uri=${encodeURIComponent(WEB_APP_REDIRECT_URI)}&code_challenge=${challenge}&code_challenge_method=S256&scope=project:read`;
+  const res = await authorize(cookie, query);
+  assert.equal(res.status, 302);
+  assert.equal(new URL(res.headers.get('location')).searchParams.get('error'), 'invalid_request');
+});
+
+test('10 authorization request rejects an unsupported response_type', async () => {
+  const cookie = await login(baseUrl, 'alice@example.com', 'password-alice');
+  const { challenge } = pkcePair();
+  const query = `response_type=token&client_id=web-app&redirect_uri=${encodeURIComponent(WEB_APP_REDIRECT_URI)}&code_challenge=${challenge}&code_challenge_method=S256&scope=project:read`;
+  const res = await authorize(cookie, query);
+  assert.equal(res.status, 302);
+  assert.equal(new URL(res.headers.get('location')).searchParams.get('error'), 'unsupported_response_type');
+});

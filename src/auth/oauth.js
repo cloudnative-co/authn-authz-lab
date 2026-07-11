@@ -25,10 +25,16 @@ function parseBasicClientAuth(header = '') {
   const decoded = Buffer.from(token, 'base64').toString('utf8');
   const separator = decoded.indexOf(':');
   if (separator < 0) return null;
-  return {
-    clientId: decodeURIComponent(decoded.slice(0, separator)),
-    clientSecret: decodeURIComponent(decoded.slice(separator + 1)),
-  };
+  // Credentials are form-urlencoded before base64 (RFC 6749 §2.3.1); reject
+  // malformed percent-encoding instead of throwing.
+  try {
+    return {
+      clientId: decodeURIComponent(decoded.slice(0, separator)),
+      clientSecret: decodeURIComponent(decoded.slice(separator + 1)),
+    };
+  } catch {
+    return null;
+  }
 }
 
 function verifyPkce(verifier, challenge) {
@@ -58,10 +64,22 @@ function tokenError(status, error, description) {
   return { status, headers: cacheHeaders(), body: { error, error_description: description } };
 }
 
-function invalidClient() {
+// Client authenticated with the Authorization header: RFC 6749 §5.2 requires a
+// 401 with a matching WWW-Authenticate challenge.
+function invalidClientBasic() {
   return {
     status: 401,
     headers: { ...cacheHeaders(), 'www-authenticate': 'Basic realm="oauth-token"' },
+    body: { error: 'invalid_client', error_description: 'client authentication failed' },
+  };
+}
+
+// Client authenticated in the request body (client_secret_post): no HTTP auth
+// scheme was used, so a plain 400 invalid_client is returned (RFC 6749 §5.2).
+function invalidClientPost() {
+  return {
+    status: 400,
+    headers: cacheHeaders(),
     body: { error: 'invalid_client', error_description: 'client authentication failed' },
   };
 }
@@ -87,36 +105,58 @@ export class AuthorizationServer {
     });
   }
 
-  handleAuthorizationRequest(query, authenticatedUserId) {
-    const client = this.clients.get(query.client_id);
+  handleAuthorizationRequest(searchParams, authenticatedUserId) {
+    // RFC 6749 §3.1: request parameters MUST NOT be included more than once.
+    const seen = new Set();
+    const duplicates = new Set();
+    for (const key of searchParams.keys()) {
+      if (seen.has(key)) duplicates.add(key);
+      seen.add(key);
+    }
+    // A duplicated client_id or redirect_uri cannot be resolved to a single
+    // trusted value, so refuse without redirecting (open-redirect defense).
+    if (duplicates.has('client_id') || duplicates.has('redirect_uri')) {
+      return { redirect: false, error: 'invalid_request', error_description: 'client_id and redirect_uri must appear once' };
+    }
+
+    const client = this.clients.get(searchParams.get('client_id'));
     if (!client) {
       return { redirect: false, error: 'invalid_request', error_description: 'unknown client_id' };
     }
-    const redirectUri = query.redirect_uri;
+    const redirectUri = searchParams.get('redirect_uri');
     if (!redirectUri || !client.redirectUris.includes(redirectUri)) {
       return { redirect: false, error: 'invalid_request', error_description: 'redirect_uri mismatch' };
     }
 
-    const state = query.state;
+    const state = searchParams.get('state');
     const fail = (error, error_description) => ({
       redirect: true,
       location: buildRedirect(redirectUri, { error, error_description, state }),
     });
 
-    if (query.response_type !== 'code') {
+    // Any other duplicated parameter is reported to the client via redirect.
+    if (duplicates.size > 0) {
+      return fail('invalid_request', `duplicate parameter: ${[...duplicates][0]}`);
+    }
+
+    const responseType = searchParams.get('response_type');
+    if (!responseType) {
+      return fail('invalid_request', 'response_type is required');
+    }
+    if (responseType !== 'code') {
       return fail('unsupported_response_type', 'only response_type=code is supported');
     }
-    if (query.code_challenge_method !== 'S256') {
+    if (searchParams.get('code_challenge_method') !== 'S256') {
       return fail('invalid_request', 'code_challenge_method must be S256');
     }
-    if (!query.code_challenge) {
+    if (!searchParams.get('code_challenge')) {
       return fail('invalid_request', 'code_challenge is required');
     }
     if (!client.grantTypes.includes('authorization_code')) {
       return fail('unauthorized_client', 'client cannot use the authorization_code grant');
     }
 
-    const scopes = parseScope(query.scope);
+    const scopes = parseScope(searchParams.get('scope'));
     const invalidScope = scopes.find((scope) => !client.allowedScopes.includes(scope));
     if (invalidScope) {
       return fail('invalid_scope', `scope not allowed: ${invalidScope}`);
@@ -128,8 +168,8 @@ export class AuthorizationServer {
       userId: authenticatedUserId,
       redirectUri,
       scopes,
-      codeChallenge: query.code_challenge,
-      nonce: query.nonce,
+      codeChallenge: searchParams.get('code_challenge'),
+      nonce: searchParams.get('nonce'),
       expiresAt: this.now() + AUTHORIZATION_CODE_TTL_MS,
       used: false,
     });
@@ -160,27 +200,25 @@ export class AuthorizationServer {
   }
 
   authenticateClient(headers, params) {
-    const basic = parseBasicClientAuth(headers.authorization ?? headers.Authorization);
-    let clientId;
-    let clientSecret;
-    if (basic) {
-      clientId = basic.clientId;
-      clientSecret = basic.clientSecret;
-    } else if (params.get('client_id')) {
-      clientId = params.get('client_id');
-      clientSecret = params.get('client_secret') ?? undefined;
-    } else {
-      return { error: true, response: invalidClient() };
+    const authorization = headers.authorization ?? headers.Authorization;
+    if (/^Basic\s/i.test(String(authorization ?? ''))) {
+      const basic = parseBasicClientAuth(authorization);
+      if (!basic) return { error: true, response: invalidClientBasic() };
+      return this.verifyClientCredentials(basic.clientId, basic.clientSecret, 'basic');
     }
+    if (params.get('client_id')) {
+      return this.verifyClientCredentials(params.get('client_id'), params.get('client_secret') ?? undefined, 'post');
+    }
+    // No client authentication supplied; challenge with Basic.
+    return { error: true, response: invalidClientBasic() };
+  }
 
+  verifyClientCredentials(clientId, clientSecret, method) {
+    const reject = () => ({ error: true, response: method === 'basic' ? invalidClientBasic() : invalidClientPost() });
     const client = this.clients.get(clientId);
-    if (!client) {
-      return { error: true, response: invalidClient() };
-    }
-    if (client.clientSecret) {
-      if (clientSecret === undefined || !safeEqual(clientSecret, client.clientSecret)) {
-        return { error: true, response: invalidClient() };
-      }
+    if (!client) return reject();
+    if (client.clientSecret && (clientSecret === undefined || !safeEqual(clientSecret, client.clientSecret))) {
+      return reject();
     }
     return { client };
   }

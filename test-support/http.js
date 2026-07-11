@@ -7,7 +7,11 @@ export const WEB_APP_REDIRECT_URI = 'http://localhost:4000/callback';
 export async function startTestServer() {
   const server = createApp();
   await new Promise((resolve) => server.listen(0, resolve));
-  return { server, baseUrl: `http://localhost:${server.address().port}` };
+  const baseUrl = `http://localhost:${server.address().port}`;
+  // Configure the issuer once the ephemeral port is known (static, not derived
+  // from request Host).
+  server.setIssuer(baseUrl);
+  return { server, baseUrl };
 }
 
 export function form(fields) {
