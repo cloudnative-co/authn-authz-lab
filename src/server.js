@@ -1,3 +1,4 @@
+import { readFileSync } from 'node:fs';
 import http from 'node:http';
 import { authenticateBasicAuth } from './auth/basic.js';
 import { authorizeProjectAction, listReadableProjects } from './auth/authorization.js';
@@ -79,6 +80,22 @@ export function createApp({ issuer } = {}) {
     samlProvider = config ? createSamlServiceProvider(config) : null;
     samlProviderResolved = true;
     return samlProvider;
+  }
+
+  // WebAuthn state (registered credentials, challenges) lives in one service
+  // instance, created lazily so `npm test` need not load @simplewebauthn.
+  let webauthnService = null;
+  async function getWebAuthn() {
+    if (!webauthnService) {
+      const { WebAuthnService } = await import('./auth/webauthn.js');
+      webauthnService = new WebAuthnService({ rpID: process.env.WEBAUTHN_RPID ?? 'localhost' });
+    }
+    return webauthnService;
+  }
+
+  function serveStatic(res, fileUrl, contentType) {
+    res.writeHead(200, { 'content-type': contentType });
+    res.end(readFileSync(fileUrl));
   }
 
   const server = http.createServer(async (req, res) => {
@@ -249,6 +266,49 @@ export function createApp({ issuer } = {}) {
         return send(res, 401, { error: 'saml_validation_failed', detail: error.message });
       }
       return send(res, 200, { authenticated: true, nameId: profile.nameID, attributes: profile.attributes ?? {} });
+    }
+
+    // --- WebAuthn / Passkey (13, 14). Needs a browser; no container required. ---
+    if (req.method === 'GET' && url.pathname === '/') {
+      return serveStatic(res, new URL('../public/index.html', import.meta.url), 'text/html; charset=utf-8');
+    }
+    if (req.method === 'GET' && url.pathname === '/main.js') {
+      return serveStatic(res, new URL('../public/main.js', import.meta.url), 'text/javascript; charset=utf-8');
+    }
+
+    if (req.method === 'POST' && url.pathname === '/webauthn/register/options') {
+      const user = currentUser(req);
+      if (!user) return send(res, 401, { error: 'login_required' });
+      const options = await (await getWebAuthn()).startRegistration(user);
+      return send(res, 200, options);
+    }
+
+    if (req.method === 'POST' && url.pathname === '/webauthn/register') {
+      const user = currentUser(req);
+      if (!user) return send(res, 401, { error: 'login_required' });
+      const result = await (await getWebAuthn()).finishRegistration(user, await readJson(req), { expectedOrigin: oauth.issuer });
+      if (!result.verified) return send(res, 400, { error: 'registration_failed' });
+      return send(res, 200, { verified: true, credentialId: result.credentialId });
+    }
+
+    if (req.method === 'POST' && url.pathname === '/webauthn/authenticate/options') {
+      const { options, challengeId } = await (await getWebAuthn()).startAuthentication();
+      return send(res, 200, options, { 'set-cookie': `webauthn_chal=${challengeId}; HttpOnly; SameSite=Lax; Path=/` });
+    }
+
+    if (req.method === 'POST' && url.pathname === '/webauthn/authenticate') {
+      const challengeId = parseCookie(req.headers.cookie).webauthn_chal;
+      const result = await (await getWebAuthn()).finishAuthentication(challengeId, await readJson(req), { expectedOrigin: oauth.issuer });
+      if (!result.verified) return send(res, 401, { error: 'authentication_failed' });
+      // Passwordless login: a valid passkey assertion mints an app session.
+      const sessionId = sessions.create(result.userId);
+      const user = store.users.find((candidate) => candidate.id === result.userId);
+      return send(
+        res,
+        200,
+        { verified: true, user: { id: user.id, email: user.email }, signCount: result.signCount },
+        { 'set-cookie': sessionCookie(sessionId) },
+      );
     }
 
     return send(res, 404, { error: 'not_found' });

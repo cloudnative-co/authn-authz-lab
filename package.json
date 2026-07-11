@@ -8,17 +8,20 @@
     "test": "node --test 'test/**/*.test.js'",
     "test:integration": "node --test 'test-integration/**/*.test.js'",
     "compose:up": "docker compose up -d --build --wait",
-    "compose:down": "docker compose down -v"
+    "compose:down": "docker compose down -v",
+    "test:e2e": "playwright test e2e/"
   },
   "engines": {
     "node": ">=22"
   },
   "dependencies": {
     "@node-saml/node-saml": "^5.1.0",
+    "@simplewebauthn/server": "^13.3.2",
     "kerberos": "^7.0.0",
     "ldapts": "^8.1.8"
   },
   "devDependencies": {
+    "@playwright/test": "1.61.1",
     "openid-client": "^6.8.4",
     "otpauth": "^9.5.1"
   }

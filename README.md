@@ -27,10 +27,12 @@ src/
     ldap.js           LDAP bind/search 認証（RFC 4511、ldapts）
     spnego.js         Kerberos/SPNEGO acceptor（RFC 4559、kerberos npm・遅延読込）
     saml.js           SAML 2.0 SP（@node-saml/node-saml、XML-DSig 検証はライブラリ委譲）
-    passkey.js        WebAuthn/Passkey風のチャレンジ認証（Phase Cで差し替え予定）
+    webauthn.js       WebAuthn RP（W3C L3、@simplewebauthn/server、attestation 'none'）
+    webauthnInspect.js  clientDataJSON / authenticatorData の表示用デコード（検証には非使用）
   data/
     seed.js           サンプルユーザー・プロジェクト・OAuthクライアント
   server.js           最小HTTP API
+public/               WebAuthn 用の最小フロント（index.html + main.js、素の ES modules）
 docker/
   ldap/               OpenLDAP slapd（debian bookworm、seed.ldif）
   kdc/                MIT Kerberos KDC（debian trixie、EXAMPLE.TEST）
@@ -39,15 +41,16 @@ docker/
   keycloak/           Keycloak 26.7.0 realm（SAML IdP）
   samba-ad/           Samba AD DC（08 演習用・profile "ad"）
 docker-compose.yml
-test/                 コンテナ不要（npm test）
-  02-05-core-auth / 10-oauth / 11-oidc / 12-totp / 13-14-legacy / 15-api-authorization
+test/                 コンテナ・ブラウザ不要（npm test）
+  02-05-core-auth / 10-oauth / 11-oidc / 12-totp / 13-webauthn / 15-api-authorization
   interop/            openid-client（認定RP）/ otpauth との相互接続テスト
 test-integration/     docker compose 前提（npm run test:integration）
   06-ldap / 07-kerberos / 09-saml
+e2e/                  Playwright + CDP 仮想認証器（npm run test:e2e、13/14）
 test-support/http.js  テスト用のHTTPヘルパー（node --test の対象外）
 ```
 
-OAuth / OIDC / TOTP / JWT は追加のランタイム依存なし（`node:crypto` のみ）で実装しています。LDAP / Kerberos / SAML は「バグ＝脆弱性」に直結するワイヤ処理（BER/ASN.1・GSSAPI・XML-DSig）を実務標準ライブラリ（`ldapts` / `kerberos` / `@node-saml/node-saml`）に委譲します。準拠性は相互接続テスト（自前 OP ⇔ OpenID Certified な openid-client、自前 TOTP ⇔ otpauth、SP ⇔ Keycloak）で担保します。
+OAuth / OIDC / TOTP / JWT は追加のランタイム依存なし（`node:crypto` のみ）で実装しています。LDAP / Kerberos / SAML / WebAuthn は「バグ＝脆弱性」に直結するワイヤ処理（BER/ASN.1・GSSAPI・XML-DSig・CBOR/attestation）を実務標準ライブラリ（`ldapts` / `kerberos` / `@node-saml/node-saml` / `@simplewebauthn/server`）に委譲します。準拠性は相互接続テスト（自前 OP ⇔ OpenID Certified な openid-client、自前 TOTP ⇔ otpauth、SP ⇔ Keycloak、WebAuthn ⇔ Chromium 仮想認証器）で担保します。
 
 ## 必要環境
 
@@ -56,13 +59,13 @@ OAuth / OIDC / TOTP / JWT は追加のランタイム依存なし（`node:crypto
 | 01–05, 10–12, 15（パスワード〜OAuth/OIDC/TOTP/API認可） | **Node 24 のみ**（`npm test`） |
 | 06 LDAP / 07 Kerberos / 09 SAML | **+ Docker**（`npm run compose:up` → `npm run test:integration`） |
 | 08 Active Directory（Samba AD DC） | **+ Docker**（`docker compose --profile ad up`、演習のみ） |
-| 13–14 WebAuthn / Passkey | Phase C（ブラウザ）で置換予定 |
+| 13–14 WebAuthn / Passkey | **+ ブラウザ**（`npm run test:e2e`、要 `npx playwright install chromium`） |
 
 ## 実行（コンテナ不要）
 
 ```bash
 npm install
-npm test        # 02-05 / 10-12 / 15 / 13-14 legacy / interop（コンテナ不要）
+npm test        # 02-05 / 10-12 / 13(inspect) / 15 / interop（コンテナ・ブラウザ不要）
 npm start
 
 curl -i -X POST http://localhost:3000/login \
@@ -117,8 +120,25 @@ docker compose exec samba-ad ldbsearch -H /var/lib/samba/private/sam.ldb '(sAMAc
 
 FreeIPA は Docker Desktop での動作要件（systemd / cgroup v2）が未検証のため compose に含めません。公式手順は [freeipa-container](https://github.com/freeipa/freeipa-container) を参照してください。
 
+## 実行（ブラウザが必要な章：13 / 14 WebAuthn / Passkey）
+
+`http://localhost` は secure context の例外なので HTTPS 不要で試せます（RP ID は `localhost`）。
+
+```bash
+# 自動テスト（Chromium の CDP 仮想認証器で登録→パスワードレスログイン→signCount 増加）
+npx playwright install chromium   # 初回のみ
+npm run test:e2e
+
+# 実機で試す
+npm start                          # http://localhost:3000 を開く
+```
+
+- 13 登録: パスワードでログイン →「Log in and register passkey」。画面に `clientDataJSON` と `authenticatorData` ヘッダ（flags UP/UV/BE/BS + signCount）が表示される
+- 14 パスワードレス: ログアウト後「Log in with passkey」→ discoverable passkey で `/me` が 200
+- CDP 仮想認証器は Chromium 限定。手動デバッグは Chrome DevTools の WebAuthn タブ（仮想認証器・signCount 監視・credential エクスポート）や実機 Touch ID / 1Password でも試せる
+
 ## 注意
 
 **このアプリは教材専用です。本番利用は禁止します。** 実プロトコル（OAuth 2.0 / OIDC / TOTP など）のワイヤ形式を「コードで見える」ようにするための最小実装であり、認可サーバー・OP は OpenID 認定を受けていません。本番では oidc-provider や IDaaS など認定・実績のある実装を使ってください。学習の都合であえて簡略化した箇所（認可エンドポイントの同意画面省略、refresh_token 未実装、鍵ローテーション非対応など）があります。
 
-XML-DSig（SAML）・GSSAPI（Kerberos）・BER/ASN.1（LDAP）は自作すると「バグ＝認証バイパス脆弱性」に直結するため（xml-crypto CVE-2025-29775 / samlify CVE-2025-47949 が実例）、実務標準ライブラリに委譲しています。コンテナ（Keycloak `start-dev` / Samba AD DC / slapd / KDC）はいずれも **学習用構成**で、認証情報も固定のサンプル値です。本番運用は不可です。
+XML-DSig（SAML）・GSSAPI（Kerberos）・BER/ASN.1（LDAP）・CBOR/attestation（WebAuthn）は自作すると「バグ＝認証バイパス脆弱性」に直結するため（xml-crypto CVE-2025-29775 / samlify CVE-2025-47949 が実例）、実務標準ライブラリに委譲しています。WebAuthn の `attestation: 'none'` は「検証の省略」ではなくパスキー実運用の標準（Google/Apple 等の RP も既定は none）です。コンテナ（Keycloak `start-dev` / Samba AD DC / slapd / KDC）はいずれも **学習用構成**で、認証情報も固定のサンプル値です。本番運用は不可です。

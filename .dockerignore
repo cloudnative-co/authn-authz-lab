@@ -4,6 +4,8 @@ node_modules
 test
 test-integration
 test-support
+e2e
+playwright.config.js
 docker
 docker-compose.yml
 *.md
