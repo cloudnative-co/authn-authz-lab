@@ -47,5 +47,22 @@ export function createSeedData() {
     { id: 'contractors', name: 'Contractors', members: ['user_carol'] },
   ];
 
-  return { users, projects, groups };
+  const oauthClients = [
+    {
+      clientId: 'web-app',
+      clientSecret: 'web-app-secret',
+      redirectUris: ['http://localhost:4000/callback'],
+      allowedScopes: ['openid', 'project:read'],
+      grantTypes: ['authorization_code'],
+    },
+    {
+      clientId: 'report-app',
+      clientSecret: 'report-app-secret',
+      redirectUris: [],
+      allowedScopes: ['project:read'],
+      grantTypes: ['client_credentials'],
+    },
+  ];
+
+  return { users, projects, groups, oauthClients };
 }

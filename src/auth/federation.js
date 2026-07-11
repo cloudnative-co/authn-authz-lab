@@ -35,28 +35,6 @@ export function verifySamlAssertion(assertion, secret, now = Date.now()) {
   return profile;
 }
 
-export function issueIdToken(profile, secret, now = Date.now()) {
-  const header = encodeJson({ alg: 'HS256', typ: 'JWT' });
-  const payload = encodeJson({
-    iss: 'https://idp.example.test/oidc',
-    aud: 'mini-project-app',
-    sub: profile.subject,
-    email: profile.email,
-    groups: profile.groups,
-    exp: Math.floor((now + 300_000) / 1000),
-  });
-  const body = `${header}.${payload}`;
-  return `${body}.${signature(secret, body)}`;
-}
-
-export function verifyIdToken(idToken, secret, now = Date.now()) {
-  const [header, payload, actual] = idToken.split('.');
-  if (!header || !payload || !actual) return null;
-  const body = `${header}.${payload}`;
-  const expected = signature(secret, body);
-  if (!timingSafeEqual(Buffer.from(actual), Buffer.from(expected))) return null;
-
-  const claims = decodeJson(payload);
-  if (claims.aud !== 'mini-project-app' || claims.exp <= Math.floor(now / 1000)) return null;
-  return claims;
-}
+// The OIDC ID Token helpers that used to live here were replaced by the
+// RFC-compliant RS256 implementation in oidc.js / jwt.js. The SAML helpers
+// above stay until Phase B swaps them for a real SP + Keycloak IdP.

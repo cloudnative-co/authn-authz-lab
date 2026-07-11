@@ -1,43 +1,16 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { authenticateBasicAuth } from '../src/auth/basic.js';
-import { authorizeProjectAction } from '../src/auth/authorization.js';
 import { Directory, toIdentityProfile } from '../src/auth/directory.js';
-import { issueIdToken, issueSamlAssertion, verifyIdToken, verifySamlAssertion } from '../src/auth/federation.js';
+import { issueSamlAssertion, verifySamlAssertion } from '../src/auth/federation.js';
 import { issueServiceTicket, validateServiceTicket } from '../src/auth/kerberos.js';
-import { createDevicePinFactor, MfaStore, verifyDevicePin } from '../src/auth/mfa.js';
-import { AuthorizationServer } from '../src/auth/oauth.js';
 import { createDemoAuthenticator, PasskeyStore } from '../src/auth/passkey.js';
-import { authenticateWithPassword } from '../src/auth/password.js';
-import { SessionStore } from '../src/auth/session.js';
 import { createSeedData } from '../src/data/seed.js';
 
-test('02 password authentication identifies a user', () => {
-  const store = createSeedData();
-  const alice = authenticateWithPassword(store, 'alice@example.com', 'password-alice');
-  assert.equal(alice.id, 'user_alice');
-  assert.equal(authenticateWithPassword(store, 'alice@example.com', 'wrong-password'), null);
-});
-
-test('03 sessions preserve authentication result between requests', () => {
-  const sessions = new SessionStore({ ttlMs: 1000 });
-  const id = sessions.create('user_alice', 1000);
-  assert.equal(sessions.resolve(id, 1500), 'user_alice');
-  assert.equal(sessions.resolve(id, 2500), null);
-});
-
-test('04 project authorization separates login from delete permission', () => {
-  const store = createSeedData();
-  assert.equal(authorizeProjectAction(store, 'user_alice', 'project_123', 'project.delete').allowed, true);
-  assert.equal(authorizeProjectAction(store, 'user_bob', 'project_123', 'project.delete').allowed, false);
-});
-
-test('05 basic authentication authenticates every request with the Authorization header', () => {
-  const store = createSeedData();
-  const token = Buffer.from('alice@example.com:password-alice').toString('base64');
-  const user = authenticateBasicAuth(store, `Basic ${token}`);
-  assert.equal(user.id, 'user_alice');
-});
+// Phase A replaced 02-05 (moved to 02-05-core-auth.test.js) and 10-12, 15
+// (rewritten as protocol-accurate suites: 10-oauth, 11-oidc, 12-totp,
+// 15-api-authorization). The 06-09 and 13-14 cases below still exercise the
+// "concept model" modules (directory/kerberos/federation SAML/passkey) and are
+// replaced by real LDAP/Kerberos/SAML/WebAuthn implementations in Phase B/C.
 
 test('06 directory can authenticate and return group membership', () => {
   const store = createSeedData();
@@ -64,48 +37,6 @@ test('09 saml assertion carries an IdP authentication result', () => {
   const assertion = issueSamlAssertion({ subject: 'user_alice', email: 'alice@example.com', groups: ['security'] }, 'secret', 1000);
   const profile = verifySamlAssertion(assertion, 'secret', 1200);
   assert.equal(profile.subject, 'user_alice');
-});
-
-test('10 oauth authorization code is exchanged for a scoped access token', () => {
-  const server = new AuthorizationServer({ secret: 'secret' });
-  server.registerClient({
-    clientId: 'report-app',
-    clientSecret: 'report-app-secret',
-    redirectUris: ['https://report.example.test/callback'],
-    allowedScopes: ['project:read'],
-  });
-  const code = server.issueAuthorizationCode({
-    clientId: 'report-app',
-    userId: 'user_alice',
-    redirectUri: 'https://report.example.test/callback',
-    scopes: ['project:read'],
-  });
-  const token = server.exchangeCode({
-    clientId: 'report-app',
-    clientSecret: 'report-app-secret',
-    code,
-    redirectUri: 'https://report.example.test/callback',
-  });
-  assert.equal(server.introspect(token, ['project:read']).subject, 'user_alice');
-});
-
-test('11 oidc id token carries who the user is', () => {
-  const idToken = issueIdToken({ subject: 'user_alice', email: 'alice@example.com', groups: ['security'] }, 'secret', 1000);
-  const claims = verifyIdToken(idToken, 'secret', 1200);
-  assert.equal(claims.sub, 'user_alice');
-});
-
-test('12 multi-factor authentication adds a second check after password', () => {
-  const mfa = new MfaStore({ now: () => 1000, codeGenerator: () => '123456' });
-  mfa.enrollCodeFactor({ userId: 'user_alice', factorId: 'alice-authenticator-app', label: 'Authenticator app' });
-
-  const challenge = mfa.startChallenge('user_alice', 'alice-authenticator-app');
-  assert.equal(mfa.verifyChallenge({ challengeId: challenge.challengeId, code: '000000' }), false);
-  assert.equal(mfa.verifyChallenge({ challengeId: challenge.challengeId, code: '123456' }), true);
-
-  const pinFactor = createDevicePinFactor({ userId: 'user_alice', deviceId: 'alice-laptop', pin: '246810' });
-  assert.equal(verifyDevicePin(pinFactor, { userId: 'user_alice', deviceId: 'alice-laptop', pin: '246810' }), true);
-  assert.equal(verifyDevicePin(pinFactor, { userId: 'user_alice', deviceId: 'unknown-device', pin: '246810' }), false);
 });
 
 test('13 webauthn-like public key authentication verifies a challenge signature', () => {
@@ -157,20 +88,4 @@ test('14 passkey login uses a registered credential instead of a password', () =
     }),
     true,
   );
-});
-
-test('15 client credentials token gives a machine client scoped API access', () => {
-  const server = new AuthorizationServer({ secret: 'secret' });
-  server.registerClient({
-    clientId: 'nightly-report-worker',
-    clientSecret: 'worker-secret',
-    redirectUris: [],
-    allowedScopes: ['project:read'],
-  });
-  const token = server.issueClientCredentialsToken({
-    clientId: 'nightly-report-worker',
-    clientSecret: 'worker-secret',
-    scopes: ['project:read'],
-  });
-  assert.equal(server.introspect(token, ['project:read']).tokenType, 'client');
 });

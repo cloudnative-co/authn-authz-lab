@@ -1,27 +1,34 @@
 import http from 'node:http';
 import { authenticateBasicAuth } from './auth/basic.js';
-import { authenticateWithPassword } from './auth/password.js';
 import { authorizeProjectAction, listReadableProjects } from './auth/authorization.js';
 import { AuthorizationServer } from './auth/oauth.js';
+import { buildDiscoveryDocument, buildJwks } from './auth/oidc.js';
+import { authenticateWithPassword } from './auth/password.js';
 import { parseCookie, sessionCookie, SessionStore } from './auth/session.js';
+import { buildOtpauthUri, generateTotpSecret, verifyTotp } from './auth/totp.js';
 import { createSeedData } from './data/seed.js';
 
 export function createApp() {
   const store = createSeedData();
   const sessions = new SessionStore();
-  const oauth = new AuthorizationServer();
-  oauth.registerClient({
-    clientId: 'report-app',
-    clientSecret: 'report-app-secret',
-    redirectUris: ['http://localhost:4000/callback'],
-    allowedScopes: ['project:read'],
-  });
+  const totpSecrets = new Map();
 
-  async function readJson(req) {
+  const oauth = new AuthorizationServer({
+    resolveUser: (userId) => store.users.find((user) => user.id === userId) ?? null,
+  });
+  for (const client of store.oauthClients) {
+    oauth.registerClient(client);
+  }
+
+  async function readRawBody(req) {
     const chunks = [];
     for await (const chunk of req) chunks.push(chunk);
-    if (chunks.length === 0) return {};
-    return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+    return Buffer.concat(chunks).toString('utf8');
+  }
+
+  async function readJson(req) {
+    const raw = await readRawBody(req);
+    return raw ? JSON.parse(raw) : {};
   }
 
   function send(res, status, value, headers = {}) {
@@ -36,7 +43,13 @@ export function createApp() {
   }
 
   return http.createServer(async (req, res) => {
-    const url = new URL(req.url, 'http://localhost');
+    // Derive the issuer from the request Host so tokens, discovery and the
+    // JWKS agree with the origin the server is actually reachable at (the tests
+    // listen on an ephemeral port). All clients hit a single origin.
+    const issuer = `http://${req.headers.host}`;
+    oauth.issuer = issuer;
+    oauth.resource = `${issuer}/api`;
+    const url = new URL(req.url, issuer);
 
     if (req.method === 'POST' && url.pathname === '/login') {
       const body = await readJson(req);
@@ -73,22 +86,66 @@ export function createApp() {
       return send(res, 200, { id: user.id, email: user.email });
     }
 
+    if (req.method === 'GET' && url.pathname === '/.well-known/openid-configuration') {
+      return send(res, 200, buildDiscoveryDocument(issuer));
+    }
+
+    if (req.method === 'GET' && url.pathname === '/oauth/jwks') {
+      return send(res, 200, buildJwks(oauth.keyPair));
+    }
+
+    if (req.method === 'GET' && url.pathname === '/oauth/authorize') {
+      // A real AS renders a consent screen here before issuing the code. This
+      // sample authenticates the resource owner by session cookie and skips
+      // consent to keep the authorization-code + PKCE flow readable.
+      const user = currentUser(req);
+      if (!user) return send(res, 401, { error: 'login_required' });
+      const result = oauth.handleAuthorizationRequest(Object.fromEntries(url.searchParams), user.id);
+      if (result.redirect) {
+        res.writeHead(302, { location: result.location });
+        return res.end();
+      }
+      return send(res, 400, { error: result.error, error_description: result.error_description });
+    }
+
     if (req.method === 'POST' && url.pathname === '/oauth/token') {
-      const body = await readJson(req);
-      const token = oauth.issueClientCredentialsToken({
-        clientId: body.client_id,
-        clientSecret: body.client_secret,
-        scopes: body.scope?.split(' ') ?? [],
-      });
-      if (!token) return send(res, 401, { error: 'invalid_client_or_scope' });
-      return send(res, 200, { access_token: token, token_type: 'Bearer' });
+      const result = oauth.handleTokenRequest(req.headers, await readRawBody(req));
+      return send(res, result.status, result.body, { ...result.headers, 'content-type': 'application/json;charset=UTF-8' });
+    }
+
+    if (req.method === 'POST' && url.pathname === '/oauth/introspect') {
+      const result = oauth.handleIntrospectionRequest(req.headers, await readRawBody(req));
+      return send(res, result.status, result.body, { ...result.headers, 'content-type': 'application/json;charset=UTF-8' });
     }
 
     if (req.method === 'GET' && url.pathname === '/reports/projects') {
-      const token = req.headers.authorization?.replace(/^Bearer /, '');
-      const access = token ? oauth.introspect(token, ['project:read']) : null;
-      if (!access) return send(res, 401, { error: 'invalid_token' });
+      const result = oauth.authenticateBearer(req.headers, 'project:read');
+      if (!result.ok) {
+        const headers = result.wwwAuthenticate ? { 'www-authenticate': result.wwwAuthenticate } : {};
+        return send(res, result.status, { error: result.error ?? 'unauthorized' }, headers);
+      }
       return send(res, 200, { projects: listReadableProjects(store, 'user_alice').map((project) => project.name) });
+    }
+
+    if (req.method === 'POST' && url.pathname === '/mfa/totp/setup') {
+      const user = currentUser(req);
+      if (!user) return send(res, 401, { error: 'login_required' });
+      const secret = generateTotpSecret();
+      totpSecrets.set(user.id, secret);
+      return send(res, 200, {
+        secret,
+        otpauth_uri: buildOtpauthUri({ issuer: 'Mini Project App', accountName: user.email, secret }),
+      });
+    }
+
+    if (req.method === 'POST' && url.pathname === '/mfa/totp/verify') {
+      const user = currentUser(req);
+      if (!user) return send(res, 401, { error: 'login_required' });
+      const secret = totpSecrets.get(user.id);
+      if (!secret) return send(res, 400, { error: 'totp_not_enrolled' });
+      const body = await readJson(req);
+      if (!verifyTotp(body.token, secret)) return send(res, 401, { error: 'invalid_totp' });
+      return send(res, 200, { verified: true });
     }
 
     return send(res, 404, { error: 'not_found' });
