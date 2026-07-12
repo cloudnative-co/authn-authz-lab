@@ -1,0 +1,108 @@
+services:
+  dc:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    hostname: dc.ad.example.test
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777,size=32m
+      - /etc/samba:mode=0700,size=4m
+      - /run/samba:mode=0755,size=8m
+      - /var/cache/samba:mode=0755,size=16m
+      - /var/log/samba:mode=0755,size=32m
+    labels: &course-labels
+      io.cloudnative.course.id: auth-authz
+      io.cloudnative.course.install-id: "${COURSE_INSTALL_ID:?COURSE_INSTALL_ID is required}"
+      io.cloudnative.course.resource-id: identity-platform-lab
+    secrets:
+      - lesson08_admin_password
+      - lesson08_service_password
+      - lesson08_alice_password
+    volumes:
+      - lesson08_ca_public:/ca-public
+      - lesson08_directory_data:/var/lib/samba
+      - lesson08_samba_tls:/samba-tls
+    networks:
+      default:
+        aliases:
+          - dc.ad.example.test
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/healthcheck.sh"]
+      interval: 2s
+      timeout: 5s
+      retries: 60
+      start_period: 5s
+
+  app:
+    build:
+      context: app
+      dockerfile: Dockerfile
+    hostname: app.ad.example.test
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777,size=16m
+    labels: *course-labels
+    secrets:
+      - lesson08_service_password
+      - lesson08_stable_id_key
+      - lesson08_control_token
+    volumes:
+      - lesson08_ca_public:/ca-public:ro
+    depends_on:
+      dc:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "client.mjs", "health"]
+      interval: 2s
+      timeout: 5s
+      retries: 30
+      start_period: 2s
+
+  client:
+    build:
+      context: .
+      dockerfile: client.Dockerfile
+    hostname: client.ad.example.test
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777,size=16m,uid=10008,gid=10008
+    labels: *course-labels
+    environment:
+      KRB5CCNAME: FILE:/tmp/lesson08.ccache
+    depends_on:
+      app:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "test", "-r", "/etc/krb5.conf"]
+      interval: 2s
+      timeout: 2s
+      retries: 10
+
+secrets:
+  lesson08_admin_password:
+    file: "${LESSON08_SECRET_DIR:?LESSON08_SECRET_DIR is required}/admin-password"
+  lesson08_service_password:
+    file: "${LESSON08_SECRET_DIR:?LESSON08_SECRET_DIR is required}/service-password"
+  lesson08_alice_password:
+    file: "${LESSON08_SECRET_DIR:?LESSON08_SECRET_DIR is required}/alice-password"
+  lesson08_stable_id_key:
+    file: "${LESSON08_SECRET_DIR:?LESSON08_SECRET_DIR is required}/stable-id-key"
+  lesson08_control_token:
+    file: "${LESSON08_SECRET_DIR:?LESSON08_SECRET_DIR is required}/control-token"
+
+volumes:
+  lesson08_ca_public:
+    labels: *course-labels
+  lesson08_directory_data:
+    labels: *course-labels
+  lesson08_samba_tls:
+    labels: *course-labels
+
+networks:
+  default:
+    internal: true
+    labels: *course-labels

@@ -1,0 +1,83 @@
+services:
+  keycloak:
+    build:
+      context: ../..
+      dockerfile: docker/saml/keycloak/Dockerfile
+    hostname: keycloak
+    init: true
+    read_only: true
+    entrypoint: ["/bin/bash", "/opt/course/entrypoint.sh"]
+    tmpfs:
+      - /tmp:mode=1777,size=64m
+      - /opt/keycloak/data:mode=0700,size=256m,uid=1000,gid=0
+    labels: &course-labels
+      io.cloudnative.course.id: auth-authz
+      io.cloudnative.course.install-id: "${COURSE_INSTALL_ID:?COURSE_INSTALL_ID is required}"
+      io.cloudnative.course.resource-id: saml-lab
+    secrets:
+      - lesson09_user_password
+    volumes:
+      - ./keycloak/entrypoint.sh:/opt/course/entrypoint.sh:ro
+      - ./keycloak/lesson09-realm.json:/opt/course/lesson09-realm.json:ro
+    healthcheck:
+      test: ["CMD-SHELL", "exec 3<>/dev/tcp/127.0.0.1/9000; printf 'GET /health/ready HTTP/1.0\\r\\n\\r\\n' >&3; grep -q '200 OK' <&3"]
+      interval: 2s
+      timeout: 3s
+      retries: 60
+      start_period: 10s
+
+  sp:
+    build:
+      context: ../..
+      dockerfile: docker/saml/sp/Dockerfile
+    hostname: sp
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:mode=0700,size=32m,uid=10009,gid=10009
+    labels: *course-labels
+    secrets:
+      - lesson09_control_token
+    depends_on:
+      keycloak:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3009/health').then(r=>process.exit(r.status===200?0:1),()=>process.exit(1))"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s
+
+  user-agent:
+    build:
+      context: ../..
+      dockerfile: docker/saml/user-agent/Dockerfile
+    hostname: user-agent
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777,size=8m
+    labels: *course-labels
+    secrets:
+      - lesson09_user_password
+      - lesson09_control_token
+    depends_on:
+      sp:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "client.mjs", "health"]
+      interval: 2s
+      timeout: 3s
+      retries: 20
+      start_period: 2s
+
+secrets:
+  lesson09_user_password:
+    file: "${LESSON09_SECRET_DIR:?LESSON09_SECRET_DIR is required}/user-password"
+  lesson09_control_token:
+    file: "${LESSON09_SECRET_DIR:?LESSON09_SECRET_DIR is required}/control-token"
+
+networks:
+  default:
+    internal: true
+    labels: *course-labels

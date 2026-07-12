@@ -1,0 +1,31 @@
+{
+  "$schema": "curriculum/schemas/extension.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "13",
+  "status": "implemented",
+  "title": "WebAuthn RPのproduction境界設計",
+  "estimatedMinutes": 60,
+  "prerequisiteCheckIds": ["AA13-C1", "AA13-C2", "AA13-C3"],
+  "tasks": [
+    {
+      "id": "AA13-X1",
+      "prompt": "自環境のproduction RP ID、許可origin、環境分離、HTTPS、cookie、reverse proxyの対応表を作る",
+      "acceptance": "scheme、host、port、RP ID、owner、確認方法があり、wildcard originやrequest由来の無条件採用がない"
+    },
+    {
+      "id": "AA13-X2",
+      "prompt": "user handle生成、credential record、registration transaction、認証transaction、失効、監査のdata modelを設計する",
+      "acceptance": "PII由来handleを避け、TTL、一回限り、active/revoked state、secret非記録、同時更新を扱う"
+    },
+    {
+      "id": "AA13-X3",
+      "prompt": "対象OS、browser、platform/roaming authenticator、keyboard、screen reader、取消、timeoutを含むhuman test matrixを作る",
+      "acceptance": "CDP passを実機passへ読み替えず、失敗時の復旧と証拠境界を定義する"
+    }
+  ],
+  "evidenceBoundary": {
+    "allowed": ["RP ID", "origin category", "role", "status", "固定reason", "集計値", "test profile"],
+    "forbidden": ["password", "session token", "challenge", "user handle", "credential ID", "public key", "assertion", "signature", "実利用者identity"]
+  }
+}

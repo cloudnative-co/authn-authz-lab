@@ -1,0 +1,31 @@
+{
+  "$schema": "curriculum/schemas/extension.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "11",
+  "status": "implemented",
+  "title": "account linking・key rotation・OIDC sessionの運用設計",
+  "estimatedMinutes": 60,
+  "prerequisiteCheckIds": ["AA11-C1", "AA11-C2"],
+  "tasks": [
+    {
+      "id": "AA11-X1",
+      "prompt": "外部identityの(issuer, sub)と内部accountを結び付け、email変更・重複・再利用時のtestを設計する",
+      "acceptance": "emailだけを永続keyにせず、自動linkと人手復旧の境界がある"
+    },
+    {
+      "id": "AA11-X2",
+      "prompt": "JWKS cache、通常rotation、未知kid、緊急失効、取得障害時の上限と監査を時系列で設計する",
+      "acceptance": "未知kidで無制限再取得せず、旧鍵猶予とfail-closed条件を説明できる"
+    },
+    {
+      "id": "AA11-X3",
+      "prompt": "logout、pairwise subject、ACR/AMR、UserInfoのうち一つを選び、追加検証とprivacy影響を整理する",
+      "acceptance": "ID Token検証済みという理由だけでアプリsession失効や属性利用を省略しない"
+    }
+  ],
+  "evidenceBoundary": {
+    "allowed": ["固定reason", "HTTP status", "claim名", "担当role", "検証結果"],
+    "forbidden": ["ID Token", "Access Token", "nonce", "Authorization Code", "Cookie", "private key", "control token"]
+  }
+}

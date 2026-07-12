@@ -1,0 +1,39 @@
+#!/bin/sh
+set -eu
+
+BASE_DN='DC=ad,DC=example,DC=test'
+ALICE_PASSWORD_FILE=/run/secrets/lesson08_alice_password
+
+case "${1:-}" in
+  reset)
+    if samba-tool user show alice >/dev/null 2>&1; then
+      samba-tool user delete alice >/dev/null
+    fi
+    ;;
+  joiner)
+    if samba-tool user show alice >/dev/null 2>&1; then
+      exit 65
+    fi
+    samba-tool user create alice "$(cat "$ALICE_PASSWORD_FILE")" \
+      --userou='OU=People' \
+      --given-name='Alice' \
+      --surname='Anderson' \
+      --mail-address='alice@example.test' >/dev/null
+    samba-tool user setexpiry alice --noexpiry >/dev/null
+    samba-tool group addmembers Engineering alice >/dev/null
+    samba-tool group addmembers CourseAppViewer alice >/dev/null
+    ;;
+  mover)
+    samba-tool user move alice "OU=Contractors,$BASE_DN" >/dev/null
+    samba-tool group removemembers CourseAppViewer alice >/dev/null
+    samba-tool group addmembers CourseAppEditor alice >/dev/null
+    ;;
+  leaver)
+    samba-tool user disable alice >/dev/null
+    ;;
+  *)
+    exit 64
+    ;;
+esac
+
+printf '{"stage":"%s","applied":true}\n' "$1"

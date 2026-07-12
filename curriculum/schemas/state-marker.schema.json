@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cloudnative.co.jp/schemas/auth-authz/state-marker.schema.json",
+  "title": "Course runtime state identity marker",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schemaVersion", "courseId", "repositoryRealpath", "installId", "sourceRevision", "sourceDigest", "createdAt"],
+  "properties": {
+    "$schema": { "const": "curriculum/schemas/state-marker.schema.json" },
+    "schemaVersion": { "const": 1 },
+    "courseId": { "type": "string", "minLength": 1 },
+    "repositoryRealpath": { "type": "string", "minLength": 1 },
+    "installId": { "type": "string", "pattern": "^[a-f0-9]{32}$" },
+    "sourceRevision": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "string", "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$" }
+      ]
+    },
+    "sourceDigest": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "createdAt": { "type": "string", "format": "date-time" }
+  }
+}

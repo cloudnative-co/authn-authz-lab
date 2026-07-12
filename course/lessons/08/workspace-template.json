@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "08",
+  "answers": {
+    "AA08-C1": {
+      "platform": "TODO",
+      "directory": "TODO",
+      "identity": "TODO",
+      "kerberos": "TODO",
+      "scope": "TODO"
+    },
+    "AA08-C2": {
+      "mapping": "TODO",
+      "organization": "TODO",
+      "mover": "TODO",
+      "leaver": "TODO",
+      "serviceAccount": "TODO"
+    }
+  },
+  "diagnosis": {
+    "D1": "TODO",
+    "D2": "TODO",
+    "D3": "TODO",
+    "D4": "TODO"
+  }
+}

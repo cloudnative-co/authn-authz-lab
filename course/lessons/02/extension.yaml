@@ -1,0 +1,31 @@
+{
+  "$schema": "curriculum/schemas/extension.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "02",
+  "status": "implemented",
+  "title": "password移行・入力規則・KDF容量の運用設計",
+  "estimatedMinutes": 45,
+  "prerequisiteCheckIds": ["AA02-C1", "AA02-C2", "AA02-C3"],
+  "tasks": [
+    {
+      "id": "AA02-X1",
+      "prompt": "自環境のpassword保存方式をsecretなしで棚卸しし、algorithm、parameter、salt、pepper、再hash条件、旧形式からの移行順を記録する",
+      "acceptance": "平文復元を前提にせず、login時の段階移行、強制reset、rollback不能点とownerを区別している"
+    },
+    {
+      "id": "AA02-X2",
+      "prompt": "Unicode、最大長、paste、password managerを含む入力規則と、client・API・保存層の正規化契約を設計する",
+      "acceptance": "表示上同じ文字を無条件に同一視せず、byte上限、拒否理由、互換性testを明記している"
+    },
+    {
+      "id": "AA02-X3",
+      "prompt": "per-identifier rate limitと全体KDF容量保護を別々に設計し、観測指標、閾値、復旧、正当利用者への影響を記録する",
+      "acceptance": "account列挙を増やす応答差を作らず、分散試行とresource exhaustionの両方を扱っている"
+    }
+  ],
+  "evidenceBoundary": {
+    "allowed": ["algorithm名", "parameter", "入力規則", "閾値", "担当role", "検証結果"],
+    "forbidden": ["password", "hash値", "salt値", "pepper", "実user identifier", "reset token", "secret"]
+  }
+}

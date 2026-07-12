@@ -1,0 +1,43 @@
+include /etc/ldap/schema/core.schema
+include /etc/ldap/schema/cosine.schema
+include /etc/ldap/schema/nis.schema
+include /etc/ldap/schema/inetorgperson.schema
+
+pidfile /run/slapd/slapd.pid
+argsfile /run/slapd/slapd.args
+modulepath /usr/lib/ldap
+moduleload back_mdb
+
+database mdb
+maxsize 1073741824
+suffix "dc=example,dc=test"
+rootdn "cn=admin,dc=example,dc=test"
+rootpw @@ADMIN_PASSWORD_HASH@@
+directory /var/lib/ldap
+index objectClass eq
+index mail eq
+index member eq
+
+access to attrs=userPassword
+  by anonymous auth
+  by * none
+
+access to dn.subtree="ou=people,dc=example,dc=test"
+  by dn.exact="uid=course-search,ou=service,dc=example,dc=test" read
+  by self read
+  by * none
+
+access to dn.subtree="ou=groups,dc=example,dc=test"
+  by dn.exact="uid=course-search,ou=service,dc=example,dc=test" read
+  by * none
+
+access to dn.base="ou=service,dc=example,dc=test"
+  by dn.exact="uid=course-search,ou=service,dc=example,dc=test" read
+  by * none
+
+access to dn.base="dc=example,dc=test"
+  by dn.exact="uid=course-search,ou=service,dc=example,dc=test" read
+  by * none
+
+access to *
+  by * none

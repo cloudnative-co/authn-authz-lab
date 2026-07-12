@@ -1,0 +1,55 @@
+{
+  "realm": "lesson09",
+  "enabled": true,
+  "sslRequired": "none",
+  "registrationAllowed": false,
+  "resetPasswordAllowed": false,
+  "rememberMe": false,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "users": [
+    {
+      "username": "learner@example.test",
+      "email": "learner@example.test",
+      "firstName": "Course",
+      "lastName": "Learner",
+      "emailVerified": true,
+      "enabled": true,
+      "requiredActions": [],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${LESSON09_USER_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    }
+  ],
+  "clients": [
+    {
+      "clientId": "lesson09-sp",
+      "name": "Lesson 09 training service provider",
+      "enabled": true,
+      "protocol": "saml",
+      "publicClient": true,
+      "frontchannelLogout": false,
+      "fullScopeAllowed": false,
+      "redirectUris": [
+        "http://sp:3009/saml/acs"
+      ],
+      "attributes": {
+        "saml.assertion.signature": "true",
+        "saml.authnstatement": "true",
+        "saml.client.signature": "false",
+        "saml.encrypt": "false",
+        "saml.force.post.binding": "true",
+        "saml.multivalued.roles": "false",
+        "saml.server.signature": "true",
+        "saml.server.signature.keyinfo.ext": "false",
+        "saml.signature.algorithm": "RSA_SHA256",
+        "saml_force_name_id_format": "true",
+        "saml_name_id_format": "email"
+      }
+    }
+  ]
+}

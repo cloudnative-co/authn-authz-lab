@@ -1,0 +1,162 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "07",
+  "assessment": {
+    "id": "AA07-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA07-O1",
+      "AA07-O2"
+    ],
+    "type": "integration-and-diagnosis",
+    "evidence": "runner所有の隔離network内にある実MIT Kerberos V5 KDC、client、GSSAPI acceptorへfresh scenarioを実行し、kinit直後のTGT、HTTP Negotiate後のservice ticket、401 challenge、principal付き200、誤SPNのTGS拒否、client processだけの時刻ずれによるAP拒否、stale keytabのkvno不一致によるacceptor拒否とcurrent keytab復旧を確認する。password、Authorization/response token、keytab、native error、container control値はruntime evidenceへ残さない",
+    "passCriteria": "AA07-C1でAS・TGS・APとTGT・HTTP service ticketを区別し、401 Negotiate challenge、GSSAPI acceptor、alice principalの200、Kerberos mechanismの1回のclient tokenとfinal acceptor tokenを確認する。AA07-C2で誤SPN・process-local時刻ずれ・stale kvnoを正しい境界で診断し、同じgeneric 401、host clock不変更、keytab復旧、TLS production要件、証跡秘匿を確認し、診断5件中4件以上に正答する",
+    "labTask": {
+      "instructionsRef": "course/lessons/07/README.md",
+      "predict": "kinit直後とHTTP Negotiate後のcredential cache、未認証challenge、誤SPN・時刻ずれ・stale keytabが失敗するAS/TGS/AP境界を予測する",
+      "execute": "runnerだけでdoctor、setup、demo、observeを実行し、隔離network内の実MIT Kerberos V5とGSSAPIの秘匿済みruntime.jsonを観察してsubmission.jsonを完成する。checkは保存済みruntimeを信用せずfresh actual protocol scenarioを再実行する",
+      "rejectOrFail": "Docker未導入・daemon停止・Compose欠落・所有/config不整合、TODO・未知値、TGTとservice ticketの混同、誤SPNをHTTP処理後のpassword failureとする誤答、host clock変更、stale kvno無視、一般SPNEGO・browser対応を実証済みとする誤答でfail closedすることを確認する",
+      "evidence": "AA07-C1とAA07-C2がpassし、password、Authorization/response token、keytab、native error、container ID、Compose project、install IDを含まないevidenceIdを確認する",
+      "practicalTransfer": "自組織のKerberos連携についてrealm、DNS、SPN重複、NTP許容差、keytab配布権限、kvno rotation、HTTP Negotiateのmechanism/browser scope、TLS、generic failure、audit redactionを確認する"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "fresh actual KerberosのAS・TGS・AP正常経路、3拒否境界、keytab復旧、mechanism scope、秘匿境界と回答が一致し、診断5件中4件以上かつAA07-C1とAA07-C2が全件passすれば合格",
+      "failureRule": "runtimeまたは回答が1件でも不一致、TODO・未知field、TGTとservice ticketの混同、誤SPN・時刻ずれ・kvno不一致の境界誤認、host clock変更、一般SPNEGO continuationまたはbrowser動作の過剰一般化、credentialやtokenやkeytabの証跡保存なら不合格"
+    },
+    "answerKeyRef": "course/lessons/07/answer-key.md",
+    "instructorGuideRef": "course/lessons/07/instructor-guide.md",
+    "automatedCheckRefs": [
+      "apps/project-app/lessons/07/negotiate-header.mjs",
+      "course/lessons/07/assessment.mjs",
+      "course/lessons/07/container.mjs",
+      "course/lessons/07/protocol-adapter.mjs",
+      "course/lessons/07/runner.mjs",
+      "course/lessons/07/scenario.mjs",
+      "docker/kerberos/app/server.mjs",
+      "docker/kerberos/compose.yml",
+      "test/lesson-07/assessment.test.js",
+      "test/lesson-07/negotiate-header.test.js",
+      "test/lesson-07/protocol-adapter.test.js",
+      "test/lesson-07/runtime-scenario.test.js",
+      "test-integration/07-course-kerberos.test.js",
+      "test-integration/07-course-runner.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA07-C1",
+        "mode": "lab",
+        "assessmentId": "AA07-A1",
+        "objectiveIds": [
+          "AA07-O1",
+          "AA07-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO5",
+          "AA-CO7"
+        ],
+        "evidenceType": "integration-and-diagnosis",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA07-C2",
+        "mode": "lab",
+        "assessmentId": "AA07-A1",
+        "objectiveIds": [
+          "AA07-O1",
+          "AA07-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO5",
+          "AA-CO7"
+        ],
+        "evidenceType": "integration-and-diagnosis",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs lesson 07 doctor",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs lesson 07 setup",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs lesson 07 demo",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs lesson 07 observe",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "learner-action",
+        "step": 5,
+        "path": ".lab/submissions/07/submission.json",
+        "task": "runtime.jsonのAS・TGS・AP証跡と秘匿境界を根拠にAA07-C1、AA07-C2、診断5件を手作業で入力する",
+        "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えずに全回答欄が許可値で埋まっている"
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson 07 check",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA07-C1",
+          "AA07-C2"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs lesson 07 stop",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": true
+      }
+    ],
+    "optionalRecoveryScenarios": [
+      {
+        "id": "discard-and-recreate-kerberos-lab",
+        "trigger": "現在のLesson 07回答、KDC、keytab generationを破棄して最初からやり直す場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson 07 reset",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      }
+    ]
+  }
+}

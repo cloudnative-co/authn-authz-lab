@@ -1,0 +1,191 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cloudnative.co.jp/schemas/auth-authz/assessment.schema.json",
+  "title": "Course lesson assessment artifact",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schemaVersion", "courseId", "lessonId", "assessment"],
+  "properties": {
+    "$schema": { "const": "curriculum/schemas/assessment.schema.json" },
+    "schemaVersion": { "const": 1 },
+    "courseId": { "$ref": "#/$defs/id" },
+    "lessonId": { "$ref": "#/$defs/id" },
+    "assessment": {
+      "oneOf": [
+        { "$ref": "#/$defs/implementedAssessment" },
+        { "$ref": "#/$defs/plannedAssessment" }
+      ]
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1 },
+    "portablePath": {
+      "type": "string",
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*//)(?!.*\\\\)(?!.*#)(?!.*(?:^|/)\\.\\.?/)(?!.*(?:^|/)\\.\\.?$)[A-Za-z0-9._/-]+$"
+    },
+    "nonEmptyIdArray": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/id" },
+      "uniqueItems": true
+    },
+    "labTask": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["instructionsRef", "predict", "execute", "rejectOrFail", "evidence", "practicalTransfer"],
+      "properties": {
+        "instructionsRef": { "$ref": "#/$defs/portablePath" },
+        "predict": { "type": "string", "minLength": 1 },
+        "execute": { "type": "string", "minLength": 1 },
+        "rejectOrFail": { "type": "string", "minLength": 1 },
+        "evidence": { "type": "string", "minLength": 1 },
+        "practicalTransfer": { "type": "string", "minLength": 1 }
+      }
+    },
+    "rubric": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["scoringMethod", "passRule", "failureRule"],
+      "properties": {
+        "scoringMethod": { "const": "all-required-checks" },
+        "passRule": { "type": "string", "minLength": 1 },
+        "failureRule": { "type": "string", "minLength": 1 }
+      }
+    },
+    "requiredCheck": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "mode", "assessmentId", "objectiveIds", "courseOutcomeIds", "evidenceType", "required", "mappingBasis"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "mode": { "const": "lab" },
+        "assessmentId": { "$ref": "#/$defs/id" },
+        "objectiveIds": { "$ref": "#/$defs/nonEmptyIdArray" },
+        "courseOutcomeIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        },
+        "evidenceType": { "type": "string", "minLength": 1 },
+        "required": { "const": true },
+        "mappingBasis": { "const": "assessment-objective-closure" }
+      }
+    },
+    "procedureStep": {
+      "oneOf": [
+        { "$ref": "#/$defs/commandStep" },
+        { "$ref": "#/$defs/learnerActionStep" }
+      ]
+    },
+    "commandStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "step", "command", "expectedStatus", "checkIds", "terminal"],
+      "properties": {
+        "kind": { "const": "command" },
+        "step": { "type": "integer", "minimum": 1 },
+        "command": { "type": "string", "minLength": 1 },
+        "expectedStatus": { "enum": ["pass", "fail", "blocked", "safe-noop"] },
+        "checkIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        },
+        "terminal": { "type": "boolean" }
+      }
+    },
+    "learnerActionStep": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["kind", "step", "path", "task", "completionCriterion"],
+      "properties": {
+        "kind": { "const": "learner-action" },
+        "step": { "type": "integer", "minimum": 1 },
+        "path": { "$ref": "#/$defs/portablePath" },
+        "task": { "type": "string", "minLength": 1 },
+        "completionCriterion": { "type": "string", "minLength": 1 }
+      }
+    },
+    "recoveryScenario": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "trigger", "procedure"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "trigger": { "type": "string", "minLength": 1 },
+        "procedure": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/procedureStep" }
+        }
+      }
+    },
+    "implementedAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "artifactStatus",
+        "objectiveIds",
+        "type",
+        "evidence",
+        "passCriteria",
+        "labTask",
+        "rubric",
+        "answerKeyRef",
+        "instructorGuideRef",
+        "automatedCheckRefs",
+        "requiredChecks",
+        "procedure"
+      ],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "artifactStatus": { "const": "implemented" },
+        "objectiveIds": { "$ref": "#/$defs/nonEmptyIdArray" },
+        "type": { "type": "string", "minLength": 1 },
+        "evidence": { "type": "string", "minLength": 1 },
+        "passCriteria": { "type": "string", "minLength": 1 },
+        "labTask": { "$ref": "#/$defs/labTask" },
+        "rubric": { "$ref": "#/$defs/rubric" },
+        "answerKeyRef": { "$ref": "#/$defs/portablePath" },
+        "instructorGuideRef": { "$ref": "#/$defs/portablePath" },
+        "automatedCheckRefs": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/portablePath" },
+          "uniqueItems": true
+        },
+        "requiredChecks": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/requiredCheck" }
+        },
+        "procedure": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/procedureStep" }
+        },
+        "optionalRecoveryScenarios": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "$ref": "#/$defs/recoveryScenario" }
+        }
+      }
+    },
+    "plannedAssessment": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "artifactStatus", "objectiveIds", "type", "evidence", "passCriteria", "implementationNote"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "artifactStatus": { "const": "planned" },
+        "objectiveIds": { "$ref": "#/$defs/nonEmptyIdArray" },
+        "type": { "type": "string", "minLength": 1 },
+        "evidence": { "type": "string", "minLength": 1 },
+        "passCriteria": { "type": "string", "minLength": 1 },
+        "implementationNote": { "type": "string", "pattern": "未実装" }
+      }
+    }
+  }
+}

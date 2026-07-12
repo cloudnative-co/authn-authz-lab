@@ -1,0 +1,31 @@
+{
+  "$schema": "curriculum/schemas/extension.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "10",
+  "status": "implemented",
+  "title": "scope・token失効・sender constraintの運用設計",
+  "estimatedMinutes": 60,
+  "prerequisiteCheckIds": ["AA10-C1", "AA10-C2"],
+  "tasks": [
+    {
+      "id": "AA10-X1",
+      "prompt": "管理対象APIの業務操作をscopeへ分解し、要求主体、同意表示、Resource Server側の最終認可との境界を記述する",
+      "acceptance": "scopeを画面roleやログイン済み状態と混同せず、最小権限と廃止手順がある"
+    },
+    {
+      "id": "AA10-X2",
+      "prompt": "introspection cacheを導入する場合のTTL、強制失効、AS障害時のfail-closed、監査項目を設計する",
+      "acceptance": "active応答を無期限に保持せず、失効反映の遅延上限と503時の利用者影響を説明できる"
+    },
+    {
+      "id": "AA10-X3",
+      "prompt": "refresh token、PAR、DPoP、mTLSのうち一つを選び、軽減する脅威と新しい鍵・運用負荷を整理する",
+      "acceptance": "機能名の列挙ではなく、適用する攻撃経路、所有者、rotation、失敗時の復旧がある"
+    }
+  ],
+  "evidenceBoundary": {
+    "allowed": ["固定reason", "HTTP status", "scope名", "担当role", "検証結果"],
+    "forbidden": ["password", "Access Token", "Authorization Code", "PKCE verifier", "client secret", "Cookie", "control token"]
+  }
+}

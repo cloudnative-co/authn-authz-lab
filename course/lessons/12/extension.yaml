@@ -1,0 +1,31 @@
+{
+  "$schema": "curriculum/schemas/extension.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "12",
+  "status": "implemented",
+  "title": "TOTP例外とfactor recoveryの運用設計",
+  "estimatedMinutes": 45,
+  "prerequisiteCheckIds": ["AA12-C1", "AA12-C2", "AA12-C3"],
+  "tasks": [
+    {
+      "id": "AA12-X1",
+      "prompt": "自環境のTOTPについてsecretの発行、暗号化、鍵分離、backup、access、rotation、削除のownerと証跡を記述する",
+      "acceptance": "secret、provisioning URI、TOTP値を提出せず、role、storage種別、承認、固定確認結果だけを記録する"
+    },
+    {
+      "id": "AA12-X2",
+      "prompt": "device、recovery code、既存sessionをすべて失った利用者について、本人確認、複数承認、通知、factor reset、session失効、監査を時系列で設計する",
+      "acceptance": "support担当者の単独判断やknowledge-based questionだけでfactorを解除せず、例外期限と事後reviewがある"
+    },
+    {
+      "id": "AA12-X3",
+      "prompt": "TOTPからWebAuthnへ移行する対象、優先順位、fallback、accessibility、support、完了指標を定義する",
+      "acceptance": "TOTPをphishing-resistantと扱わず、強制移行によるlockoutと恒久例外の両方を抑えるmeasureがある"
+    }
+  ],
+  "evidenceBoundary": {
+    "allowed": ["role", "storage種別", "承認段階", "固定reason", "集計値", "期限"],
+    "forbidden": ["password", "TOTP secret", "provisioning URI", "TOTP値", "recovery code", "session token", "実利用者identity"]
+  }
+}

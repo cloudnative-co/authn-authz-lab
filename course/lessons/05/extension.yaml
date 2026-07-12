@@ -1,0 +1,31 @@
+{
+  "$schema": "curriculum/schemas/extension.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "05",
+  "status": "implemented",
+  "title": "Basic認証の利用範囲・廃止・証跡境界の設計",
+  "estimatedMinutes": 30,
+  "prerequisiteCheckIds": ["AA05-C1", "AA05-C2"],
+  "tasks": [
+    {
+      "id": "AA05-X1",
+      "prompt": "自環境でBasic認証を使うendpointを棚卸しし、client、TLS終端、credential owner、代替方式、廃止期限を記録する",
+      "acceptance": "base64を暗号化と扱わず、browser利用と機械間利用を分け、共有IDを無条件に承認しない"
+    },
+    {
+      "id": "AA05-X2",
+      "prompt": "proxy、APM、application logでAuthorization headerを保存しないことを確認するtestと、漏えい時rotation手順を設計する",
+      "acceptance": "TLSの有無だけで完了とせず、header redaction、error dump、support採取物、rotation後の無効化を確認する"
+    },
+    {
+      "id": "AA05-X3",
+      "prompt": "401 challenge、credential不正、権限不足を区別するmonitoringとrunbookを作る",
+      "acceptance": "401と403を混同せず、credentialそのものを証跡にせずに原因分類と担当への引き渡しができる"
+    }
+  ],
+  "evidenceBoundary": {
+    "allowed": ["endpoint種別", "HTTP status", "challenge scheme", "TLS終端", "廃止期限", "担当role"],
+    "forbidden": ["Authorization header", "username", "password", "base64 credential", "実hostname", "secret"]
+  }
+}

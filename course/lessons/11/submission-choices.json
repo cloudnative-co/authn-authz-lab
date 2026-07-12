@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "11",
+  "sourceOfTruth": "assessment-validator-shared-choice-contract",
+  "instructions": [
+    "choices配列の掲載順は正答を示しません。ただし、回答として作る配列内の順序は手順や優先順位として採点される場合があります。",
+    "scalarはTODO文字列を候補1つへ置換します。exact-arrayは配列全体を候補1つへ置換します。",
+    "array-elementsは指定数の要素を候補から選び、教材本文の依存順に並べます。uniqueがtrueなら重複させません。"
+  ],
+  "entries": [
+    {
+      "path": "answers.AA11-C1.discovery",
+      "kind": "scalar",
+      "choices": [
+        "exact-issuer-and-http-fetched-jwks",
+        "trust-host-header-and-inline-key"
+      ]
+    },
+    {
+      "path": "answers.AA11-C1.idTokenDelivery",
+      "kind": "scalar",
+      "choices": [
+        "backchannel-token-response",
+        "browser-fragment"
+      ]
+    },
+    {
+      "path": "answers.AA11-C1.session",
+      "kind": "scalar",
+      "choices": [
+        "digest-only-after-full-validation",
+        "session-before-token-validation"
+      ]
+    },
+    {
+      "path": "answers.AA11-C1.validation",
+      "kind": "scalar",
+      "choices": [
+        "decode-payload-only",
+        "rs256-signature-iss-aud-time-nonce"
+      ]
+    },
+    {
+      "path": "answers.AA11-C2.accessToken",
+      "kind": "scalar",
+      "choices": [
+        "api-authorization-not-login-proof",
+        "login-proof-without-id-token"
+      ]
+    },
+    {
+      "path": "answers.AA11-C2.email",
+      "kind": "scalar",
+      "choices": [
+        "optional-attribute-not-subject",
+        "permanent-primary-key"
+      ]
+    },
+    {
+      "path": "answers.AA11-C2.identityKey",
+      "kind": "scalar",
+      "choices": [
+        "email-address",
+        "issuer-subject-pair"
+      ]
+    },
+    {
+      "path": "answers.AA11-C2.negativeMatrix",
+      "kind": "scalar",
+      "choices": [
+        "accept-valid-signature-only",
+        "one-fault-id-tokens-all-rejected"
+      ]
+    }
+  ]
+}

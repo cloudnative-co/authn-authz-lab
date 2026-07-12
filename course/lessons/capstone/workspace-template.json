@@ -1,0 +1,82 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "capstone",
+  "track": "TODO",
+  "common": {
+    "responsibilities": {
+      "identitySource": "TODO",
+      "directoryAndCredentialLifecycle": "TODO",
+      "federationAssertionValidation": "TODO",
+      "apiObjectAuthorization": "TODO",
+      "localSessionLifecycle": "TODO"
+    },
+    "credentialLifecycle": {
+      "accountModel": "TODO",
+      "joiner": "TODO",
+      "mover": "TODO",
+      "leaver": "TODO",
+      "emergency": "TODO"
+    },
+    "federation": {
+      "signature": "TODO",
+      "issuer": "TODO",
+      "audience": "TODO",
+      "destinationRecipient": "TODO",
+      "inResponseTo": "TODO",
+      "time": "TODO",
+      "replay": "TODO"
+    },
+    "apiAuthorization": {
+      "order": ["TODO"],
+      "invalidToken": "TODO",
+      "insufficientScope": "TODO",
+      "crossTenant": "TODO",
+      "unknownObject": "TODO",
+      "idToken": "TODO"
+    },
+    "mfaPasskey": {
+      "enrollment": "TODO",
+      "recovery": "TODO",
+      "lostDevice": "TODO",
+      "syncBoundary": "TODO",
+      "factorBoundary": "TODO"
+    },
+    "risks": [
+      { "id": "R-LEAVER-ACCESS", "severity": "TODO", "owner": "TODO", "disposition": "TODO" },
+      { "id": "R-FEDERATION-SEMANTICS", "severity": "TODO", "owner": "TODO", "disposition": "TODO" },
+      { "id": "R-API-OBJECT", "severity": "TODO", "owner": "TODO", "disposition": "TODO" },
+      { "id": "R-RECOVERY", "severity": "TODO", "owner": "TODO", "disposition": "TODO" },
+      { "id": "R-SHARED-ADMIN", "severity": "TODO", "owner": "TODO", "disposition": "TODO" }
+    ],
+    "priorityOrder": ["TODO"]
+  },
+  "artifacts": {
+    "developer": {
+      "policyMode": "TODO",
+      "sessionRevocationHook": "TODO",
+      "federationAdapter": "TODO",
+      "apiPolicy": "TODO",
+      "negativeTests": {
+        "invalidToken": "TODO",
+        "samlReplay": "TODO",
+        "crossTenant": "TODO",
+        "leaverSession": "TODO",
+        "weakRecovery": "TODO"
+      }
+    },
+    "iamOperations": {
+      "changeControl": "TODO",
+      "jmlRunbook": ["TODO"],
+      "emergencyRunbook": ["TODO"],
+      "recoveryRunbook": ["TODO"],
+      "validationProfile": "TODO",
+      "simulations": {
+        "invalidToken": "TODO",
+        "samlReplay": "TODO",
+        "crossTenant": "TODO",
+        "leaverSession": "TODO",
+        "weakRecovery": "TODO"
+      }
+    }
+  }
+}

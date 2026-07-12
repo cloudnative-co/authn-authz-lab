@@ -1,0 +1,58 @@
+schemaVersion: 1
+courseId: auth-authz
+deviations:
+  - id: DEV-LOOPBACK-HTTP
+    status: active
+    scope: setup-04
+    category: transport
+    summary: 教材runnerが起動するHTTP serviceをloopback interfaceへ限定する
+    productionDifference: 本番のbrowser-facing serviceはHTTPSと正式なhost名を使用する
+    guardrails:
+      - 0.0.0.0へbindしない
+      - loopback以外のredirect URIを登録しない
+      - loopback HTTPを本番構成として説明しない
+  - id: DEV-PER-RUN-CREDENTIAL
+    status: planned
+    scope: course-runtime
+    category: credential
+    summary: runner管理serviceのcredentialはinstallまたはrunごとに生成する
+    productionDifference: 本番credentialはsecret manager、rotation、失効、監査を含む組織管理下に置く
+    guardrails:
+      - source treeへcredentialを書かない
+      - evidenceとjournalへcredential値を保存しない
+      - callerごと、app controlごとに別credentialを発行し用途を共有しない
+      - credentialは256-bit以上の暗号学的乱数から生成する
+      - resetごとにcredentialをrotationする
+      - 別callerまたは別control用途のcredentialをcross-purposeで受理しない
+      - credential比較は長さを正規化したうえで定時間比較を使う
+      - stopでは保持しpurgeでは教材管理下のcredentialだけを削除する
+  - id: DEV-COURSE-CONTROLS
+    status: planned
+    scope: course-runtime
+    category: control-plane
+    summary: setup、reset、stop、purge用の教材controlを業務protocolから分離する
+    productionDifference: 教材controlは学習状態の再現専用であり、製品APIではない
+    guardrails:
+      - loopbackからのみ利用する
+      - per-install所有情報を検証する
+      - 記事内で実protocolのendpointとして図示しない
+  - id: DEV-LEGACY-FIXTURE
+    status: active
+    scope: test-fixtures
+    category: compatibility
+    summary: 旧mock由来fixtureは明示的にlegacyと分類し、回帰または拒否testにだけ使う
+    productionDifference: legacy fixtureは現行protocolの正常系証拠ではない
+    guardrails:
+      - runtime evidenceへ採用しない
+      - 正常系diagramの生成元にしない
+      - 現行scenarioと同じIDを割り当てない
+  - id: DEV-PROJECT-CORE-PR4
+    status: planned
+    scope: lesson-04
+    category: architecture
+    summary: project-coreの独立process、port、resource、lockは第04回vertical sliceで追加する
+    productionDifference: 現在の第04回はproject-app内の既存認可関数であり、分離済みPDPまたは業務SoRではない
+    guardrails:
+      - 現在の構成を分離済みserviceとして図示しない
+      - project-coreのruntime evidenceはPR4完了前に発行しない
+      - PR4でmanifestのport、resource、lock、sourceFilesを更新する

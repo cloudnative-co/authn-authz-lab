@@ -1,0 +1,31 @@
+{
+  "$schema": "curriculum/schemas/extension.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "07",
+  "status": "implemented",
+  "title": "SPN・keytab rotation・TLS終端の運用設計",
+  "estimatedMinutes": 60,
+  "prerequisiteCheckIds": ["AA07-C1", "AA07-C2"],
+  "tasks": [
+    {
+      "id": "AA07-X1",
+      "prompt": "自環境の1つのHTTP serviceについて、realm、canonical hostname、SPN、登録主体、重複検出、廃止手順をsource of truth付きで記述する",
+      "acceptance": "SPNをURL表示名や利用者IDと混同せず、登録・変更・削除のownerと検証commandがある"
+    },
+    {
+      "id": "AA07-X2",
+      "prompt": "keytabの発行、0600相当の配布、read-only mount、rotation、旧kvno猶予、rollback、漏えい時失効を時系列で設計する",
+      "acceptance": "raw keytabを提出せず、鍵素材ではなくrole、保管場所種別、担当、確認結果だけを記録する"
+    },
+    {
+      "id": "AA07-X3",
+      "prompt": "TLS終端、GSSAPI acceptor、principalからapplication sessionまたは認可subjectへの変換境界を図示する",
+      "acceptance": "平文HTTPをproduction承認せず、proxy headerを無条件にprincipalとして信用しない"
+    }
+  ],
+  "evidenceBoundary": {
+    "allowed": ["固定reason", "ticket種別", "SPN文字列", "担当role", "検証結果"],
+    "forbidden": ["password", "Negotiate token", "credential cache", "keytab", "private key", "native error全文", "実container identity"]
+  }
+}

@@ -1,0 +1,158 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "11",
+  "assessment": {
+    "id": "AA11-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA11-O1",
+      "AA11-O2"
+    ],
+    "type": "interop-and-rejection",
+    "evidence": "固定issuerから実DiscoveryとJWKSをHTTP取得し、joseでRS256署名、iss、aud、exp/iat、nonce、subを検証してからopaque app sessionを発行する。signature、issuer、audience、expiry、nonce、Access Token取り違えを一条件ずつ拒否し、token、nonce、Cookie、private key、control情報はruntime evidenceへ残さない",
+    "passCriteria": "AA11-C1でID Tokenがback-channel Token Responseへ届き、discovery/JWKSと全検証条件の後だけapp sessionと200が成立する。AA11-C2で六つの一条件不正が通常callbackで400となりsessionを発行せず、重複Cookieも403となり、保存済みruntimeではなくfresh scenarioと回答が一致する",
+    "labTask": {
+      "instructionsRef": "course/lessons/11/README.md",
+      "predict": "ID Tokenの到達経路、署名が正しい別issuer/audience、Access Token取り違え、emailと(issuer, sub)のaccount keyを予測する",
+      "execute": "runnerだけでdoctor、setup、demo、observeを実行し、所有process上の実OIDC HTTP scenarioから秘匿済みruntime.jsonを観察してsubmission.jsonを完成する。checkはfresh isolated scenarioを再実行する",
+      "rejectOrFail": "三portの外部占有、所有process identity不整合、discovery/JWKS/algorithm/iss/aud/exp/iat/nonce/subの検証不一致、Access Token取り違え、重複Cookie、TODO・未知field、runtimeへのcredential混入でfail closedすることを確認する",
+      "evidence": "AA11-C1とAA11-C2がpassし、ID Token、Access Token、nonce、state、verifier、code、Cookie、password、private key、scenario IDを含まないevidenceIdを確認する",
+      "practicalTransfer": "管理対象RPについて固定issuer、discovery issuer完全一致、JWKS取得先、algorithm allowlist、全ID Token検証、front-channel露出、(issuer, sub) link、app session失効を確認する"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "fresh actual HTTPの正常OIDC経路、六つの一条件拒否、session未発行、Cookie境界、秘匿境界と回答が一致し、AA11-C1とAA11-C2が全件passすれば合格",
+      "failureRule": "runtimeまたは回答が1件でも不一致、TODO・未知field、JWT decodeや署名だけで受理、Access Tokenをログイン証明にする、iss/aud/time/nonce/sub不検証、不正tokenでsession発行、credentialの証拠保存なら不合格"
+    },
+    "answerKeyRef": "course/lessons/11/answer-key.md",
+    "instructorGuideRef": "course/lessons/11/instructor-guide.md",
+    "automatedCheckRefs": [
+      "apps/oauth-lab/authorization-server.mjs",
+      "apps/oauth-lab/client-server.mjs",
+      "apps/oauth-lab/scenario-registry.mjs",
+      "course/lessons/10/managed-lab.mjs",
+      "course/lessons/11/assessment.mjs",
+      "course/lessons/11/runner.mjs",
+      "course/lessons/11/scenario.mjs",
+      "test/lesson-10-11/actual-http.test.js",
+      "test/lesson-10-11/contracts.test.js",
+      "test/lesson-10-11/runner-e2e.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA11-C1",
+        "mode": "lab",
+        "assessmentId": "AA11-A1",
+        "objectiveIds": [
+          "AA11-O1",
+          "AA11-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5"
+        ],
+        "evidenceType": "interop-and-rejection",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA11-C2",
+        "mode": "lab",
+        "assessmentId": "AA11-A1",
+        "objectiveIds": [
+          "AA11-O1",
+          "AA11-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5"
+        ],
+        "evidenceType": "interop-and-rejection",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs lesson 11 doctor",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs lesson 11 setup",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs lesson 11 demo",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs lesson 11 observe",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "learner-action",
+        "step": 5,
+        "path": ".lab/submissions/11/submission.json",
+        "task": "runtime.jsonのID Token到達経路、検証条件、拒否結果、session未発行、秘匿境界を根拠にAA11-C1とAA11-C2の回答を手作業で入力する",
+        "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えずに全回答欄が許可値で埋まっている"
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson 11 check",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA11-C1",
+          "AA11-C2"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs lesson 11 stop",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": true
+      }
+    ],
+    "optionalRecoveryScenarios": [
+      {
+        "id": "discard-and-recreate-oidc-lab",
+        "trigger": "現在のLesson 11回答、runtime、OIDC lab generationを破棄して最初からやり直す場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson 11 reset",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      }
+    ]
+  }
+}

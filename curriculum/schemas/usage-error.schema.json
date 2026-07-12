@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cloudnative.co.jp/schemas/auth-authz/usage-error.schema.json",
+  "title": "Course runner usage error",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schemaVersion", "status", "reasonCode", "message", "usage"],
+  "properties": {
+    "$schema": { "const": "curriculum/schemas/usage-error.schema.json" },
+    "schemaVersion": { "const": 1 },
+    "status": { "const": "usage-error" },
+    "reasonCode": { "const": "USAGE_ERROR" },
+    "message": { "type": "string", "minLength": 1 },
+    "usage": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    }
+  }
+}

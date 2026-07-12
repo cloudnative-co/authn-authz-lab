@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "12",
+  "answers": {
+    "AA12-C1": {
+      "enrollmentGate": "TODO",
+      "provisioning": "TODO",
+      "confirmation": "TODO",
+      "applicationSession": "TODO"
+    },
+    "AA12-C2": {
+      "replay": "TODO",
+      "invalidSurface": "TODO",
+      "throttling": "TODO",
+      "evidence": "TODO"
+    },
+    "AA12-C3": {
+      "factorClassification": "TODO",
+      "phishingResistance": "TODO",
+      "recoveryCode": "TODO",
+      "strongerChoice": "TODO"
+    }
+  }
+}

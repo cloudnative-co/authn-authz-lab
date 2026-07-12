@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cloudnative.co.jp/schemas/auth-authz/state.schema.json",
+  "title": "Course runtime state",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schemaVersion", "courseId", "installId", "markerDigest", "epoch", "lifecycle", "lessons", "resources", "updatedAt"],
+  "properties": {
+    "$schema": { "const": "curriculum/schemas/state.schema.json" },
+    "schemaVersion": { "const": 1 },
+    "courseId": { "$ref": "#/$defs/id" },
+    "installId": { "type": "string", "pattern": "^[a-f0-9]{32}$" },
+    "markerDigest": { "$ref": "#/$defs/sha256" },
+    "epoch": { "type": "integer", "minimum": 1 },
+    "lifecycle": { "enum": ["stopped", "starting", "ready", "running", "degraded"] },
+    "lessons": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/lessonState" }
+    },
+    "resources": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/resourceState" }
+    },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1 },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "lessonState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "lifecycle", "lastRunId", "evidenceIds"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "lifecycle": { "enum": ["not-started", "stopped", "ready", "running", "failed"] },
+        "lastRunId": { "type": ["string", "null"] },
+        "evidenceIds": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/id" },
+          "uniqueItems": true
+        }
+      }
+    },
+    "resourceState": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "ownershipDigest"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "status": { "enum": ["absent", "present", "stopped", "running", "unknown"] },
+        "ownershipDigest": {
+          "oneOf": [
+            { "type": "null" },
+            { "$ref": "#/$defs/sha256" }
+          ]
+        }
+      }
+    }
+  }
+}

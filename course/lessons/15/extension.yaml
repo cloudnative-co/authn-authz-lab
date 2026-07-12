@@ -1,0 +1,31 @@
+{
+  "$schema": "curriculum/schemas/extension.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "15",
+  "status": "implemented",
+  "title": "JWT鍵rotation・緊急失効・BOLA面の拡張設計",
+  "estimatedMinutes": 60,
+  "prerequisiteCheckIds": ["AA15-C1", "AA15-C2", "AA15-C3"],
+  "tasks": [
+    {
+      "id": "AA15-X1",
+      "prompt": "JWKSの新旧鍵共存、cache更新、旧鍵撤去、未知kid時の再取得を時系列で設計する",
+      "acceptance": "鍵所有者、重複期間、cache上限、fail-closed、rollbackが明記されている"
+    },
+    {
+      "id": "AA15-X2",
+      "prompt": "JWT Access Tokenの緊急失効を短命化、denylist、introspectionから選び、反映遅延と可用性を比較する",
+      "acceptance": "jtiを記録するだけで失効できると誤解せず、反映主体と障害時挙動がある"
+    },
+    {
+      "id": "AA15-X3",
+      "prompt": "単体取得、一覧、検索、batchの各APIでtenantとobject認可をどこへ強制するか設計する",
+      "acceptance": "scopeとobject認可を分け、cross-tenantの存在漏えいと抜け道をテストできる"
+    }
+  ],
+  "evidenceBoundary": {
+    "allowed": ["固定kid", "HTTP status", "rotation状態", "scope名", "policy結果"],
+    "forbidden": ["Access Token", "Authorization Code", "PKCE verifier", "password", "秘密鍵", "Cookie", "control token"]
+  }
+}

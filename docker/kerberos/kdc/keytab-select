@@ -1,0 +1,13 @@
+#!/bin/bash
+set -euo pipefail
+umask 077
+
+case "${1:-}" in
+  current|stale)
+    install -o 10001 -g 10001 -m 0400 "/keytabs/${1}.keytab" /keytabs/active.keytab
+    ;;
+  *)
+    exit 64
+    ;;
+esac
+

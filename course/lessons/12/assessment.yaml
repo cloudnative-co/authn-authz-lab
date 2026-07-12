@@ -1,0 +1,176 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "12",
+  "assessment": {
+    "id": "AA12-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA12-O1",
+      "AA12-O2"
+    ],
+    "type": "automated-and-decision",
+    "evidence": "freshな実HTTP scenarioでpassword再確認後のTOTP登録、現在codeによる確認、pre-auth、第二要素後のsession発行、同一counter replay、期限切れ、誤値、account単位rate limit、single-use recovery code、secret非保存を観察し、factor強度と復旧判断を照合する",
+    "passCriteria": "AA12-C1で登録とsession gate、AA12-C2でreplay・generic拒否・rate limit・redaction、AA12-C3でfactor分類・phishing耐性・recovery・WebAuthn選択がfresh runtimeと回答の両方で一致する",
+    "labTask": {
+      "instructionsRef": "course/lessons/12/README.md",
+      "predict": "password後のsession、登録確認、同一counter再利用、誤値と期限切れの外部応答、TOTPのphishing耐性、recovery code保存を予測する",
+      "execute": "doctor、setup、demo、observeを実行し、登録、pre-auth、TOTP、session、拒否、rate limit、recovery、redactionをruntime.jsonで確認してsubmission.jsonを完成する",
+      "rejectOrFail": "TODO、未知値、password後のsession発行、同一counter再利用、原因別の外部応答、無制限guess、secret保存、TOTPをphishing-resistantとする回答がfailすることを確認する",
+      "evidence": "AA12-C1からAA12-C3がfresh scenarioでpassし、password、secret、provisioning URI、TOTP、recovery code、cookie/tokenを含まないevidenceIdを確認する",
+      "practicalTransfer": "自環境のenrollment、secret保管、clock/window、replay、rate limit、recovery、session、WebAuthn移行のownerと未確認事項を記録する"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "fresh scenarioの登録、二段階login、replay拒否、generic失敗、rate limit、single-use recovery、redactionと回答が一致し、AA12-C1、AA12-C2、AA12-C3がすべてpassすれば合格",
+      "failureRule": "runtimeまたは回答が1件でも不一致、TODOや未知field、passwordだけのapplication session、成功counter再利用、secret/code/token保存、TOTPをphishing-resistantとする判断があれば不合格"
+    },
+    "answerKeyRef": "course/lessons/12/answer-key.md",
+    "instructorGuideRef": "course/lessons/12/instructor-guide.md",
+    "automatedCheckRefs": [
+      "packages/totp/totp.mjs",
+      "apps/project-app/lessons/12/mfa-service.mjs",
+      "apps/project-app/lessons/12/http-handler.mjs",
+      "course/lessons/12/assessment.mjs",
+      "course/lessons/12/runner.mjs",
+      "course/lessons/12/scenario.mjs",
+      "course/lessons/12/workspace.mjs",
+      "test/lesson-12/totp.test.js",
+      "test/lesson-12/mfa-service.test.js",
+      "test/lesson-12/runner-e2e.test.js",
+      "test/lesson-12/runtime-scenario.test.js",
+      "test/lesson-12/assessment.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA12-C1",
+        "mode": "lab",
+        "assessmentId": "AA12-A1",
+        "objectiveIds": [
+          "AA12-O1",
+          "AA12-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO3",
+          "AA-CO5",
+          "AA-CO6"
+        ],
+        "evidenceType": "automated-and-decision",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA12-C2",
+        "mode": "lab",
+        "assessmentId": "AA12-A1",
+        "objectiveIds": [
+          "AA12-O1",
+          "AA12-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO3",
+          "AA-CO5",
+          "AA-CO6"
+        ],
+        "evidenceType": "automated-and-decision",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA12-C3",
+        "mode": "lab",
+        "assessmentId": "AA12-A1",
+        "objectiveIds": [
+          "AA12-O1",
+          "AA12-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO3",
+          "AA-CO5",
+          "AA-CO6"
+        ],
+        "evidenceType": "automated-and-decision",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs lesson 12 doctor",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs lesson 12 setup",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs lesson 12 demo",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs lesson 12 observe",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "learner-action",
+        "step": 5,
+        "path": ".lab/submissions/12/submission.json",
+        "task": "runtime.jsonと一次情報を根拠にAA12-C1からAA12-C3の12回答を許可値で入力する",
+        "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えずにすべての回答欄が許可値で埋まっている"
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson 12 check",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA12-C1",
+          "AA12-C2",
+          "AA12-C3"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs lesson 12 stop",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": true
+      }
+    ],
+    "optionalRecoveryScenarios": [
+      {
+        "id": "discard-and-restart-mfa-lab",
+        "trigger": "現在の第12回答とruntimeを破棄して最初からやり直す場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson 12 reset",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      }
+    ]
+  }
+}

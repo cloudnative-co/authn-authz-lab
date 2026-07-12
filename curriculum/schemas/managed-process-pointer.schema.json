@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cloudnative.co.jp/schemas/auth-authz/managed-process-pointer.schema.json",
+  "title": "Course managed process current-generation pointer",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schemaVersion", "resourceId", "generationId", "activatedAt"],
+  "properties": {
+    "$schema": { "const": "curriculum/schemas/managed-process-pointer.schema.json" },
+    "schemaVersion": { "const": 1 },
+    "resourceId": { "type": "string", "pattern": "^[a-z][a-z0-9-]{2,63}$" },
+    "generationId": { "type": "string", "pattern": "^gen-[a-f0-9]{32}$" },
+    "activatedAt": { "type": "string", "format": "date-time" }
+  }
+}

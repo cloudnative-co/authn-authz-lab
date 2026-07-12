@@ -1,0 +1,8 @@
+#!/bin/bash
+set -euo pipefail
+
+test -s /keytabs/current.keytab
+test -s /keytabs/stale.keytab
+test -s /keytabs/active.keytab
+kill -0 1
+

@@ -1,0 +1,31 @@
+{
+  "$schema": "curriculum/schemas/extension.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "04",
+  "status": "implemented",
+  "title": "resource認可・BOLA・監査整合性の設計レビュー",
+  "estimatedMinutes": 45,
+  "prerequisiteCheckIds": ["AA04-C1", "AA04-C2", "AA04-C3", "AA04-C4"],
+  "tasks": [
+    {
+      "id": "AA04-X1",
+      "prompt": "自環境の1 APIについてsubject、resource、action、contextの認可表を作り、既定拒否とpolicy ownerを記録する",
+      "acceptance": "画面表示やrole名だけで判断せず、resource ownershipとtenant境界を各requestで検証している"
+    },
+    {
+      "id": "AA04-X2",
+      "prompt": "ID列挙を伴うBOLA testと、403または404を選ぶ外部応答方針を設計する",
+      "acceptance": "statusだけを安全性の根拠にせず、存在確認と操作の双方がserver側認可を通るtestになっている"
+    },
+    {
+      "id": "AA04-X3",
+      "prompt": "重要操作と監査記録の原子性、重複実行、監査sink障害、rollbackを含む運用を設計する",
+      "acceptance": "操作成功なのに監査だけ欠ける状態を検出でき、secretや個人情報を過剰に保存しない"
+    }
+  ],
+  "evidenceBoundary": {
+    "allowed": ["resource種別", "action", "policy結果", "HTTP status", "監査event種別", "担当role"],
+    "forbidden": ["Session ID", "Cookie値", "Access Token", "実tenant ID", "実resource ID", "個人情報"]
+  }
+}

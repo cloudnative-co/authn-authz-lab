@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "14",
+  "answers": {
+    "AA14-C1": {
+      "discoverableCredential": "TODO",
+      "usernameTiming": "TODO",
+      "rpRevocation": "TODO",
+      "recovery": "TODO"
+    },
+    "AA14-C2": {
+      "backupFlags": "TODO",
+      "cloudSyncEvidence": "TODO",
+      "accountDisable": "TODO",
+      "signCount": "TODO"
+    }
+  }
+}

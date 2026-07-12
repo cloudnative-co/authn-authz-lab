@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "15",
+  "answers": {
+    "AA15-C1": {
+      "accessTokenProfile": "TODO",
+      "resourceIndicator": "TODO",
+      "clientTreatment": "TODO",
+      "validation": "TODO"
+    },
+    "AA15-C2": {
+      "invalidToken": "TODO",
+      "insufficientScope": "TODO",
+      "idTokenConfusion": "TODO",
+      "validationOrder": "TODO"
+    },
+    "AA15-C3": {
+      "policyDecisionPoint": "TODO",
+      "sameTenantViewer": "TODO",
+      "crossTenant": "TODO",
+      "unknownObject": "TODO",
+      "owner": "TODO"
+    }
+  }
+}

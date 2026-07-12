@@ -1,0 +1,162 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "09",
+  "assessment": {
+    "id": "AA09-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA09-O1",
+      "AA09-O2"
+    ],
+    "type": "browser-e2e-and-rejection",
+    "evidence": "runner所有のinternal networkで実Keycloak 26.7.0、strict SP、scripted HTTP User Agentを動かし、SP AuthnRequest、Keycloak login、署名済みHTTP-POST SAMLResponse、ACS、local app sessionまで追跡する。別系統のruntime生成test keyによる署名fixtureでsignature、Response/Assertion issuer、Audience、Destination、Response/SubjectConfirmation InResponseTo、bearer Method、Recipient、expiry、exact replayを一条件ずつ拒否し、raw XML、NameID、Cookie、password、private key、container control値はruntime evidenceへ残さない",
+    "passCriteria": "AA09-C1で実Keycloak正常flowのHTTP-Redirect AuthnRequest、login、HTTP-POST Response、全検証後のapp session、scripted User Agentの限定scopeを確認する。AA09-C2でResponse/Assertion両署名、issuer、Audience/Conditions、Destination、二つのInResponseTo、bearer SubjectConfirmation、Recipient、期限、Response/Assertion/request IDのone-time化を確認し、11拒否すべてがgeneric 400、期待固定reason、session未発行となり、診断5件中4件以上に正答する",
+    "labTask": {
+      "instructionsRef": "course/lessons/09/README.md",
+      "predict": "AuthnRequestとSAMLResponseのbinding、署名とAudience/Recipientの別責務、app session発行者、exact replayの結果を実行前に予測する",
+      "execute": "runnerだけでdoctor、setup、demo、observeを実行し、実Keycloak traceと別系統conformance fixtureを区別してruntime.jsonを観察し、submission.jsonを完成する。checkはfresh actual scenarioを再実行する",
+      "rejectOrFail": "Docker・ownership・config不整合、duplicate/oversize ACS input、10種類の1条件違反とexact replay、TODO・未知値、metadata/AuthnRequestだけをSSO成功とする誤答、scripted agentをGUI browserへ一般化する誤答でfail closedすることを確認する",
+      "evidence": "AA09-C1とAA09-C2がpassし、実Keycloak正常trace、11件の期待reason一致、各拒否のsession未発行、raw SAMLResponse・Assertion・NameID・Cookie・password・private key非保存を確認する",
+      "practicalTransfer": "自組織のSAML連携についてentityID、ACS、IdP issuer、metadata trust、証明書rotation、Audience、Recipient、request/replay TTL、generic failure、app session失効を確認する"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "fresh actual Keycloak flowとruntime署名fixtureの全runtime条件、AA09-C1、AA09-C2、診断5件中4件以上、秘匿境界が一致すれば合格",
+      "failureRule": "metadata/AuthnRequestだけの成功、署名だけの検証、Response/Assertion issuer・Destination・SubjectConfirmation未検証、replay許可、検証前session発行、Keycloak/GUI browserへの過剰一般化、TODO・未知field、raw identity/credential/key保存のいずれかがあれば不合格"
+    },
+    "answerKeyRef": "course/lessons/09/answer-key.md",
+    "instructorGuideRef": "course/lessons/09/instructor-guide.md",
+    "automatedCheckRefs": [
+      "course/lessons/09/assessment.mjs",
+      "course/lessons/09/container.mjs",
+      "course/lessons/09/protocol-adapter.mjs",
+      "course/lessons/09/runner.mjs",
+      "course/lessons/09/scenario.mjs",
+      "docker/saml/compose.yml",
+      "docker/saml/sp/server.mjs",
+      "docker/saml/user-agent/client.mjs",
+      "packages/saml-strict/service-provider.mjs",
+      "packages/saml-strict/xml-shape.mjs",
+      "test/lesson-09/assessment.test.js",
+      "test/lesson-09/contracts.test.js",
+      "test/lesson-09/strict-saml.test.js",
+      "test-integration/09-course-saml.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA09-C1",
+        "mode": "lab",
+        "assessmentId": "AA09-A1",
+        "objectiveIds": [
+          "AA09-O1",
+          "AA09-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5"
+        ],
+        "evidenceType": "browser-e2e-and-rejection",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA09-C2",
+        "mode": "lab",
+        "assessmentId": "AA09-A1",
+        "objectiveIds": [
+          "AA09-O1",
+          "AA09-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5"
+        ],
+        "evidenceType": "browser-e2e-and-rejection",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs lesson 09 doctor",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs lesson 09 setup",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs lesson 09 demo",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs lesson 09 observe",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "learner-action",
+        "step": 5,
+        "path": ".lab/submissions/09/submission.json",
+        "task": "runtime.jsonの実Keycloak trace、strict validation、one-fault/replay拒否、秘匿境界を根拠にAA09-C1、AA09-C2、診断5件を手作業で入力する",
+        "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えずに全回答欄が許可値で埋まっている"
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson 09 check",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA09-C1",
+          "AA09-C2"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs lesson 09 stop",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": true
+      }
+    ],
+    "optionalRecoveryScenarios": [
+      {
+        "id": "discard-and-recreate-saml-lab",
+        "trigger": "現在のLesson 09回答、Keycloak realm、runtime key、session、fixture stateを破棄して最初からやり直す場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson 09 reset",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      }
+    ]
+  }
+}

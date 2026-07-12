@@ -1,0 +1,132 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "09",
+  "sourceOfTruth": "assessment-validator-shared-choice-contract",
+  "instructions": [
+    "choices配列の掲載順は正答を示しません。ただし、回答として作る配列内の順序は手順や優先順位として採点される場合があります。",
+    "scalarはTODO文字列を候補1つへ置換します。exact-arrayは配列全体を候補1つへ置換します。",
+    "array-elementsは指定数の要素を候補から選び、教材本文の依存順に並べます。uniqueがtrueなら重複させません。"
+  ],
+  "entries": [
+    {
+      "path": "answers.AA09-C1.bindings",
+      "kind": "scalar",
+      "choices": [
+        "json-api-for-both-messages",
+        "redirect-request-and-post-response"
+      ]
+    },
+    {
+      "path": "answers.AA09-C1.flow",
+      "kind": "scalar",
+      "choices": [
+        "metadata-download-only",
+        "sp-authnrequest-idp-login-post-response-acs-session"
+      ]
+    },
+    {
+      "path": "answers.AA09-C1.session",
+      "kind": "scalar",
+      "choices": [
+        "created-before-signature-validation",
+        "created-only-after-complete-validation"
+      ]
+    },
+    {
+      "path": "answers.AA09-C1.trust",
+      "kind": "scalar",
+      "choices": [
+        "issuer-text-alone-establishes-trust",
+        "metadata-certificate-pins-idp-signature-trust"
+      ]
+    },
+    {
+      "path": "answers.AA09-C1.userAgentScope",
+      "kind": "scalar",
+      "choices": [
+        "all-browser-js-and-csp-proven",
+        "scripted-http-agent-not-gui-browser-proof"
+      ]
+    },
+    {
+      "path": "answers.AA09-C2.evidence",
+      "kind": "scalar",
+      "choices": [
+        "omit-xml-nameid-cookie-private-key",
+        "retain-raw-assertion-for-scoring"
+      ]
+    },
+    {
+      "path": "answers.AA09-C2.replay",
+      "kind": "scalar",
+      "choices": [
+        "request-response-assertion-one-time",
+        "same-signed-response-remains-valid-until-expiry"
+      ]
+    },
+    {
+      "path": "answers.AA09-C2.semanticChecks",
+      "kind": "scalar",
+      "choices": [
+        "issuer-audience-conditions-destination-inresponseto",
+        "signature-only-without-protocol-semantics"
+      ]
+    },
+    {
+      "path": "answers.AA09-C2.signatures",
+      "kind": "scalar",
+      "choices": [
+        "response-and-assertion-both-required",
+        "unsigned-assertion-is-safe-inside-response"
+      ]
+    },
+    {
+      "path": "answers.AA09-C2.subjectConfirmation",
+      "kind": "scalar",
+      "choices": [
+        "accept-any-subject-confirmation-method",
+        "single-bearer-recipient-expiry-inresponseto"
+      ]
+    },
+    {
+      "path": "diagnosis.D1",
+      "kind": "scalar",
+      "choices": [
+        "metadata-and-authnrequest-do-not-prove-sso-completed",
+        "metadata-proves-acs-session-success"
+      ]
+    },
+    {
+      "path": "diagnosis.D2",
+      "kind": "scalar",
+      "choices": [
+        "signature-makes-destination-and-audience-irrelevant",
+        "valid-signature-does-not-replace-recipient-and-audience-checks"
+      ]
+    },
+    {
+      "path": "diagnosis.D3",
+      "kind": "scalar",
+      "choices": [
+        "relaystate-and-inresponseto-bind-different-parts-of-the-flow",
+        "relaystate-is-the-signed-assertion-recipient"
+      ]
+    },
+    {
+      "path": "diagnosis.D4",
+      "kind": "scalar",
+      "choices": [
+        "app-session-is-local-and-created-after-saml-validation",
+        "saml-response-is-the-application-session-cookie"
+      ]
+    },
+    {
+      "path": "diagnosis.D5",
+      "kind": "scalar",
+      "choices": [
+        "keycloak-success-does-not-generalize-to-every-idp-or-browser",
+        "one-keycloak-script-proves-all-saml-products-and-browsers"
+      ]
+    }
+  ]
+}

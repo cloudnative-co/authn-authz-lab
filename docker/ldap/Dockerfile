@@ -1,24 +1,23 @@
-# Real OpenLDAP directory server (RFC 4511 over TCP 389).
-FROM debian:bookworm-slim
+# Debian's multi-architecture index is pinned. Package versions are pinned to
+# the Bookworm release used by this training image.
+FROM debian:bookworm-slim@sha256:60eac759739651111db372c07be67863818726f754804b8707c90979bda511df
+
 ENV DEBIAN_FRONTEND=noninteractive
 
-COPY slapd-preseed.txt /tmp/slapd-preseed.txt
-COPY seed.ldif /seed.ldif
-
-# Preseed debconf so the slapd postinst provisions dc=example,dc=test with
-# cn=admin, then load the sample people/groups into the MDB at build time.
-RUN debconf-set-selections < /tmp/slapd-preseed.txt \
- && apt-get update \
- && apt-get install -y --no-install-recommends slapd ldap-utils \
- && apt-get clean \
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends \
+      ldap-utils=2.5.13+dfsg-5 \
+      slapd=2.5.13+dfsg-5 \
  && rm -rf /var/lib/apt/lists/* \
- && slapd -h "ldap:///" -u openldap -g openldap \
- && sleep 2 \
- && ldapadd -x -H ldap://localhost -D "cn=admin,dc=example,dc=test" -w admin-password -f /seed.ldif \
- && kill "$(cat /run/slapd/slapd.pid)" \
- && sleep 1
+ && rm -rf /etc/ldap/slapd.d/* /var/lib/ldap/*
+
+COPY entrypoint.sh /usr/local/bin/course-openldap-entrypoint
+COPY slapd.conf.template /opt/course/slapd.conf.template
+COPY seed.ldif.template /opt/course/seed.ldif.template
+
+RUN chmod 0755 /usr/local/bin/course-openldap-entrypoint \
+ && chmod 0444 /opt/course/slapd.conf.template /opt/course/seed.ldif.template
 
 EXPOSE 389
-# -d 256 keeps slapd in the foreground and logs connection/bind/search activity
-# so readers can watch the LDAP protocol traffic.
-CMD ["slapd", "-h", "ldap:///", "-u", "openldap", "-g", "openldap", "-d", "256"]
+
+ENTRYPOINT ["/usr/local/bin/course-openldap-entrypoint"]

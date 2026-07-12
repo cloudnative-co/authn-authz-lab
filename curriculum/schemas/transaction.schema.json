@@ -1,0 +1,106 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cloudnative.co.jp/schemas/auth-authz/transaction.schema.json",
+  "title": "Course state mutation transaction",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schemaVersion", "runId", "courseId", "operationId", "command", "phase", "stateEpochBefore", "stateDigestBefore", "stateEpochAfter", "recoveryLockRunId", "recoveredByRunId", "recoveryReason", "startedAt", "updatedAt"],
+  "properties": {
+    "$schema": { "const": "curriculum/schemas/transaction.schema.json" },
+    "schemaVersion": { "enum": [3, 4] },
+    "runId": { "$ref": "#/$defs/id" },
+    "courseId": { "$ref": "#/$defs/id" },
+    "operationId": {
+      "type": "string",
+      "pattern": "^(?:course:(?:setup|reset|stop)|lesson:(?:setup|0[1-9]|1[0-5]|capstone):(?:setup|check|reset|stop))$"
+    },
+    "command": { "enum": ["setup", "check", "reset", "stop"] },
+    "phase": { "enum": ["begun", "prepared", "committed", "aborted"] },
+    "stateEpochBefore": { "$ref": "#/$defs/nullableEpoch" },
+    "stateDigestBefore": { "$ref": "#/$defs/nullableSha256" },
+    "stateEpochAfter": { "$ref": "#/$defs/nullableEpoch" },
+    "stateDigestAfter": { "$ref": "#/$defs/nullableSha256" },
+    "mutationId": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "string", "pattern": "^[a-f0-9]{32}$" }
+      ]
+    },
+    "preparedAt": {
+      "oneOf": [
+        { "type": "null" },
+        { "type": "string", "format": "date-time" }
+      ]
+    },
+    "recoveryLockRunId": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/id" }
+      ]
+    },
+    "recoveredByRunId": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/id" }
+      ]
+    },
+    "recoveryReason": {
+      "type": ["string", "null"],
+      "enum": [null, "owner-exited", "pid-reused", "operation-error", "operation-aborted"]
+    },
+    "startedAt": { "type": "string", "format": "date-time" },
+    "updatedAt": { "type": "string", "format": "date-time" }
+  },
+  "allOf": [
+    {
+      "oneOf": [
+        { "properties": { "operationId": { "pattern": ":setup$" }, "command": { "const": "setup" } } },
+        { "properties": { "operationId": { "pattern": ":check$" }, "command": { "const": "check" } } },
+        { "properties": { "operationId": { "pattern": ":reset$" }, "command": { "const": "reset" } } },
+        { "properties": { "operationId": { "pattern": ":stop$" }, "command": { "const": "stop" } } }
+      ]
+    },
+    {
+      "oneOf": [
+        {
+          "properties": { "schemaVersion": { "const": 3 }, "phase": { "const": "begun" }, "stateEpochAfter": { "type": "null" }, "recoveryLockRunId": { "type": "null" }, "recoveredByRunId": { "type": "null" }, "recoveryReason": { "type": "null" } }
+        },
+        {
+          "properties": { "schemaVersion": { "const": 3 }, "phase": { "const": "committed" }, "recoveryLockRunId": { "type": "null" }, "recoveredByRunId": { "type": "null" }, "recoveryReason": { "type": "null" } }
+        },
+        {
+          "properties": { "schemaVersion": { "const": 3 }, "phase": { "const": "aborted" }, "stateEpochAfter": { "type": "null" }, "recoveryLockRunId": { "$ref": "#/$defs/id" }, "recoveredByRunId": { "$ref": "#/$defs/id" }, "recoveryReason": { "enum": ["owner-exited", "pid-reused"] } }
+        },
+        {
+          "required": ["stateDigestAfter", "mutationId", "preparedAt"],
+          "properties": { "schemaVersion": { "const": 4 }, "phase": { "const": "begun" }, "stateEpochAfter": { "type": "null" }, "stateDigestAfter": { "type": "null" }, "mutationId": { "type": "string", "pattern": "^[a-f0-9]{32}$" }, "preparedAt": { "type": "null" }, "recoveryLockRunId": { "type": "null" }, "recoveredByRunId": { "type": "null" }, "recoveryReason": { "type": "null" } }
+        },
+        {
+          "required": ["stateDigestAfter", "mutationId", "preparedAt"],
+          "properties": { "schemaVersion": { "const": 4 }, "phase": { "const": "prepared" }, "stateEpochAfter": { "type": "integer", "minimum": 1 }, "stateDigestAfter": { "type": "string", "pattern": "^[a-f0-9]{64}$" }, "mutationId": { "type": "string", "pattern": "^[a-f0-9]{32}$" }, "preparedAt": { "type": "string", "format": "date-time" }, "recoveryLockRunId": { "type": "null" }, "recoveredByRunId": { "type": "null" }, "recoveryReason": { "type": "null" } }
+        },
+        {
+          "required": ["stateDigestAfter", "mutationId", "preparedAt"],
+          "properties": { "schemaVersion": { "const": 4 }, "phase": { "const": "committed" }, "mutationId": { "type": "string", "pattern": "^[a-f0-9]{32}$" }, "preparedAt": { "type": "string", "format": "date-time" }, "recoveryLockRunId": { "type": "null" }, "recoveredByRunId": { "type": "null" }, "recoveryReason": { "type": "null" } },
+          "oneOf": [
+            { "properties": { "stateEpochAfter": { "type": "integer", "minimum": 1 }, "stateDigestAfter": { "type": "string", "pattern": "^[a-f0-9]{64}$" } } },
+            { "properties": { "stateEpochAfter": { "type": "null" }, "stateDigestAfter": { "type": "null" } } }
+          ]
+        },
+        {
+          "required": ["stateDigestAfter", "mutationId", "preparedAt"],
+          "properties": { "schemaVersion": { "const": 4 }, "phase": { "const": "aborted" }, "stateEpochAfter": { "type": "null" }, "stateDigestAfter": { "type": "null" }, "mutationId": { "type": "string", "pattern": "^[a-f0-9]{32}$" }, "preparedAt": { "type": "null" }, "recoveryLockRunId": { "$ref": "#/$defs/id" }, "recoveredByRunId": { "$ref": "#/$defs/id" }, "recoveryReason": { "enum": ["owner-exited", "pid-reused"] } }
+        },
+        {
+          "required": ["stateDigestAfter", "mutationId", "preparedAt"],
+          "properties": { "schemaVersion": { "const": 4 }, "phase": { "const": "aborted" }, "stateEpochAfter": { "type": "null" }, "stateDigestAfter": { "type": "null" }, "mutationId": { "type": "string", "pattern": "^[a-f0-9]{32}$" }, "preparedAt": { "type": "null" }, "recoveryLockRunId": { "type": "null" }, "recoveredByRunId": { "type": "null" }, "recoveryReason": { "enum": ["operation-error", "operation-aborted"] } }
+        }
+      ]
+    }
+  ],
+  "$defs": {
+    "id": { "type": "string", "minLength": 3, "maxLength": 128, "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{2,127}$" },
+    "nullableSha256": { "oneOf": [{ "type": "null" }, { "type": "string", "pattern": "^[a-f0-9]{64}$" }] },
+    "nullableEpoch": { "oneOf": [{ "type": "null" }, { "type": "integer", "minimum": 1 }] }
+  }
+}

@@ -1,0 +1,150 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "setup",
+  "assessment": {
+    "id": "AA-SETUP-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA-SETUP-O1",
+      "AA-SETUP-O2"
+    ],
+    "type": "automated",
+    "evidence": "checkが保存するdoctor・setup・reset後の再診断結果と、terminal purgeが返す残存resource 0件のJSON結果",
+    "passCriteria": "checkが全required checkをpassとしてevidence IDを返し、続くpurgeがpassかつ教材所有resource 0件を返す",
+    "labTask": {
+      "instructionsRef": "course/lessons/setup/README.md",
+      "predict": "doctor、setup、reset、purgeのうち、どの操作が教材stateを作成・更新・削除するかを実行前に予測する",
+      "execute": "READMEの順に環境診断、state作成、診断、reset、再診断、check、terminal purgeを実行する",
+      "rejectOrFail": "blockedまたはfailではreasonCodeとrecoveryを読み、所有確認を回避する手作業削除やprocess停止をせずに復旧する",
+      "evidence": "checkの全required checkがpassしたevidenceIdと、purge結果のdiagnostics[]内でidが\"resources.remaining\"の要素のactualが文字列\"0\"であることを確認する",
+      "practicalTransfer": "自組織の研修環境準備へ、前提診断、再実行可能な初期化、理由付き失敗、安全な完全削除の流れを対応づける"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "course contractから導出された全required checkがpassし、terminal purgeで教材所有resourceの残存0件を確認できれば合格",
+      "failureRule": "required checkが1件でも未達、evidenceIdが空、またはpurge後の残存0件を確認できなければ不合格"
+    },
+    "answerKeyRef": "course/lessons/setup/answer-key.md",
+    "instructorGuideRef": "course/lessons/setup/instructor-guide.md",
+    "automatedCheckRefs": [
+      "course/runner/main.mjs",
+      "course/runner/lifecycle.mjs",
+      "test/course/assessment-contract.test.js",
+      "test/course/runner-lifecycle.test.js",
+      "test/course/runner-state.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA-SETUP-C1",
+        "mode": "lab",
+        "assessmentId": "AA-SETUP-A1",
+        "objectiveIds": [
+          "AA-SETUP-O1",
+          "AA-SETUP-O2"
+        ],
+        "courseOutcomeIds": [],
+        "evidenceType": "automated",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA-SETUP-C2",
+        "mode": "lab",
+        "assessmentId": "AA-SETUP-A1",
+        "objectiveIds": [
+          "AA-SETUP-O1",
+          "AA-SETUP-O2"
+        ],
+        "courseOutcomeIds": [],
+        "evidenceType": "automated",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA-SETUP-C3",
+        "mode": "lab",
+        "assessmentId": "AA-SETUP-A1",
+        "objectiveIds": [
+          "AA-SETUP-O1",
+          "AA-SETUP-O2"
+        ],
+        "courseOutcomeIds": [],
+        "evidenceType": "automated",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs doctor",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA-SETUP-C1"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs setup",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA-SETUP-C2"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs diagnose",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs reset",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA-SETUP-C3"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 5,
+        "command": "node course.mjs diagnose",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson setup check --json",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA-SETUP-C1",
+          "AA-SETUP-C2",
+          "AA-SETUP-C3"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs purge --yes --json",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA-SETUP-C3"
+        ],
+        "terminal": true
+      }
+    ]
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "08",
+  "assessment": {
+    "id": "AA08-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA08-O1",
+      "AA08-O2"
+    ],
+    "type": "integration-and-design-review",
+    "evidence": "隔離した実Samba AD互換DCへCA・hostname検証付きLDAPSで接続し、read-only service bind、structured user search、resolved-user bind、group search、objectGUID由来opaque ID、明示group-to-role mapping、Joiner/Mover/Leaver、application session再検証、同一DCへのkinit/klistを実行する。password、bind secret、session token、raw objectGUID、DN、container identityはruntime evidenceへ残さない",
+    "passCriteria": "AA08-C1でruntime境界、verified LDAPS、stable identity、LDAPとKerberosの経路分離を確認し、AA08-C2でread-only service account、明示mapping、MoverとLeaverにおけるdirectory状態と既存sessionの時差を説明する。保存済みruntimeではなくfresh JML scenarioと回答が一致する",
+    "labTask": {
+      "instructionsRef": "course/lessons/08/README.md",
+      "predict": "Joiner、OU moveとrole変更、account disableの各時点で、新規login、既存session、再検証後のsession、application roleがどう変わるか予測する",
+      "execute": "runnerだけでdoctor、setup、demo、observeを実行し、実Samba AD互換DC、verified LDAPS application、Kerberos clientのJML証跡を観察してsubmission.jsonを完成する。checkはuser削除からfresh sequenceを再実行する",
+      "rejectOrFail": "service accountのwriteがinsufficient access、新規loginのwrong passwordとdisabled accountが同じgeneric 422、Mover/Leaverの旧sessionが再検証で失効し、foreign resourceやhost portへ触れないことを確認する",
+      "evidence": "AA08-C1とAA08-C2がpassし、stableIdPreserved、directoryLocationChanged、role transition、session revoke reason、TGT存在を秘匿済みbooleanと固定値で確認する",
+      "practicalTransfer": "自環境のimmutable ID、group-to-role mapping owner、session再検証契機、disable-to-revoke SLO、緊急失効、service accountとTLS trustの管理を設計する"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "fresh actual protocol/stateのruntime条件、AA08-C1、AA08-C2、診断4件中3件以上が一致し、秘匿境界を満たせば合格",
+      "failureRule": "製品能力の一般化、cleartextまたは未検証TLS、DN/mailをimmutable key化、group=role、disable=既存session即時失効、admin bind必須、LDAPとKerberos経路混同、TODO・未知field、credentialまたはraw identifier保存のいずれかがあれば不合格"
+    },
+    "answerKeyRef": "course/lessons/08/answer-key.md",
+    "instructorGuideRef": "course/lessons/08/instructor-guide.md",
+    "automatedCheckRefs": [
+      "course/lessons/08/assessment.mjs",
+      "course/lessons/08/container.mjs",
+      "course/lessons/08/lab-contract.mjs",
+      "course/lessons/08/protocol-adapter.mjs",
+      "course/lessons/08/runner.mjs",
+      "course/lessons/08/scenario.mjs",
+      "docker/samba-ad/app/directory-login-flow.mjs",
+      "docker/samba-ad/app/server.mjs",
+      "docker/samba-ad/compose.yml",
+      "test-integration/08-course-identity-platform.test.js",
+      "test-integration/08-course-runner.test.js",
+      "test/lesson-08/assessment.test.js",
+      "test/lesson-08/directory-login-flow.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA08-C1",
+        "mode": "lab",
+        "assessmentId": "AA08-A1",
+        "objectiveIds": [
+          "AA08-O1",
+          "AA08-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO4",
+          "AA-CO7"
+        ],
+        "evidenceType": "integration-and-design-review",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA08-C2",
+        "mode": "lab",
+        "assessmentId": "AA08-A1",
+        "objectiveIds": [
+          "AA08-O1",
+          "AA08-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO4",
+          "AA-CO7"
+        ],
+        "evidenceType": "integration-and-design-review",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs lesson 08 doctor",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs lesson 08 setup",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs lesson 08 demo",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs lesson 08 observe",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "learner-action",
+        "step": 5,
+        "path": ".lab/submissions/08/submission.json",
+        "task": "runtime.jsonのverified LDAPS、stable identity、mapping、JML、session、Kerberos証跡を根拠にAA08-C1、AA08-C2、診断4件を入力する",
+        "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えず全回答欄が許可値で埋まっている"
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson 08 check",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA08-C1",
+          "AA08-C2"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs lesson 08 stop",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": true
+      }
+    ],
+    "optionalRecoveryScenarios": [
+      {
+        "id": "discard-and-recreate-identity-platform-lab",
+        "trigger": "現在のLesson 08回答、runtime secret、Samba DC database、runtime CA、sessionを破棄して最初からやり直す場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson 08 reset",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      }
+    ]
+  }
+}

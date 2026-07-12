@@ -1,0 +1,87 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cloudnative.co.jp/schemas/auth-authz/evidence.schema.json",
+  "title": "Redacted course assessment evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schemaVersion", "evidenceId", "courseId", "lessonId", "runId", "command", "status", "checkIds", "generatedAt", "inputs", "supportProfileId", "runnerResultDigest", "redaction", "observations"],
+  "properties": {
+    "$schema": { "const": "curriculum/schemas/evidence.schema.json" },
+    "schemaVersion": { "const": 1 },
+    "evidenceId": { "$ref": "#/$defs/id" },
+    "courseId": { "$ref": "#/$defs/id" },
+    "lessonId": { "$ref": "#/$defs/id" },
+    "runId": { "$ref": "#/$defs/id" },
+    "command": { "enum": ["demo", "observe", "check", "diagnose", "reset", "stop", "purge"] },
+    "status": { "enum": ["pass", "fail", "blocked", "safe-noop"] },
+    "checkIds": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/id" },
+      "uniqueItems": true
+    },
+    "generatedAt": { "type": "string", "format": "date-time" },
+    "inputs": { "$ref": "#/$defs/inputs" },
+    "supportProfileId": { "$ref": "#/$defs/id" },
+    "runnerResultDigest": { "$ref": "#/$defs/sha256" },
+    "redaction": { "$ref": "#/$defs/redaction" },
+    "observations": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/observation" }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1 },
+    "sha256": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "nullableSha256": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/$defs/sha256" }
+      ]
+    },
+    "inputs": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["articleContentDigest", "manifestDigest", "sampleSourceDigest", "sampleRevision", "stateEpoch", "stateMarkerDigest"],
+      "properties": {
+        "articleContentDigest": { "$ref": "#/$defs/nullableSha256" },
+        "manifestDigest": { "$ref": "#/$defs/sha256" },
+        "sampleSourceDigest": { "$ref": "#/$defs/sha256" },
+        "sampleRevision": {
+          "oneOf": [
+            { "type": "null" },
+            { "type": "string", "pattern": "^(?:[a-f0-9]{40}|[a-f0-9]{64})$" }
+          ]
+        },
+        "stateEpoch": { "type": "integer", "minimum": 1 },
+        "stateMarkerDigest": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "redaction": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["policyVersion", "redactedFieldClasses", "rawSensitiveValuesStored"],
+      "properties": {
+        "policyVersion": { "const": 1 },
+        "redactedFieldClasses": {
+          "type": "array",
+          "items": {
+            "enum": ["secret", "token", "assertion", "credential", "hostname", "home-path", "ip-address"]
+          },
+          "uniqueItems": true
+        },
+        "rawSensitiveValuesStored": { "const": false }
+      }
+    },
+    "observation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["checkId", "outcome", "reasonCode", "normalizedDigest"],
+      "properties": {
+        "checkId": { "$ref": "#/$defs/id" },
+        "outcome": { "enum": ["pass", "fail", "blocked"] },
+        "reasonCode": { "type": ["string", "null"] },
+        "normalizedDigest": { "$ref": "#/$defs/sha256" }
+      }
+    }
+  }
+}

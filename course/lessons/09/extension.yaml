@@ -1,0 +1,31 @@
+{
+  "$schema": "curriculum/schemas/extension.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "09",
+  "status": "implemented",
+  "title": "SAML trustとapp session運用設計",
+  "estimatedMinutes": 60,
+  "prerequisiteCheckIds": ["AA09-C1", "AA09-C2"],
+  "tasks": [
+    {
+      "id": "AA09-X1",
+      "prompt": "自組織の1つのSAML連携についてentityID、ACS、IdP issuer、Audience、metadata取得元、証明書rotation ownerをsource of truth付きで記述する",
+      "acceptance": "URL表示名とentityIDを混同せず、変更・rotation・rollbackの担当と検証方法がある"
+    },
+    {
+      "id": "AA09-X2",
+      "prompt": "ACS拒否をgenericに保ちつつ、signature、issuer、recipient、replayを運用側で切り分けるredacted telemetryを設計する",
+      "acceptance": "raw assertion、NameID、Cookie、private keyを保存せず、固定reasonとcorrelation IDだけを使う"
+    },
+    {
+      "id": "AA09-X3",
+      "prompt": "SAML sessionとapplication sessionのTTL、失効、logout、利用者無効化時の再検証境界を時系列で設計する",
+      "acceptance": "SAMLResponseをsessionとして保存せず、IdP logoutだけでlocal sessionが必ず消えると仮定しない"
+    }
+  ],
+  "evidenceBoundary": {
+    "allowed": ["固定reason", "entityID", "endpoint role", "証明書fingerprint digest", "owner role", "検証結果"],
+    "forbidden": ["password", "raw SAMLResponse", "assertion XML", "NameID", "session Cookie", "private key", "実container identity"]
+  }
+}

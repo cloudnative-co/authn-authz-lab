@@ -1,0 +1,18 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "05",
+  "answers": {
+    "AA05-C1": {
+      "challenge": "TODO",
+      "credentialConstruction": "TODO",
+      "success": "TODO",
+      "requestReuse": "TODO"
+    },
+    "AA05-C2": {
+      "transport": "TODO",
+      "base64Security": "TODO",
+      "logging": "TODO",
+      "adoption": "TODO"
+    }
+  }
+}

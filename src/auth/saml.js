@@ -30,13 +30,12 @@ export function createSamlServiceProvider(config) {
     issuer: config.issuer,
     idpCert: normalizeCert(config.idpCert),
     audience: config.audience,
-    // The assertion signature is the trust anchor; xml-crypto (inside node-saml)
-    // performs the XML-DSig verification we deliberately do NOT hand-roll.
     wantAssertionsSigned: true,
-    wantAuthnResponseSigned: false,
-    // IdP-initiated responses carry no InResponseTo; accept them but still
-    // validate it (replay defense) when present.
-    validateInResponseTo: 'ifPresent',
+    wantAuthnResponseSigned: true,
+    validateInResponseTo: 'always',
+    requestIdExpirationPeriodMs: 5 * 60_000,
+    acceptedClockSkewMs: 10_000,
+    maxAssertionAgeMs: 5 * 60_000,
     signatureAlgorithm: 'sha256',
   });
 }
@@ -49,8 +48,4 @@ export async function getLoginRedirectUrl(sp, relayState = '') {
 export async function validateSamlResponse(sp, samlResponse) {
   const { profile } = await sp.validatePostResponseAsync({ SAMLResponse: samlResponse });
   return profile;
-}
-
-export function decodeSamlResponseXml(samlResponse) {
-  return Buffer.from(samlResponse, 'base64').toString('utf8');
 }

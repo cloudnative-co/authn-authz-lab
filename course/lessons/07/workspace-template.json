@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "07",
+  "answers": {
+    "AA07-C1": {
+      "tgt": "TODO",
+      "serviceTicket": "TODO",
+      "challenge": "TODO",
+      "acceptor": "TODO",
+      "scope": "TODO"
+    },
+    "AA07-C2": {
+      "wrongSpn": "TODO",
+      "clockSkew": "TODO",
+      "staleKeytab": "TODO",
+      "transport": "TODO",
+      "evidence": "TODO"
+    }
+  },
+  "diagnosis": {
+    "D1": "TODO",
+    "D2": "TODO",
+    "D3": "TODO",
+    "D4": "TODO",
+    "D5": "TODO"
+  }
+}
+

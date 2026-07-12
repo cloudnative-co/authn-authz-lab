@@ -1,0 +1,89 @@
+{
+  "$schema": "./curriculum/schemas/course-lock.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "releaseStatus": "unreleased",
+  "sourceRevision": null,
+  "sourceFile": {
+    "path": "articles/series/auth-authz/curriculum.json",
+    "sha256": "68e1e83cd1704ac1f971bce9b1add3a570fbbc3cbbb06057345b172ddc6851bb"
+  },
+  "generatedFiles": [
+    {
+      "path": "curriculum/course-contract.json",
+      "sha256": "084aab7420b576b2449157fb2cde8856bc893bf7f25e806763238c3637e60790"
+    },
+    {
+      "path": "curriculum/course-source.snapshot.json",
+      "sha256": "68e1e83cd1704ac1f971bce9b1add3a570fbbc3cbbb06057345b172ddc6851bb"
+    },
+    {
+      "path": "course/lessons/setup/assessment.yaml",
+      "sha256": "9500abaae958f5bff11556bde87014f067ad94ac01e6458d2db70c8214397f0a"
+    },
+    {
+      "path": "course/lessons/01/assessment.yaml",
+      "sha256": "abb242432dcf50ec22a8096edb08bb0d4fb317250f9c3c38213c3275835f50eb"
+    },
+    {
+      "path": "course/lessons/02/assessment.yaml",
+      "sha256": "c18e1229dee4feda8fb488385090a3a06193ee83b072b4bf0ef97656131e6f9a"
+    },
+    {
+      "path": "course/lessons/03/assessment.yaml",
+      "sha256": "d4609eb8a192c6fd84301eb4285d25220b65ef53d78571e7287a8bc1668e57d9"
+    },
+    {
+      "path": "course/lessons/04/assessment.yaml",
+      "sha256": "8fb184c9b526fe18e08e5e2f76200d2988e6660b2245b3ece1a8d811488cba88"
+    },
+    {
+      "path": "course/lessons/05/assessment.yaml",
+      "sha256": "4962d44405fc2cc4bef7d21080d2d4f186243d8a76260f46b339d7296458e8c1"
+    },
+    {
+      "path": "course/lessons/06/assessment.yaml",
+      "sha256": "4fbb4c2d6ab6ec2125bfbd9147ae263496613b6ecdb1d9054031f38b53280906"
+    },
+    {
+      "path": "course/lessons/07/assessment.yaml",
+      "sha256": "0afc8b0ce5a661c8dc15eb7c73527ff4fc945fe6f8fa2513053492a9cec2b80e"
+    },
+    {
+      "path": "course/lessons/08/assessment.yaml",
+      "sha256": "2d872e177ca7b2e0418f8469c68a4d721cd924c402c0cc656c82a54cf4659ed2"
+    },
+    {
+      "path": "course/lessons/09/assessment.yaml",
+      "sha256": "2ff4eb69292f906dffcdf9791ecceb4f20b86350dfc1ca148f85bdefe82ac53c"
+    },
+    {
+      "path": "course/lessons/10/assessment.yaml",
+      "sha256": "82786470ad97d1c6285ac882ba82d2aebf7b1a7bda5d7553a80474502540bed0"
+    },
+    {
+      "path": "course/lessons/11/assessment.yaml",
+      "sha256": "7f2f6f5eae6542037019ecd47cdadaa8cb10c27ae87b25e82c34d391b42013f5"
+    },
+    {
+      "path": "course/lessons/12/assessment.yaml",
+      "sha256": "bb06bf8d261e2f37510c42da1e6d2e0a2de740f578793f09dfa5d66a212d7aa2"
+    },
+    {
+      "path": "course/lessons/13/assessment.yaml",
+      "sha256": "75bcabb15af524f1741465da2b741b2f43dfce9b1e47d23e44b26673eeebec01"
+    },
+    {
+      "path": "course/lessons/14/assessment.yaml",
+      "sha256": "f3798a244d2d437d940cf714c22de1f5dfad31f737e18962b9403d76d45cabe8"
+    },
+    {
+      "path": "course/lessons/15/assessment.yaml",
+      "sha256": "a77735eaded832721f78ec2c840ee60599a557d365767dc2e8bc740da8481091"
+    },
+    {
+      "path": "course/lessons/capstone/assessment.yaml",
+      "sha256": "9197236f60130605aa1149bae614d196ba1e9fd916c0fabd66cd2e3787088a56"
+    }
+  ]
+}

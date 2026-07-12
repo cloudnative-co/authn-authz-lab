@@ -1,0 +1,67 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cloudnative.co.jp/schemas/auth-authz/extension.schema.json",
+  "title": "Optional lesson extension",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "courseId",
+    "lessonId",
+    "status",
+    "title",
+    "estimatedMinutes",
+    "prerequisiteCheckIds",
+    "tasks",
+    "evidenceBoundary"
+  ],
+  "properties": {
+    "$schema": { "const": "curriculum/schemas/extension.schema.json" },
+    "schemaVersion": { "const": 1 },
+    "courseId": { "const": "auth-authz" },
+    "lessonId": { "type": "string", "pattern": "^[0-9]{2}$" },
+    "status": { "const": "implemented" },
+    "title": { "type": "string", "minLength": 1 },
+    "estimatedMinutes": { "type": "integer", "minimum": 1 },
+    "prerequisiteCheckIds": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^AA[0-9]{2}-C[0-9]+$" }
+    },
+    "tasks": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "prompt", "acceptance"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^AA[0-9]{2}-X[0-9]+$" },
+          "prompt": { "type": "string", "minLength": 1 },
+          "acceptance": { "type": "string", "minLength": 1 }
+        }
+      }
+    },
+    "evidenceBoundary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["allowed", "forbidden"],
+      "properties": {
+        "allowed": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "forbidden": {
+          "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "items": { "type": "string", "minLength": 1 }
+        }
+      }
+    }
+  }
+}

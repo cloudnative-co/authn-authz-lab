@@ -1,0 +1,50 @@
+services:
+  ldap:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+      - /etc/ldap/slapd.d:size=8m,mode=0750,uid=101,gid=101
+      - /var/lib/ldap:size=32m,mode=0750,uid=101,gid=101
+      - /run/slapd:size=4m,mode=0750,uid=101,gid=101
+    ports:
+      - "127.0.0.1:${LESSON06_LDAP_PORT:?LESSON06_LDAP_PORT is required}:389"
+    labels:
+      io.cloudnative.course.id: auth-authz
+      io.cloudnative.course.install-id: "${COURSE_INSTALL_ID:?COURSE_INSTALL_ID is required}"
+      io.cloudnative.course.resource-id: ldap-directory
+    secrets:
+      - source: ldap_admin_password
+        target: ldap_admin_password
+      - source: ldap_service_password
+        target: ldap_service_password
+      - source: ldap_alice_password
+        target: ldap_alice_password
+      - source: ldap_bob_password
+        target: ldap_bob_password
+    healthcheck:
+      test: ["CMD", "ldapsearch", "-x", "-H", "ldap://127.0.0.1:389", "-s", "base", "-b", "", "namingContexts"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 2s
+
+networks:
+  default:
+    labels:
+      io.cloudnative.course.id: auth-authz
+      io.cloudnative.course.install-id: "${COURSE_INSTALL_ID:?COURSE_INSTALL_ID is required}"
+      io.cloudnative.course.resource-id: ldap-directory
+
+secrets:
+  ldap_admin_password:
+    file: "${LESSON06_SECRET_DIR:?LESSON06_SECRET_DIR is required}/admin-password"
+  ldap_service_password:
+    file: "${LESSON06_SECRET_DIR:?LESSON06_SECRET_DIR is required}/service-password"
+  ldap_alice_password:
+    file: "${LESSON06_SECRET_DIR:?LESSON06_SECRET_DIR is required}/alice-password"
+  ldap_bob_password:
+    file: "${LESSON06_SECRET_DIR:?LESSON06_SECRET_DIR is required}/bob-password"

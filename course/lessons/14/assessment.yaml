@@ -1,0 +1,158 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "14",
+  "assessment": {
+    "id": "AA14-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA14-O1",
+      "AA14-O2"
+    ],
+    "type": "browser-e2e-and-lifecycle",
+    "evidence": "2つのCDP virtual authenticatorでdiscoverable credentialのusernameなし認証、RP側失効後のassertion拒否とauthenticator credential残存、第二credential復旧、BE/BS、account disable、session invalidationをactual create/getで観察する",
+    "passCriteria": "AA14-C1でusernameなし認証、RP失効、private credential残存、第二credential復旧、AA14-C2でBE/BS、cloud同期非証明、account/session失効、signCount、redactionがruntimeと回答の両方で一致する",
+    "labTask": {
+      "instructionsRef": "course/lessons/14/README.md",
+      "predict": "empty allowCredentials、returned userHandle、RP失効、authenticator private credential、第二credential、BE/BS、account disable後のsessionとassertionを予測する",
+      "execute": "doctor、setup、demo、observeで2つのvirtual authenticatorによるusernameなし認証、失効、復旧、backup flags、account lifecycleを実行し、runtime.jsonからsubmission.jsonを完成する",
+      "rejectOrFail": "RPが端末private keyを遠隔削除できる、CDP flagsが実cloud同期を証明する、credential 1本で復旧十分、account disable後もsession有効、signCount 0がclone証明という回答がfailすることを確認する",
+      "evidence": "AA14-C1/C2がfresh browser scenarioでpassし、credential ID、userHandle、public key、assertion、signature、tokenを含まないevidenceIdを確認する",
+      "practicalTransfer": "複数credential登録、紛失、RP失効、account disable、session失効、全喪失recovery、通知、監査、accessibilityのownerを記録する"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "discoverable login、RP失効後拒否、private credential残存、第二credential復旧、BE/BS、cloud同期非証明、account/session失効、redactionと回答が一致し、AA14-C1/C2がともにpassすれば合格",
+      "failureRule": "runtimeまたは回答が1件でも不一致、TODO、未知field、private key遠隔削除、virtual flagsの実同期証明、signCountのclone断定、disable後session維持があれば不合格"
+    },
+    "answerKeyRef": "course/lessons/14/answer-key.md",
+    "instructorGuideRef": "course/lessons/14/instructor-guide.md",
+    "automatedCheckRefs": [
+      "apps/project-app/lessons/13-14/webauthn-service.mjs",
+      "apps/project-app/lessons/13-14/http-handler.mjs",
+      "apps/project-app/lessons/13-14/browser-page.mjs",
+      "course/lessons/webauthn/browser-lab.mjs",
+      "course/lessons/14/assessment.mjs",
+      "course/lessons/14/runner.mjs",
+      "course/lessons/14/scenario.mjs",
+      "course/lessons/14/workspace.mjs",
+      "test/lesson-13-14/webauthn-service.test.js",
+      "test/lesson-13-14/runtime-scenario.test.js",
+      "test/lesson-13-14/assessment.test.js",
+      "test/lesson-13-14/runner-e2e.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA14-C1",
+        "mode": "lab",
+        "assessmentId": "AA14-A1",
+        "objectiveIds": [
+          "AA14-O1",
+          "AA14-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO6",
+          "AA-CO7"
+        ],
+        "evidenceType": "browser-e2e-and-lifecycle",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA14-C2",
+        "mode": "lab",
+        "assessmentId": "AA14-A1",
+        "objectiveIds": [
+          "AA14-O1",
+          "AA14-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO6",
+          "AA-CO7"
+        ],
+        "evidenceType": "browser-e2e-and-lifecycle",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs lesson 14 doctor",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs lesson 14 setup",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs lesson 14 demo",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs lesson 14 observe",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "learner-action",
+        "step": 5,
+        "path": ".lab/submissions/14/submission.json",
+        "task": "runtime.jsonと一次仕様からAA14-C1とAA14-C2の8回答を許可値で入力する",
+        "completionCriterion": "TODOが残らず、構造を変えず、全fieldが許可値で埋まっている"
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson 14 check",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA14-C1",
+          "AA14-C2"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs lesson 14 stop",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": true
+      }
+    ],
+    "optionalRecoveryScenarios": [
+      {
+        "id": "discard-and-restart-passkey-lab",
+        "trigger": "現在の第14回答とruntimeを破棄して最初からやり直す場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson 14 reset",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      }
+    ]
+  }
+}

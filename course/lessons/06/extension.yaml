@@ -1,0 +1,31 @@
+{
+  "$schema": "curriculum/schemas/extension.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "06",
+  "status": "implemented",
+  "title": "TLS移行・identity link・directory障害の運用設計",
+  "estimatedMinutes": 60,
+  "prerequisiteCheckIds": ["AA06-C1", "AA06-C2"],
+  "tasks": [
+    {
+      "id": "AA06-X1",
+      "prompt": "自環境の1つのdirectory連携について、user / group search base、scope、filter、取得attribute、size / time limit、service account ACLをsecretなしで記録する",
+      "acceptance": "searchとbindを区別し、directory adminをapplicationの常用accountとして承認せず、readとwriteの検証方法がある"
+    },
+    {
+      "id": "AA06-X2",
+      "prompt": "DNのrename / moveを含むidentity lifecycleを想定し、application identityへlinkする不変identifier、namespace、衝突・再利用・削除時の扱いを設計する",
+      "acceptance": "email、uid、DNを無条件に長期不変keyとせず、directory製品のidentifier契約とownerを明記する"
+    },
+    {
+      "id": "AA06-X3",
+      "prompt": "loopback cleartext LDAPからproductionのStartTLSまたはLDAPSへ移す手順と、certificate validation、credential failure / directory failure、timing測定、retry、監視、rollbackを設計する",
+      "acceptance": "generic responseだけでtiming side-channelを解消したと断定せず、TLS無効化やcertificate validation省略を恒久回避策にしない"
+    }
+  ],
+  "evidenceBoundary": {
+    "allowed": ["DN role", "attribute名", "search scope", "limit", "固定reason", "TLS方式", "担当role", "検証結果"],
+    "forbidden": ["password", "bind password", "実user identifier", "実DN", "private key", "full certificate", "container identity", "hostname", "IP address"]
+  }
+}

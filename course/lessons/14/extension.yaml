@@ -1,0 +1,31 @@
+{
+  "$schema": "curriculum/schemas/extension.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "14",
+  "status": "implemented",
+  "title": "Passkey導入と全喪失recoveryの設計",
+  "estimatedMinutes": 45,
+  "prerequisiteCheckIds": ["AA14-C1", "AA14-C2"],
+  "tasks": [
+    {
+      "id": "AA14-X1",
+      "prompt": "利用者が最初のcredentialを失う前に第二credentialを登録する導線、通知、完了指標を設計する",
+      "acceptance": "複数credentialの確認方法、期限、例外、accessibility、未登録者へのfallbackがある"
+    },
+    {
+      "id": "AA14-X2",
+      "prompt": "全credentialと既存sessionを失った場合のidentity proofing、複数承認、待機時間、通知、再登録、全session失効、監査を時系列で設計する",
+      "acceptance": "helpdesk単独判断やknowledge-based questionだけで解除せず、攻撃者と正当利用者の両方を考慮する"
+    },
+    {
+      "id": "AA14-X3",
+      "prompt": "対象platformのsync provider、managed/personal account、端末返却、退職、BYOD、cross-device、offline、accessibilityを実機test matrixへ落とす",
+      "acceptance": "BE/BSやvirtual fixtureを実同期証明にせず、各testのowner、expected result、証拠境界がある"
+    }
+  ],
+  "evidenceBoundary": {
+    "allowed": ["role", "platform category", "provider category", "status", "固定reason", "期限", "集計値"],
+    "forbidden": ["password", "session token", "challenge", "user handle", "credential ID", "public key", "assertion", "signature", "実利用者identity"]
+  }
+}

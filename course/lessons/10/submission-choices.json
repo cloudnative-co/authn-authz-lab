@@ -1,0 +1,84 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "10",
+  "sourceOfTruth": "assessment-validator-shared-choice-contract",
+  "instructions": [
+    "choices配列の掲載順は正答を示しません。ただし、回答として作る配列内の順序は手順や優先順位として採点される場合があります。",
+    "scalarはTODO文字列を候補1つへ置換します。exact-arrayは配列全体を候補1つへ置換します。",
+    "array-elementsは指定数の要素を候補から選び、教材本文の依存順に並べます。uniqueがtrueなら重複させません。"
+  ],
+  "entries": [
+    {
+      "path": "answers.AA10-C1.accessToken",
+      "kind": "scalar",
+      "choices": [
+        "decode-without-validation",
+        "opaque-with-authenticated-introspection"
+      ]
+    },
+    {
+      "path": "answers.AA10-C1.client",
+      "kind": "scalar",
+      "choices": [
+        "browser-keeps-client-secret",
+        "public-client-without-secret"
+      ]
+    },
+    {
+      "path": "answers.AA10-C1.code",
+      "kind": "scalar",
+      "choices": [
+        "opaque-digest-only-bound-one-time",
+        "reusable-unbound-code"
+      ]
+    },
+    {
+      "path": "answers.AA10-C1.flow",
+      "kind": "scalar",
+      "choices": [
+        "authorization-code-with-pkce-s256",
+        "implicit-token-in-browser"
+      ]
+    },
+    {
+      "path": "answers.AA10-C1.state",
+      "kind": "scalar",
+      "choices": [
+        "one-time-server-side-transaction",
+        "static-state-reused"
+      ]
+    },
+    {
+      "path": "answers.AA10-C2.bearerFailure",
+      "kind": "scalar",
+      "choices": [
+        "401-with-bearer-challenge",
+        "403-without-challenge"
+      ]
+    },
+    {
+      "path": "answers.AA10-C2.passwordBoundary",
+      "kind": "scalar",
+      "choices": [
+        "authorization-server-only",
+        "client-collects-password"
+      ]
+    },
+    {
+      "path": "answers.AA10-C2.scopeFailure",
+      "kind": "scalar",
+      "choices": [
+        "401-invalid-token",
+        "403-with-insufficient-scope"
+      ]
+    },
+    {
+      "path": "answers.AA10-C2.transport",
+      "kind": "scalar",
+      "choices": [
+        "https-required-loopback-http-training-only",
+        "plain-http-approved-for-production"
+      ]
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 # Node app container used for the Kerberos/SPNEGO exercise (07). It runs the
 # same src/server.js as the host, but with libkrb5 + the built native kerberos
 # module and the service keytab available so /kerberos/me can accept SPNEGO.
-FROM node:24-bookworm-slim
+FROM node:24-bookworm-slim@sha256:cb4e8f7c443347358b7875e717c29e27bf9befc8f5a26cf18af3c3dec80e58c5
 ENV DEBIAN_FRONTEND=noninteractive
 
 # libkrb5-3 is the runtime; libkrb5-dev + toolchain let the kerberos native
@@ -13,7 +13,7 @@ RUN apt-get update \
  && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
-COPY package.json package-lock.json ./
+COPY docker/app/package.json docker/app/package-lock.json ./
 RUN npm ci --omit=dev
 
 COPY src ./src

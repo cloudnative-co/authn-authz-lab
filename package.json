@@ -4,25 +4,30 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "start": "node src/server.js",
-    "test": "node --test 'test/**/*.test.js'",
-    "test:integration": "node --test 'test-integration/**/*.test.js'",
+    "course": "node course.mjs",
+    "start": "node course.mjs lesson 01 setup",
+    "start:legacy": "node src/server.js",
+    "test": "node --test --test-concurrency=1 'test/**/*.test.js'",
+    "test:course": "node --test 'test/course/*.test.js'",
+    "test:integration": "node scripts/run-integration-tests.mjs",
     "compose:up": "docker compose up -d --build --wait",
     "compose:down": "docker compose down -v",
     "test:e2e": "playwright test e2e/"
   },
   "engines": {
-    "node": ">=22"
+    "node": ">=24 <25"
   },
   "dependencies": {
-    "@node-saml/node-saml": "^5.1.0",
-    "@simplewebauthn/server": "^13.3.2",
-    "kerberos": "^7.0.0",
-    "ldapts": "^8.1.8"
+    "@node-saml/node-saml": "5.1.0",
+    "@simplewebauthn/server": "13.3.2",
+    "@xmldom/xmldom": "0.8.13",
+    "jose": "6.2.3",
+    "ldapts": "8.1.8",
+    "xml-crypto": "6.1.2"
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",
-    "openid-client": "^6.8.4",
-    "otpauth": "^9.5.1"
+    "openid-client": "6.8.4",
+    "otpauth": "9.5.1"
   }
 }

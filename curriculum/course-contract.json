@@ -1,0 +1,1818 @@
+{
+  "$schema": "./schemas/course-contract.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "title": "情シスのための認証認可入門",
+  "source": {
+    "path": "articles/series/auth-authz/curriculum.json",
+    "schemaVersion": 2,
+    "sha256": "68e1e83cd1704ac1f971bce9b1add3a570fbbc3cbbb06057345b172ddc6851bb",
+    "revision": null
+  },
+  "courseOutcomes": [
+    {
+      "id": "AA-CO1",
+      "statement": "HTTPの往復を見て、認証、セッション、認可、フェデレーション、委任認可の失敗箇所を分類する"
+    },
+    {
+      "id": "AA-CO2",
+      "statement": "credential、cookie、ticket、assertion、tokenについて、発行者、運搬者、検証者、寿命を追跡する"
+    },
+    {
+      "id": "AA-CO3",
+      "statement": "正常系と拒否系を再現し、HTTP応答とログから結果を説明する"
+    },
+    {
+      "id": "AA-CO4",
+      "statement": "受け手に必要な署名、issuer、audience、期限、nonce、state、PKCE、scope、resource認可を特定する"
+    },
+    {
+      "id": "AA-CO5",
+      "statement": "典型的な認証認可の失敗を診断し、修正案を選ぶ"
+    },
+    {
+      "id": "AA-CO6",
+      "statement": "MFA、WebAuthn、Passkeyを登録、復旧、失効、利用者体験まで含めて評価する"
+    },
+    {
+      "id": "AA-CO7",
+      "statement": "企業のID基盤とSaaS/API連携を最小権限、ライフサイクル、監査、例外管理の観点でレビューする"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "setup",
+      "kind": "course-setup",
+      "module": "orientation",
+      "articleSlug": null,
+      "environmentRef": "curriculum/support-matrix.json#lessons.setup",
+      "learningPrerequisites": [],
+      "estimatedMinutes": 60,
+      "extensionMinutes": 0,
+      "extensionTaskRef": null,
+      "readingAssessmentRef": null,
+      "objectives": [
+        {
+          "id": "AA-SETUP-O1",
+          "courseOutcomeIds": [],
+          "statement": "自分の環境が選択した学習経路の要件を満たすか診断する"
+        },
+        {
+          "id": "AA-SETUP-O2",
+          "courseOutcomeIds": [],
+          "statement": "教材を起動、確認、停止、初期化し、診断結果を読める"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA-SETUP-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA-SETUP-O1",
+            "AA-SETUP-O2"
+          ],
+          "type": "automated",
+          "artifactSetRef": "course/lessons/setup/assessment.yaml#AA-SETUP-A1",
+          "requiredCheckIds": [
+            "AA-SETUP-C1",
+            "AA-SETUP-C2",
+            "AA-SETUP-C3"
+          ],
+          "evidence": "checkが保存するdoctor・setup・reset後の再診断結果と、terminal purgeが返す残存resource 0件のJSON結果",
+          "passCriteria": "checkが全required checkをpassとしてevidence IDを返し、続くpurgeがpassかつ教材所有resource 0件を返す"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA-SETUP-C1",
+          "mode": "lab",
+          "assessmentId": "AA-SETUP-A1",
+          "objectiveIds": [
+            "AA-SETUP-O1",
+            "AA-SETUP-O2"
+          ],
+          "courseOutcomeIds": [],
+          "evidenceType": "automated",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA-SETUP-C2",
+          "mode": "lab",
+          "assessmentId": "AA-SETUP-A1",
+          "objectiveIds": [
+            "AA-SETUP-O1",
+            "AA-SETUP-O2"
+          ],
+          "courseOutcomeIds": [],
+          "evidenceType": "automated",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA-SETUP-C3",
+          "mode": "lab",
+          "assessmentId": "AA-SETUP-A1",
+          "objectiveIds": [
+            "AA-SETUP-O1",
+            "AA-SETUP-O2"
+          ],
+          "courseOutcomeIds": [],
+          "evidenceType": "automated",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "01",
+      "kind": "article-lesson",
+      "module": "web-foundations",
+      "articleSlug": "auth-authz-01-login-basics",
+      "environmentRef": "curriculum/support-matrix.json#lessons.01",
+      "learningPrerequisites": [],
+      "estimatedMinutes": 75,
+      "extensionMinutes": 0,
+      "extensionTaskRef": null,
+      "readingAssessmentRef": "episodes/01-auth-authz-01-login-basics/assessment.yaml#AA01-A1",
+      "objectives": [
+        {
+          "id": "AA01-O1",
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO2"
+          ],
+          "statement": "request trace内の各stepと失敗箇所を、認証、セッション、認可、フェデレーション、委任認可へ分類する"
+        },
+        {
+          "id": "AA01-O2",
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO5"
+          ],
+          "statement": "失敗した責任と確認すべき担当コンポーネントを特定する"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA01-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA01-O1",
+            "AA01-O2"
+          ],
+          "type": "provided-case-scenario",
+          "artifactSetRef": "course/lessons/01/assessment.yaml#AA01-A1",
+          "requiredCheckIds": [
+            "AA01-C1",
+            "AA01-C2"
+          ],
+          "evidence": "実プロトコルの実行証跡ではないprovided case 10件の分類結果と、5つの責任境界に対応する検証者",
+          "passCriteria": "10事例中9件以上を正しく分類し、5つの責任境界と検証者を記載する"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA01-C1",
+          "mode": "lab",
+          "assessmentId": "AA01-A1",
+          "objectiveIds": [
+            "AA01-O1",
+            "AA01-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO2",
+            "AA-CO5"
+          ],
+          "evidenceType": "provided-case-scenario",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA01-C2",
+          "mode": "lab",
+          "assessmentId": "AA01-A1",
+          "objectiveIds": [
+            "AA01-O1",
+            "AA01-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO2",
+            "AA-CO5"
+          ],
+          "evidenceType": "provided-case-scenario",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "02",
+      "kind": "article-lesson",
+      "module": "web-foundations",
+      "articleSlug": "auth-authz-02-password-authentication",
+      "environmentRef": "curriculum/support-matrix.json#lessons.02",
+      "learningPrerequisites": [
+        "01"
+      ],
+      "estimatedMinutes": 90,
+      "extensionMinutes": 45,
+      "extensionTaskRef": "course/lessons/02/extension.yaml",
+      "readingAssessmentRef": "episodes/02-auth-authz-02-password-authentication/assessment.yaml#AA02-A1",
+      "objectives": [
+        {
+          "id": "AA02-O1",
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3"
+          ],
+          "statement": "パスワード登録と照合の処理を追跡する"
+        },
+        {
+          "id": "AA02-O2",
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO5"
+          ],
+          "statement": "平文、hash、salt、rate limitの役割を評価する"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA02-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA02-O1",
+            "AA02-O2"
+          ],
+          "type": "automated-and-explanation",
+          "artifactSetRef": "course/lessons/02/assessment.yaml#AA02-A1",
+          "requiredCheckIds": [
+            "AA02-C1",
+            "AA02-C2",
+            "AA02-C3"
+          ],
+          "evidence": "loopback上の実HTTPで毎回新規scenarioを実行し、password保存表現、成功200、generic 422、3回目の429とRetry-After、30秒後の復旧を秘匿済みruntime evidenceと短答で確認する",
+          "passCriteria": "checkが保存済みruntimeを信用せずfresh scenarioを再実行し、平文非保存、同一passwordのsalt差、session未発行、誤passwordと未知identifierの同一422、3回目の429、per-identifier制限とglobal KDF容量保護が未実装である境界を、AA02-C1からAA02-C3の全件で確認する"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA02-C1",
+          "mode": "lab",
+          "assessmentId": "AA02-A1",
+          "objectiveIds": [
+            "AA02-O1",
+            "AA02-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO5"
+          ],
+          "evidenceType": "automated-and-explanation",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA02-C2",
+          "mode": "lab",
+          "assessmentId": "AA02-A1",
+          "objectiveIds": [
+            "AA02-O1",
+            "AA02-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO5"
+          ],
+          "evidenceType": "automated-and-explanation",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA02-C3",
+          "mode": "lab",
+          "assessmentId": "AA02-A1",
+          "objectiveIds": [
+            "AA02-O1",
+            "AA02-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO5"
+          ],
+          "evidenceType": "automated-and-explanation",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "03",
+      "kind": "article-lesson",
+      "module": "web-foundations",
+      "articleSlug": "auth-authz-03-session-management",
+      "environmentRef": "curriculum/support-matrix.json#lessons.03",
+      "learningPrerequisites": [
+        "02"
+      ],
+      "estimatedMinutes": 105,
+      "extensionMinutes": 45,
+      "extensionTaskRef": "course/lessons/03/extension.yaml",
+      "readingAssessmentRef": "episodes/03-auth-authz-03-session-management/assessment.yaml#AA03-A1",
+      "objectives": [
+        {
+          "id": "AA03-O1",
+          "courseOutcomeIds": [
+            "AA-CO2"
+          ],
+          "statement": "Cookie、Session ID、Session Storeを区別して追跡する"
+        },
+        {
+          "id": "AA03-O2",
+          "courseOutcomeIds": [
+            "AA-CO3",
+            "AA-CO5"
+          ],
+          "statement": "認証時のSession ID更新と、logout、期限切れ、server失効後の拒否を確認する"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA03-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA03-O1",
+            "AA03-O2"
+          ],
+          "type": "automated-and-trace",
+          "artifactSetRef": "course/lessons/03/assessment.yaml#AA03-A1",
+          "requiredCheckIds": [
+            "AA03-C1",
+            "AA03-C2",
+            "AA03-C3",
+            "AA03-C4"
+          ],
+          "evidence": "loopback上の実HTTPでSet-Cookieを受信しCookieを送信するNode.js clientのtraceとして、login rotation、absolute expiry、logoutのMax-Age=0、server側失効後のgeneric 403を秘匿済みruntime evidenceと短答で確認する。このCookie session APIはHTTP認証challengeを使わず、browserによるHttpOnlyとSameSiteの強制動作は証拠範囲に含めない",
+          "passCriteria": "checkが保存済みruntimeを信用せずfresh scenarioを再実行し、Cookie、opaque Session ID、digestのみを持つSession Storeを区別し、login時のtoken更新、古いtoken、期限切れ、logout済みtoken、server失効済みtokenの拒否をAA03-C1からAA03-C4の全件で確認する。HttpOnlyとSameSiteはheader属性の観察に限定し、browser強制動作を検証済みと表現しない"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA03-C1",
+          "mode": "lab",
+          "assessmentId": "AA03-A1",
+          "objectiveIds": [
+            "AA03-O1",
+            "AA03-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO5"
+          ],
+          "evidenceType": "automated-and-trace",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA03-C2",
+          "mode": "lab",
+          "assessmentId": "AA03-A1",
+          "objectiveIds": [
+            "AA03-O1",
+            "AA03-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO5"
+          ],
+          "evidenceType": "automated-and-trace",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA03-C3",
+          "mode": "lab",
+          "assessmentId": "AA03-A1",
+          "objectiveIds": [
+            "AA03-O1",
+            "AA03-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO5"
+          ],
+          "evidenceType": "automated-and-trace",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA03-C4",
+          "mode": "lab",
+          "assessmentId": "AA03-A1",
+          "objectiveIds": [
+            "AA03-O1",
+            "AA03-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO5"
+          ],
+          "evidenceType": "automated-and-trace",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "04",
+      "kind": "article-lesson",
+      "module": "web-foundations",
+      "articleSlug": "auth-authz-04-application-authorization",
+      "environmentRef": "curriculum/support-matrix.json#lessons.04",
+      "learningPrerequisites": [
+        "03"
+      ],
+      "estimatedMinutes": 105,
+      "extensionMinutes": 45,
+      "extensionTaskRef": "course/lessons/04/extension.yaml",
+      "readingAssessmentRef": "episodes/04-auth-authz-04-application-authorization/assessment.yaml#AA04-A1",
+      "objectives": [
+        {
+          "id": "AA04-O1",
+          "courseOutcomeIds": [
+            "AA-CO4"
+          ],
+          "statement": "subject、resource、action、contextから許可・拒否を予測する"
+        },
+        {
+          "id": "AA04-O2",
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO3",
+            "AA-CO5"
+          ],
+          "statement": "Cookie session APIの403、resource秘匿の404、HTTP認証challengeの401を文脈で使い分ける"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA04-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA04-O1",
+            "AA04-O2"
+          ],
+          "type": "automated-and-scenario",
+          "artifactSetRef": "course/lessons/04/assessment.yaml#AA04-A1",
+          "requiredCheckIds": [
+            "AA04-C1",
+            "AA04-C2",
+            "AA04-C3",
+            "AA04-C4"
+          ],
+          "evidence": "loopback上の実CookieとHTTPで毎回fresh scenarioを実行し、Cookie sessionなしのgeneric 403とchallengeなし、owner 204、viewer 403、outsider・other-tenant・missing・repeatの同一404、caller-supplied principal・role・tenantの無効化、秘匿済みbounded auditを確認する",
+          "passCriteria": "checkが保存済みruntimeを信用せずfresh scenarioを再実行し、AA04-C1からAA04-C4の全件で、PEPがCookie sessionからprincipalを確定して未認証requestをproject-coreへ渡さないこと、project-coreのsource of recordでownerだけを許可すること、viewer拒否とresource秘匿404を区別すること、許可・拒否とmutation・auditがatomicであること、auditが限定field・secret非保存・64件上限であることを確認する。401はWWW-Authenticateを伴うHTTP認証challengeの別文脈として説明し、この実行APIでは返さない"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA04-C1",
+          "mode": "lab",
+          "assessmentId": "AA04-A1",
+          "objectiveIds": [
+            "AA04-O1",
+            "AA04-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "evidenceType": "automated-and-scenario",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA04-C2",
+          "mode": "lab",
+          "assessmentId": "AA04-A1",
+          "objectiveIds": [
+            "AA04-O1",
+            "AA04-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "evidenceType": "automated-and-scenario",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA04-C3",
+          "mode": "lab",
+          "assessmentId": "AA04-A1",
+          "objectiveIds": [
+            "AA04-O1",
+            "AA04-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "evidenceType": "automated-and-scenario",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA04-C4",
+          "mode": "lab",
+          "assessmentId": "AA04-A1",
+          "objectiveIds": [
+            "AA04-O1",
+            "AA04-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "evidenceType": "automated-and-scenario",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "kind": "article-lesson",
+      "module": "web-foundations",
+      "articleSlug": "auth-authz-05-basic-authentication",
+      "environmentRef": "curriculum/support-matrix.json#lessons.05",
+      "learningPrerequisites": [
+        "01"
+      ],
+      "estimatedMinutes": 70,
+      "extensionMinutes": 30,
+      "extensionTaskRef": "course/lessons/05/extension.yaml",
+      "readingAssessmentRef": "episodes/05-auth-authz-05-basic-authentication/assessment.yaml#AA05-A1",
+      "objectives": [
+        {
+          "id": "AA05-O1",
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO2",
+            "AA-CO3"
+          ],
+          "statement": "Basic challengeとAuthorization headerを読み取る"
+        },
+        {
+          "id": "AA05-O2",
+          "courseOutcomeIds": [
+            "AA-CO5",
+            "AA-CO7"
+          ],
+          "statement": "Basic認証が適する範囲とTLS、ログ、共有IDの制約を判断する"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA05-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA05-O1",
+            "AA05-O2"
+          ],
+          "type": "automated-and-decision",
+          "artifactSetRef": "course/lessons/05/assessment.yaml#AA05-A1",
+          "requiredCheckIds": [
+            "AA05-C1",
+            "AA05-C2"
+          ],
+          "evidence": "loopback上の実HTTPで401とBasic realm/UTF-8 challenge、Authorization header付き200、次requestの再challenge、Set-Cookie非発行を確認し、headerとdecoded credentialを残さない秘匿済みruntime evidenceと採用判断を照合する",
+          "passCriteria": "checkが保存済みruntimeを信用せずfresh scenarioを再実行し、AA05-C1でRFC 7617のchallenge、canonical Base64 UTF-8 NFC user-id:password、200、毎request認証、session非発行を確認し、AA05-C2でBase64が暗号化ではないこと、productionのTLS必須、Authorizationとdecoded credentialのlog非保存、適用範囲を確認する"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA05-C1",
+          "mode": "lab",
+          "assessmentId": "AA05-A1",
+          "objectiveIds": [
+            "AA05-O1",
+            "AA05-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO5",
+            "AA-CO7"
+          ],
+          "evidenceType": "automated-and-decision",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA05-C2",
+          "mode": "lab",
+          "assessmentId": "AA05-A1",
+          "objectiveIds": [
+            "AA05-O1",
+            "AA05-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO5",
+            "AA-CO7"
+          ],
+          "evidenceType": "automated-and-decision",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "06",
+      "kind": "article-lesson",
+      "module": "enterprise-identity",
+      "articleSlug": "auth-authz-06-ldap-directory",
+      "environmentRef": "curriculum/support-matrix.json#lessons.06",
+      "learningPrerequisites": [
+        "01"
+      ],
+      "estimatedMinutes": 105,
+      "extensionMinutes": 60,
+      "extensionTaskRef": "course/lessons/06/extension.yaml",
+      "readingAssessmentRef": "episodes/06-auth-authz-06-ldap-directory/assessment.yaml#AA06-A1",
+      "objectives": [
+        {
+          "id": "AA06-O1",
+          "courseOutcomeIds": [
+            "AA-CO2"
+          ],
+          "statement": "LDAP bind、search、DN、attribute、groupを区別する"
+        },
+        {
+          "id": "AA06-O2",
+          "courseOutcomeIds": [
+            "AA-CO3",
+            "AA-CO5",
+            "AA-CO7"
+          ],
+          "statement": "空passwordとfilter injectionが拒否されることを確認する"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA06-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA06-O1",
+            "AA06-O2"
+          ],
+          "type": "integration-and-explanation",
+          "artifactSetRef": "course/lessons/06/assessment.yaml#AA06-A1",
+          "requiredCheckIds": [
+            "AA06-C1",
+            "AA06-C2"
+          ],
+          "evidence": "runner所有の実OpenLDAPに対するfresh HTTP scenarioで、read-only service bind、people search、user DN bind、group search、Alice成功とgroup、wrong・unknown・empty・filter injectionのgeneric 422、空passwordのnetwork未到達、structured EqualityFilter、credentialとcontainer control値を含まないruntime evidenceを確認する",
+          "passCriteria": "checkが保存済みruntimeを信用せず実OpenLDAPへ再接続し、AA06-C1でbind/search/DN/attribute/groupの区別とAliceのengineering・security所属を確認し、AA06-C2でwrong・unknown・empty・injectionの同一422とWWW-Authenticate非発行、emptyのnetwork前拒否、filter escape、read-only非admin service account、loopback cleartext deviationとproductionのStartTLS/LDAPS要件、trace redactionを確認する"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA06-C1",
+          "mode": "lab",
+          "assessmentId": "AA06-A1",
+          "objectiveIds": [
+            "AA06-O1",
+            "AA06-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO5",
+            "AA-CO7"
+          ],
+          "evidenceType": "integration-and-explanation",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA06-C2",
+          "mode": "lab",
+          "assessmentId": "AA06-A1",
+          "objectiveIds": [
+            "AA06-O1",
+            "AA06-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO5",
+            "AA-CO7"
+          ],
+          "evidenceType": "integration-and-explanation",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "07",
+      "kind": "article-lesson",
+      "module": "enterprise-identity",
+      "articleSlug": "auth-authz-07-kerberos-authentication",
+      "environmentRef": "curriculum/support-matrix.json#lessons.07",
+      "learningPrerequisites": [
+        "01"
+      ],
+      "estimatedMinutes": 105,
+      "extensionMinutes": 60,
+      "extensionTaskRef": "course/lessons/07/extension.yaml",
+      "readingAssessmentRef": "episodes/07-auth-authz-07-kerberos-authentication/assessment.yaml#AA07-A1",
+      "objectives": [
+        {
+          "id": "AA07-O1",
+          "courseOutcomeIds": [
+            "AA-CO2"
+          ],
+          "statement": "AS、TGS、serviceの間でTGTとService Ticketを追跡する"
+        },
+        {
+          "id": "AA07-O2",
+          "courseOutcomeIds": [
+            "AA-CO3",
+            "AA-CO5",
+            "AA-CO7"
+          ],
+          "statement": "SPN、時刻、keytabの不整合を診断する"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA07-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA07-O1",
+            "AA07-O2"
+          ],
+          "type": "integration-and-diagnosis",
+          "artifactSetRef": "course/lessons/07/assessment.yaml#AA07-A1",
+          "requiredCheckIds": [
+            "AA07-C1",
+            "AA07-C2"
+          ],
+          "evidence": "runner所有の隔離network内にある実MIT Kerberos V5 KDC、client、GSSAPI acceptorへfresh scenarioを実行し、kinit直後のTGT、HTTP Negotiate後のservice ticket、401 challenge、principal付き200、誤SPNのTGS拒否、client processだけの時刻ずれによるAP拒否、stale keytabのkvno不一致によるacceptor拒否とcurrent keytab復旧を確認する。password、Authorization/response token、keytab、native error、container control値はruntime evidenceへ残さない",
+          "passCriteria": "AA07-C1でAS・TGS・APとTGT・HTTP service ticketを区別し、401 Negotiate challenge、GSSAPI acceptor、alice principalの200、Kerberos mechanismの1回のclient tokenとfinal acceptor tokenを確認する。AA07-C2で誤SPN・process-local時刻ずれ・stale kvnoを正しい境界で診断し、同じgeneric 401、host clock不変更、keytab復旧、TLS production要件、証跡秘匿を確認し、診断5件中4件以上に正答する"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA07-C1",
+          "mode": "lab",
+          "assessmentId": "AA07-A1",
+          "objectiveIds": [
+            "AA07-O1",
+            "AA07-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO5",
+            "AA-CO7"
+          ],
+          "evidenceType": "integration-and-diagnosis",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA07-C2",
+          "mode": "lab",
+          "assessmentId": "AA07-A1",
+          "objectiveIds": [
+            "AA07-O1",
+            "AA07-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO5",
+            "AA-CO7"
+          ],
+          "evidenceType": "integration-and-diagnosis",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "08",
+      "kind": "article-lesson",
+      "module": "enterprise-identity",
+      "articleSlug": "auth-authz-08-ad-freeipa-identity-platform",
+      "environmentRef": "curriculum/support-matrix.json#lessons.08",
+      "learningPrerequisites": [
+        "06",
+        "07"
+      ],
+      "estimatedMinutes": 110,
+      "extensionMinutes": 90,
+      "extensionTaskRef": "course/lessons/08/extension.yaml",
+      "readingAssessmentRef": "episodes/08-auth-authz-08-ad-freeipa-identity-platform/assessment.yaml#AA08-A1",
+      "objectives": [
+        {
+          "id": "AA08-O1",
+          "courseOutcomeIds": [
+            "AA-CO7"
+          ],
+          "statement": "ID基盤がdirectory、authentication、policy、lifecycleをどう束ねるか説明する"
+        },
+        {
+          "id": "AA08-O2",
+          "courseOutcomeIds": [
+            "AA-CO4",
+            "AA-CO7"
+          ],
+          "statement": "directory groupとapplication roleの対応づけをレビューする"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA08-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA08-O1",
+            "AA08-O2"
+          ],
+          "type": "integration-and-design-review",
+          "artifactSetRef": "course/lessons/08/assessment.yaml#AA08-A1",
+          "requiredCheckIds": [
+            "AA08-C1",
+            "AA08-C2"
+          ],
+          "evidence": "隔離した実Samba AD互換DCへCA・hostname検証付きLDAPSで接続し、read-only service bind、structured user search、resolved-user bind、group search、objectGUID由来opaque ID、明示group-to-role mapping、Joiner/Mover/Leaver、application session再検証、同一DCへのkinit/klistを実行する。password、bind secret、session token、raw objectGUID、DN、container identityはruntime evidenceへ残さない",
+          "passCriteria": "AA08-C1でruntime境界、verified LDAPS、stable identity、LDAPとKerberosの経路分離を確認し、AA08-C2でread-only service account、明示mapping、MoverとLeaverにおけるdirectory状態と既存sessionの時差を説明する。保存済みruntimeではなくfresh JML scenarioと回答が一致する"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA08-C1",
+          "mode": "lab",
+          "assessmentId": "AA08-A1",
+          "objectiveIds": [
+            "AA08-O1",
+            "AA08-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO4",
+            "AA-CO7"
+          ],
+          "evidenceType": "integration-and-design-review",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA08-C2",
+          "mode": "lab",
+          "assessmentId": "AA08-A1",
+          "objectiveIds": [
+            "AA08-O1",
+            "AA08-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO4",
+            "AA-CO7"
+          ],
+          "evidenceType": "integration-and-design-review",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "09",
+      "kind": "article-lesson",
+      "module": "enterprise-identity",
+      "articleSlug": "auth-authz-09-saml-sso",
+      "environmentRef": "curriculum/support-matrix.json#lessons.09",
+      "learningPrerequisites": [
+        "01",
+        "03"
+      ],
+      "estimatedMinutes": 120,
+      "extensionMinutes": 60,
+      "extensionTaskRef": "course/lessons/09/extension.yaml",
+      "readingAssessmentRef": "episodes/09-auth-authz-09-saml-sso/assessment.yaml#AA09-A1",
+      "objectives": [
+        {
+          "id": "AA09-O1",
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3"
+          ],
+          "statement": "SP-initiated SSOをAuthnRequestからapp sessionまで追跡する"
+        },
+        {
+          "id": "AA09-O2",
+          "courseOutcomeIds": [
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "statement": "signature、issuer、Audience、Destination、InResponseTo、SubjectConfirmation、期限、replayを検証する"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA09-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA09-O1",
+            "AA09-O2"
+          ],
+          "type": "browser-e2e-and-rejection",
+          "artifactSetRef": "course/lessons/09/assessment.yaml#AA09-A1",
+          "requiredCheckIds": [
+            "AA09-C1",
+            "AA09-C2"
+          ],
+          "evidence": "runner所有のinternal networkで実Keycloak 26.7.0、strict SP、scripted HTTP User Agentを動かし、SP AuthnRequest、Keycloak login、署名済みHTTP-POST SAMLResponse、ACS、local app sessionまで追跡する。別系統のruntime生成test keyによる署名fixtureでsignature、Response/Assertion issuer、Audience、Destination、Response/SubjectConfirmation InResponseTo、bearer Method、Recipient、expiry、exact replayを一条件ずつ拒否し、raw XML、NameID、Cookie、password、private key、container control値はruntime evidenceへ残さない",
+          "passCriteria": "AA09-C1で実Keycloak正常flowのHTTP-Redirect AuthnRequest、login、HTTP-POST Response、全検証後のapp session、scripted User Agentの限定scopeを確認する。AA09-C2でResponse/Assertion両署名、issuer、Audience/Conditions、Destination、二つのInResponseTo、bearer SubjectConfirmation、Recipient、期限、Response/Assertion/request IDのone-time化を確認し、11拒否すべてがgeneric 400、期待固定reason、session未発行となり、診断5件中4件以上に正答する"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA09-C1",
+          "mode": "lab",
+          "assessmentId": "AA09-A1",
+          "objectiveIds": [
+            "AA09-O1",
+            "AA09-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "evidenceType": "browser-e2e-and-rejection",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA09-C2",
+          "mode": "lab",
+          "assessmentId": "AA09-A1",
+          "objectiveIds": [
+            "AA09-O1",
+            "AA09-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "evidenceType": "browser-e2e-and-rejection",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "kind": "article-lesson",
+      "module": "modern-federation-api",
+      "articleSlug": "auth-authz-10-oauth-basics-for-oidc",
+      "environmentRef": "curriculum/support-matrix.json#lessons.10",
+      "learningPrerequisites": [
+        "01"
+      ],
+      "estimatedMinutes": 140,
+      "extensionMinutes": 60,
+      "extensionTaskRef": "course/lessons/10/extension.yaml",
+      "readingAssessmentRef": "episodes/10-auth-authz-10-oauth-basics-for-oidc/assessment.yaml#AA10-A1",
+      "objectives": [
+        {
+          "id": "AA10-O1",
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3"
+          ],
+          "statement": "OAuthのroleとAuthorization Code + PKCEの往復を追跡する"
+        },
+        {
+          "id": "AA10-O2",
+          "courseOutcomeIds": [
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "statement": "state、redirect URI、PKCE、code再利用の失敗を診断する"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA10-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA10-O1",
+            "AA10-O2"
+          ],
+          "type": "browser-e2e-and-rejection",
+          "artifactSetRef": "course/lessons/10/assessment.yaml#AA10-A1",
+          "requiredCheckIds": [
+            "AA10-C1",
+            "AA10-C2"
+          ],
+          "evidence": "固定した三originの実HTTPでAuthorization Code + PKCE S256、opaque Access Token、RFC 7662 introspection、Bearer APIを実行し、state不一致、PKCE不一致、一回消費済みcode、未登録redirect URI、不正Bearer、scope不足を一条件ずつ拒否する。password、state、verifier、code、token、Cookie、secret、scenario IDはruntime evidenceへ残さない",
+          "passCriteria": "AA10-C1で四role、三origin、codeからopaque token、introspection、project:read付きAPI 200を確認する。AA10-C2でstate不一致はtoken交換前、PKCE不一致とcode replayはinvalid_grant、未登録redirect URIはredirectなし400、不正Bearerは401 invalid_token、scope不足は403 insufficient_scopeとなり、保存済みruntimeではなくfresh scenarioと回答が一致する"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA10-C1",
+          "mode": "lab",
+          "assessmentId": "AA10-A1",
+          "objectiveIds": [
+            "AA10-O1",
+            "AA10-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "evidenceType": "browser-e2e-and-rejection",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA10-C2",
+          "mode": "lab",
+          "assessmentId": "AA10-A1",
+          "objectiveIds": [
+            "AA10-O1",
+            "AA10-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "evidenceType": "browser-e2e-and-rejection",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "kind": "article-lesson",
+      "module": "modern-federation-api",
+      "articleSlug": "auth-authz-11-openid-connect",
+      "environmentRef": "curriculum/support-matrix.json#lessons.11",
+      "learningPrerequisites": [
+        "03",
+        "10"
+      ],
+      "estimatedMinutes": 120,
+      "extensionMinutes": 60,
+      "extensionTaskRef": "course/lessons/11/extension.yaml",
+      "readingAssessmentRef": "episodes/11-auth-authz-11-openid-connect/assessment.yaml#AA11-A1",
+      "objectives": [
+        {
+          "id": "AA11-O1",
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4"
+          ],
+          "statement": "discoveryとJWKSを使ってID Tokenを検証する"
+        },
+        {
+          "id": "AA11-O2",
+          "courseOutcomeIds": [
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "statement": "ID TokenとAccess Tokenを用途と検証者で区別する"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA11-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA11-O1",
+            "AA11-O2"
+          ],
+          "type": "interop-and-rejection",
+          "artifactSetRef": "course/lessons/11/assessment.yaml#AA11-A1",
+          "requiredCheckIds": [
+            "AA11-C1",
+            "AA11-C2"
+          ],
+          "evidence": "固定issuerから実DiscoveryとJWKSをHTTP取得し、joseでRS256署名、iss、aud、exp/iat、nonce、subを検証してからopaque app sessionを発行する。signature、issuer、audience、expiry、nonce、Access Token取り違えを一条件ずつ拒否し、token、nonce、Cookie、private key、control情報はruntime evidenceへ残さない",
+          "passCriteria": "AA11-C1でID Tokenがback-channel Token Responseへ届き、discovery/JWKSと全検証条件の後だけapp sessionと200が成立する。AA11-C2で六つの一条件不正が通常callbackで400となりsessionを発行せず、重複Cookieも403となり、保存済みruntimeではなくfresh scenarioと回答が一致する"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA11-C1",
+          "mode": "lab",
+          "assessmentId": "AA11-A1",
+          "objectiveIds": [
+            "AA11-O1",
+            "AA11-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "evidenceType": "interop-and-rejection",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA11-C2",
+          "mode": "lab",
+          "assessmentId": "AA11-A1",
+          "objectiveIds": [
+            "AA11-O1",
+            "AA11-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "evidenceType": "interop-and-rejection",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "kind": "article-lesson",
+      "module": "strong-authentication",
+      "articleSlug": "auth-authz-12-multi-factor-authentication",
+      "environmentRef": "curriculum/support-matrix.json#lessons.12",
+      "learningPrerequisites": [
+        "02"
+      ],
+      "estimatedMinutes": 105,
+      "extensionMinutes": 45,
+      "extensionTaskRef": "course/lessons/12/extension.yaml",
+      "readingAssessmentRef": "episodes/12-auth-authz-12-multi-factor-authentication/assessment.yaml#AA12-A1",
+      "objectives": [
+        {
+          "id": "AA12-O1",
+          "courseOutcomeIds": [
+            "AA-CO6"
+          ],
+          "statement": "知識、所持、生体のfactorと方式の強さを分類する"
+        },
+        {
+          "id": "AA12-O2",
+          "courseOutcomeIds": [
+            "AA-CO3",
+            "AA-CO5",
+            "AA-CO6"
+          ],
+          "statement": "TOTP登録と二段階ログインを完了し、replay、fallback、復旧を評価する"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA12-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA12-O1",
+            "AA12-O2"
+          ],
+          "type": "automated-and-decision",
+          "artifactSetRef": "course/lessons/12/assessment.yaml#AA12-A1",
+          "requiredCheckIds": [
+            "AA12-C1",
+            "AA12-C2",
+            "AA12-C3"
+          ],
+          "evidence": "freshな実HTTP scenarioでpassword再確認後のTOTP登録、現在codeによる確認、pre-auth、第二要素後のsession発行、同一counter replay、期限切れ、誤値、account単位rate limit、single-use recovery code、secret非保存を観察し、factor強度と復旧判断を照合する",
+          "passCriteria": "AA12-C1で登録とsession gate、AA12-C2でreplay・generic拒否・rate limit・redaction、AA12-C3でfactor分類・phishing耐性・recovery・WebAuthn選択がfresh runtimeと回答の両方で一致する"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA12-C1",
+          "mode": "lab",
+          "assessmentId": "AA12-A1",
+          "objectiveIds": [
+            "AA12-O1",
+            "AA12-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO3",
+            "AA-CO5",
+            "AA-CO6"
+          ],
+          "evidenceType": "automated-and-decision",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA12-C2",
+          "mode": "lab",
+          "assessmentId": "AA12-A1",
+          "objectiveIds": [
+            "AA12-O1",
+            "AA12-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO3",
+            "AA-CO5",
+            "AA-CO6"
+          ],
+          "evidenceType": "automated-and-decision",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA12-C3",
+          "mode": "lab",
+          "assessmentId": "AA12-A1",
+          "objectiveIds": [
+            "AA12-O1",
+            "AA12-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO3",
+            "AA-CO5",
+            "AA-CO6"
+          ],
+          "evidenceType": "automated-and-decision",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "kind": "article-lesson",
+      "module": "strong-authentication",
+      "articleSlug": "auth-authz-13-fido-webauthn",
+      "environmentRef": "curriculum/support-matrix.json#lessons.13",
+      "learningPrerequisites": [
+        "12"
+      ],
+      "estimatedMinutes": 140,
+      "extensionMinutes": 60,
+      "extensionTaskRef": "course/lessons/13/extension.yaml",
+      "readingAssessmentRef": "episodes/13-auth-authz-13-fido-webauthn/assessment.yaml#AA13-A1",
+      "objectives": [
+        {
+          "id": "AA13-O1",
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO6"
+          ],
+          "statement": "WebAuthn登録と認証でchallenge、origin、RP ID、署名を追跡する"
+        },
+        {
+          "id": "AA13-O2",
+          "courseOutcomeIds": [
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "statement": "challenge、origin、RP ID、userHandle、署名の不一致が拒否される理由を説明する"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA13-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA13-O1",
+            "AA13-O2"
+          ],
+          "type": "browser-e2e-and-rejection",
+          "artifactSetRef": "course/lessons/13/assessment.yaml#AA13-A1",
+          "requiredCheckIds": [
+            "AA13-C1",
+            "AA13-C2",
+            "AA13-C3"
+          ],
+          "evidence": "Playwright 1.61.1 ChromiumのCDP virtual authenticatorでactual navigator.credentials.create/getを実行し、失敗登録のRP非保存、username-bound認証、challenge・別origin・foreign RP ID・signature・transaction replay・userHandleの単一条件を拒否する。64-byte random user handle、UV、attestation none、signCount解釈、redactionをfresh scenarioで照合する",
+          "passCriteria": "AA13-C1でactual ceremonyと検証後保存、AA13-C2でusername-bound成功と6拒否境界、AA13-C3でattestation none、signCount、userHandle mapping、generic failure、virtual authenticatorの限界がruntimeと回答の両方で一致する"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA13-C1",
+          "mode": "lab",
+          "assessmentId": "AA13-A1",
+          "objectiveIds": [
+            "AA13-O1",
+            "AA13-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO6"
+          ],
+          "evidenceType": "browser-e2e-and-rejection",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA13-C2",
+          "mode": "lab",
+          "assessmentId": "AA13-A1",
+          "objectiveIds": [
+            "AA13-O1",
+            "AA13-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO6"
+          ],
+          "evidenceType": "browser-e2e-and-rejection",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA13-C3",
+          "mode": "lab",
+          "assessmentId": "AA13-A1",
+          "objectiveIds": [
+            "AA13-O1",
+            "AA13-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO6"
+          ],
+          "evidenceType": "browser-e2e-and-rejection",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "14",
+      "kind": "article-lesson",
+      "module": "strong-authentication",
+      "articleSlug": "auth-authz-14-passkey-login",
+      "environmentRef": "curriculum/support-matrix.json#lessons.14",
+      "learningPrerequisites": [
+        "03",
+        "13"
+      ],
+      "estimatedMinutes": 105,
+      "extensionMinutes": 45,
+      "extensionTaskRef": "course/lessons/14/extension.yaml",
+      "readingAssessmentRef": "episodes/14-auth-authz-14-passkey-login/assessment.yaml#AA14-A1",
+      "objectives": [
+        {
+          "id": "AA14-O1",
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO6"
+          ],
+          "statement": "discoverable credentialによるusernameなしのログインを説明する"
+        },
+        {
+          "id": "AA14-O2",
+          "courseOutcomeIds": [
+            "AA-CO6",
+            "AA-CO7"
+          ],
+          "statement": "同期、端末変更、復旧、退職時失効を含む導入案を作る"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA14-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA14-O1",
+            "AA14-O2"
+          ],
+          "type": "browser-e2e-and-lifecycle",
+          "artifactSetRef": "course/lessons/14/assessment.yaml#AA14-A1",
+          "requiredCheckIds": [
+            "AA14-C1",
+            "AA14-C2"
+          ],
+          "evidence": "2つのCDP virtual authenticatorでdiscoverable credentialのusernameなし認証、RP側失効後のassertion拒否とauthenticator credential残存、第二credential復旧、BE/BS、account disable、session invalidationをactual create/getで観察する",
+          "passCriteria": "AA14-C1でusernameなし認証、RP失効、private credential残存、第二credential復旧、AA14-C2でBE/BS、cloud同期非証明、account/session失効、signCount、redactionがruntimeと回答の両方で一致する"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA14-C1",
+          "mode": "lab",
+          "assessmentId": "AA14-A1",
+          "objectiveIds": [
+            "AA14-O1",
+            "AA14-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO6",
+            "AA-CO7"
+          ],
+          "evidenceType": "browser-e2e-and-lifecycle",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA14-C2",
+          "mode": "lab",
+          "assessmentId": "AA14-A1",
+          "objectiveIds": [
+            "AA14-O1",
+            "AA14-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO2",
+            "AA-CO6",
+            "AA-CO7"
+          ],
+          "evidenceType": "browser-e2e-and-lifecycle",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "kind": "article-lesson",
+      "module": "modern-federation-api",
+      "articleSlug": "auth-authz-15-oauth-api-authorization",
+      "environmentRef": "curriculum/support-matrix.json#lessons.15",
+      "learningPrerequisites": [
+        "04",
+        "10",
+        "11"
+      ],
+      "estimatedMinutes": 140,
+      "extensionMinutes": 60,
+      "extensionTaskRef": "course/lessons/15/extension.yaml",
+      "readingAssessmentRef": "episodes/15-auth-authz-15-oauth-api-authorization/assessment.yaml#AA15-A1",
+      "objectives": [
+        {
+          "id": "AA15-O1",
+          "courseOutcomeIds": [
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5"
+          ],
+          "statement": "RFC 8707 resource indicatorからRFC 9068 JWT Access Tokenを取得し、Resource ServerでJWKS、RS256、typ、iss、aud、exp、sub、client_id、iat、jti、scopeを検証する"
+        },
+        {
+          "id": "AA15-O2",
+          "courseOutcomeIds": [
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO7"
+          ],
+          "statement": "ClientはAccess Tokenをopaqueに扱い、Resource Serverでscopeとproject-coreのtenant・ownership認可を分離してBOLAとcross-tenant accessを拒否する"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA15-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA15-O1",
+            "AA15-O2"
+          ],
+          "type": "actual-http-jwt-api-authorization-and-rejection",
+          "artifactSetRef": "course/lessons/15/assessment.yaml#AA15-A1",
+          "requiredCheckIds": [
+            "AA15-C1",
+            "AA15-C2",
+            "AA15-C3"
+          ],
+          "evidence": "三originの実HTTPでAuthorization Code + PKCE、resource indicator、RS256署名JWT Access Token、remote JWKS検証、scope、project-core認可を実行する。runner所有fresh scenarioでmalformed、signature、issuer、audience、expiry、typ、ID Token混同、必須claim欠損、scope不足、viewer、cross-tenant、未知objectを一条件ずつ拒否し、秘密値を保存しない",
+          "passCriteria": "resourceとaudience、at+jwt、RS256/JWKS、Clientのopaque処理、Token不正401、scope不足403、Token/scope不正時のproject-core未到達、viewer 403、cross-tenant/未知object 404、owner 204がfresh scenarioと回答で一致し、AA15-C1/C2/C3をすべて満たす"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA15-C1",
+          "mode": "lab",
+          "assessmentId": "AA15-A1",
+          "objectiveIds": [
+            "AA15-O1",
+            "AA15-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO7"
+          ],
+          "evidenceType": "actual-http-jwt-api-authorization-and-rejection",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA15-C2",
+          "mode": "lab",
+          "assessmentId": "AA15-A1",
+          "objectiveIds": [
+            "AA15-O1",
+            "AA15-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO7"
+          ],
+          "evidenceType": "actual-http-jwt-api-authorization-and-rejection",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA15-C3",
+          "mode": "lab",
+          "assessmentId": "AA15-A1",
+          "objectiveIds": [
+            "AA15-O1",
+            "AA15-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO7"
+          ],
+          "evidenceType": "actual-http-jwt-api-authorization-and-rejection",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    },
+    {
+      "id": "capstone",
+      "kind": "course-capstone",
+      "module": "capstone",
+      "articleSlug": null,
+      "environmentRef": "curriculum/support-matrix.json#lessons.capstone",
+      "learningPrerequisites": [
+        "04",
+        "08",
+        "09",
+        "11",
+        "14",
+        "15"
+      ],
+      "estimatedMinutes": 240,
+      "extensionMinutes": 0,
+      "extensionTaskRef": null,
+      "readingAssessmentRef": null,
+      "objectives": [
+        {
+          "id": "AA-CAP-O1",
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO2",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO7"
+          ],
+          "statement": "架空企業の認証認可構成から責任分界と優先リスクを特定する"
+        },
+        {
+          "id": "AA-CAP-O2",
+          "courseOutcomeIds": [
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO6",
+            "AA-CO7"
+          ],
+          "statement": "開発またはIAM運用trackに応じた改善成果物と検証証跡をまとめる"
+        }
+      ],
+      "assessments": [
+        {
+          "id": "AA-CAP-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": [
+            "AA-CAP-O1",
+            "AA-CAP-O2"
+          ],
+          "type": "automated-track-simulation-and-instructor-rubric",
+          "artifactSetRef": "course/lessons/capstone/assessment.yaml#AA-CAP-A1",
+          "requiredCheckIds": [
+            "AA-CAP-C1",
+            "AA-CAP-C2",
+            "AA-CAP-C3",
+            "AA-CAP-C4",
+            "AA-CAP-C5",
+            "AA-CAP-C6",
+            "AA-CAP-C7"
+          ],
+          "evidence": "架空組織の同一caseに対し、developerまたはiam-operationsの構造化成果物をfresh simulatorへ入力し、責任分界、credential/JML、federation、API認可、MFA/Passkey、優先リスク、track統合の7 check、5重大拒否test、未解決Criticalを検証する。自由記述の意味理解は自動判定せず講師rubricへ分離する",
+          "passCriteria": "選択した1trackでAA-CAP-C1からAA-CAP-C7が全件pass、機械採点100点中80点以上、重大拒否test skip 0かつfailure 0、未解決Critical 0を満たす。加えて学校・社内研修の修了判定では講師が自由記述rubricを80%以上で採点する"
+        }
+      ],
+      "requiredChecks": [
+        {
+          "id": "AA-CAP-C1",
+          "mode": "lab",
+          "assessmentId": "AA-CAP-A1",
+          "objectiveIds": [
+            "AA-CAP-O1",
+            "AA-CAP-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO6",
+            "AA-CO7"
+          ],
+          "evidenceType": "automated-track-simulation-and-instructor-rubric",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA-CAP-C2",
+          "mode": "lab",
+          "assessmentId": "AA-CAP-A1",
+          "objectiveIds": [
+            "AA-CAP-O1",
+            "AA-CAP-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO6",
+            "AA-CO7"
+          ],
+          "evidenceType": "automated-track-simulation-and-instructor-rubric",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA-CAP-C3",
+          "mode": "lab",
+          "assessmentId": "AA-CAP-A1",
+          "objectiveIds": [
+            "AA-CAP-O1",
+            "AA-CAP-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO6",
+            "AA-CO7"
+          ],
+          "evidenceType": "automated-track-simulation-and-instructor-rubric",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA-CAP-C4",
+          "mode": "lab",
+          "assessmentId": "AA-CAP-A1",
+          "objectiveIds": [
+            "AA-CAP-O1",
+            "AA-CAP-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO6",
+            "AA-CO7"
+          ],
+          "evidenceType": "automated-track-simulation-and-instructor-rubric",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA-CAP-C5",
+          "mode": "lab",
+          "assessmentId": "AA-CAP-A1",
+          "objectiveIds": [
+            "AA-CAP-O1",
+            "AA-CAP-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO6",
+            "AA-CO7"
+          ],
+          "evidenceType": "automated-track-simulation-and-instructor-rubric",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA-CAP-C6",
+          "mode": "lab",
+          "assessmentId": "AA-CAP-A1",
+          "objectiveIds": [
+            "AA-CAP-O1",
+            "AA-CAP-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO6",
+            "AA-CO7"
+          ],
+          "evidenceType": "automated-track-simulation-and-instructor-rubric",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        },
+        {
+          "id": "AA-CAP-C7",
+          "mode": "lab",
+          "assessmentId": "AA-CAP-A1",
+          "objectiveIds": [
+            "AA-CAP-O1",
+            "AA-CAP-O2"
+          ],
+          "courseOutcomeIds": [
+            "AA-CO1",
+            "AA-CO2",
+            "AA-CO3",
+            "AA-CO4",
+            "AA-CO5",
+            "AA-CO6",
+            "AA-CO7"
+          ],
+          "evidenceType": "automated-track-simulation-and-instructor-rubric",
+          "required": true,
+          "mappingBasis": "assessment-objective-closure"
+        }
+      ]
+    }
+  ],
+  "traceability": {
+    "courseOutcomeCount": 7,
+    "lessonCount": 17,
+    "objectiveCount": 34,
+    "assessmentCount": 17,
+    "requiredCheckCount": 48,
+    "requiredCheckMappingBasis": "assessment-objective-closure"
+  }
+}

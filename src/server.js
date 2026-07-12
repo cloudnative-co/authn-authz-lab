@@ -257,19 +257,13 @@ export function createApp({ issuer } = {}) {
       const samlResponse = params.get('SAMLResponse');
       if (!samlResponse) return send(res, 400, { error: 'missing_saml_response' });
       const saml = await import('./auth/saml.js');
-      if (process.env.DEBUG_SAML === '1') {
-        console.log('--- decoded SAMLResponse XML ---');
-        console.log(saml.decodeSamlResponseXml(samlResponse));
-      }
       let profile;
       try {
         profile = await saml.validateSamlResponse(sp, samlResponse);
-      } catch (error) {
-        // Keep the detail in the server log only; the response is a fixed code.
-        console.error('SAML validation failed:', error.message);
-        return send(res, 401, { error: 'saml_validation_failed' });
+      } catch {
+        return send(res, 400, { error: 'saml_login_failed' });
       }
-      return send(res, 200, { authenticated: true, nameId: profile.nameID, attributes: profile.attributes ?? {} });
+      return send(res, 200, { authenticated: true, subjectPresent: typeof profile.nameID === 'string' });
     }
 
     // --- WebAuthn / Passkey (13, 14). Needs a browser; no container required. ---

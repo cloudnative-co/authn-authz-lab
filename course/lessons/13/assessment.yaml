@@ -1,0 +1,182 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "13",
+  "assessment": {
+    "id": "AA13-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA13-O1",
+      "AA13-O2"
+    ],
+    "type": "browser-e2e-and-rejection",
+    "evidence": "Playwright 1.61.1 ChromiumのCDP virtual authenticatorでactual navigator.credentials.create/getを実行し、失敗登録のRP非保存、username-bound認証、challenge・別origin・foreign RP ID・signature・transaction replay・userHandleの単一条件を拒否する。64-byte random user handle、UV、attestation none、signCount解釈、redactionをfresh scenarioで照合する",
+    "passCriteria": "AA13-C1でactual ceremonyと検証後保存、AA13-C2でusername-bound成功と6拒否境界、AA13-C3でattestation none、signCount、userHandle mapping、generic failure、virtual authenticatorの限界がruntimeと回答の両方で一致する",
+    "labTask": {
+      "instructionsRef": "course/lessons/13/README.md",
+      "predict": "失敗登録の保存、create/get、challenge・origin・RP ID・signature・userHandle・replayの検証者、signCountとvirtual authenticatorの証明範囲を予測する",
+      "execute": "doctorでChromiumを実起動確認し、setup、demo、observeでactual WebAuthn ceremonyと単一条件の拒否を実行し、秘匿済みruntime.jsonからsubmission.jsonを完成する",
+      "rejectOrFail": "PII由来user handle、検証前保存、browserだけの検証、credential IDだけの認証、再利用transaction、signCountをclone証明、virtual fixtureを実hardware証明とする回答がfailすることを確認する",
+      "evidence": "AA13-C1/C2/C3がfresh browser scenarioでpassし、challenge、userHandle、credential ID、public key、attestation object、assertion、signature、tokenを含まないevidenceIdを確認する",
+      "practicalTransfer": "自環境のRP ID、許可origin、user handle、transaction、credential record、session、失効、risk signal、実機testのownerを記録する"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "actual create/get、失敗時RP非保存、username-bound成功、6拒否境界、64-byte random handle、generic failure、redactionと回答が一致し、AA13-C1/C2/C3がすべてpassすれば合格",
+      "failureRule": "runtimeまたは回答が1件でも不一致、TODO、未知field、challenge/origin/RP ID/signature/UV/userHandle未検証、signCountまたはvirtual authenticatorの過大評価があれば不合格"
+    },
+    "answerKeyRef": "course/lessons/13/answer-key.md",
+    "instructorGuideRef": "course/lessons/13/instructor-guide.md",
+    "automatedCheckRefs": [
+      "apps/project-app/lessons/13-14/webauthn-service.mjs",
+      "apps/project-app/lessons/13-14/http-handler.mjs",
+      "apps/project-app/lessons/13-14/browser-page.mjs",
+      "course/lessons/webauthn/browser-lab.mjs",
+      "course/lessons/13/assessment.mjs",
+      "course/lessons/13/runner.mjs",
+      "course/lessons/13/scenario.mjs",
+      "course/lessons/13/workspace.mjs",
+      "test/lesson-13-14/webauthn-service.test.js",
+      "test/lesson-13-14/runtime-scenario.test.js",
+      "test/lesson-13-14/assessment.test.js",
+      "test/lesson-13-14/runner-e2e.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA13-C1",
+        "mode": "lab",
+        "assessmentId": "AA13-A1",
+        "objectiveIds": [
+          "AA13-O1",
+          "AA13-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5",
+          "AA-CO6"
+        ],
+        "evidenceType": "browser-e2e-and-rejection",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA13-C2",
+        "mode": "lab",
+        "assessmentId": "AA13-A1",
+        "objectiveIds": [
+          "AA13-O1",
+          "AA13-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5",
+          "AA-CO6"
+        ],
+        "evidenceType": "browser-e2e-and-rejection",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA13-C3",
+        "mode": "lab",
+        "assessmentId": "AA13-A1",
+        "objectiveIds": [
+          "AA13-O1",
+          "AA13-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5",
+          "AA-CO6"
+        ],
+        "evidenceType": "browser-e2e-and-rejection",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs lesson 13 doctor",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs lesson 13 setup",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs lesson 13 demo",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs lesson 13 observe",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "learner-action",
+        "step": 5,
+        "path": ".lab/submissions/13/submission.json",
+        "task": "runtime.jsonと一次仕様からAA13-C1からAA13-C3の12回答を許可値で入力する",
+        "completionCriterion": "TODOが残らず、構造を変えず、全fieldが許可値で埋まっている"
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson 13 check",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA13-C1",
+          "AA13-C2",
+          "AA13-C3"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs lesson 13 stop",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": true
+      }
+    ],
+    "optionalRecoveryScenarios": [
+      {
+        "id": "discard-and-restart-webauthn-lab",
+        "trigger": "現在の第13回答とruntimeを破棄して最初からやり直す場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson 13 reset",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      }
+    ]
+  }
+}

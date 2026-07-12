@@ -1,0 +1,92 @@
+services:
+  kdc:
+    build:
+      context: kdc
+      dockerfile: Dockerfile
+    hostname: kdc
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777,size=4m
+      - /run/krb5kdc:mode=0755,size=1m
+      - /var/lib/krb5kdc:mode=0700,size=16m
+    labels: &course-labels
+      io.cloudnative.course.id: auth-authz
+      io.cloudnative.course.install-id: "${COURSE_INSTALL_ID:?COURSE_INSTALL_ID is required}"
+      io.cloudnative.course.resource-id: kerberos-lab
+    secrets:
+      - lesson07_kdc_master_password
+      - lesson07_alice_password
+    volumes:
+      - lesson07_keytabs:/keytabs
+    healthcheck:
+      test: ["CMD", "/usr/local/bin/kdc-healthcheck"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 2s
+
+  app:
+    build:
+      context: ../..
+      dockerfile: docker/kerberos/app/Dockerfile
+    hostname: app.example.test
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777,size=16m
+      - /var/tmp:mode=1777,size=4m
+    labels: *course-labels
+    environment:
+      KRB5_KTNAME: FILE:/keytabs/active.keytab
+      KERBEROS_SERVICE_NAME: HTTP@app.example.test
+      PORT: "3000"
+    volumes:
+      - ./kdc/krb5.conf:/etc/krb5.conf:ro
+      - lesson07_keytabs:/keytabs:ro
+    networks:
+      default:
+        aliases:
+          - app.example.test
+    depends_on:
+      kdc:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1),()=>process.exit(1))"]
+      interval: 2s
+      timeout: 2s
+      retries: 30
+      start_period: 2s
+
+  client:
+    build:
+      context: client
+      dockerfile: Dockerfile
+    hostname: client.example.test
+    init: true
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777,size=16m
+    labels: *course-labels
+    environment:
+      KRB5CCNAME: FILE:/tmp/lesson07.ccache
+    volumes:
+      - ./kdc/krb5.conf:/etc/krb5.conf:ro
+    depends_on:
+      app:
+        condition: service_healthy
+
+secrets:
+  lesson07_kdc_master_password:
+    file: "${LESSON07_SECRET_DIR:?LESSON07_SECRET_DIR is required}/kdc-master-password"
+  lesson07_alice_password:
+    file: "${LESSON07_SECRET_DIR:?LESSON07_SECRET_DIR is required}/alice-password"
+
+volumes:
+  lesson07_keytabs:
+    labels: *course-labels
+
+networks:
+  default:
+    internal: true
+    labels: *course-labels

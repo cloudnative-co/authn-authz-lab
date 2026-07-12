@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "03",
+  "answers": {
+    "AA03-C1": {
+      "browserValue": "TODO",
+      "tokenSize": "TODO",
+      "serverStoredValue": "TODO",
+      "cookieHttpOnly": "TODO",
+      "cookieSameSite": "TODO",
+      "cookiePath": "TODO",
+      "cookieDomain": "TODO",
+      "loopbackTransport": "TODO"
+    },
+    "AA03-C2": {
+      "loginRotation": "TODO",
+      "oldPreAuthToken": "TODO"
+    },
+    "AA03-C3": {
+      "expiration": "TODO",
+      "logoutServerEffect": "TODO",
+      "logoutCookieEffect": "TODO",
+      "loggedOutToken": "TODO"
+    },
+    "AA03-C4": {
+      "serverRevocation": "TODO",
+      "revokedToken": "TODO"
+    }
+  }
+}

@@ -1,0 +1,1484 @@
+{
+  "$schema": "./schemas/manifest.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "implementationStatus": "experimental",
+  "runtime": {
+    "node": {
+      "baselineMajor": 24,
+      "versionRange": ">=24 <25"
+    },
+    "commands": {
+      "course": {
+        "executable": "node",
+        "arguments": [
+          "course.mjs"
+        ],
+        "grammar": "node course.mjs doctor|setup|diagnose|stop|reset|purge",
+        "actions": [
+          "doctor",
+          "setup",
+          "diagnose",
+          "stop",
+          "reset",
+          "purge"
+        ]
+      },
+      "lesson": {
+        "executable": "node",
+        "arguments": [
+          "course.mjs",
+          "lesson",
+          "<id>"
+        ],
+        "grammar": "node course.mjs lesson <id> doctor|setup|demo|observe|check|diagnose|reset|stop|purge",
+        "actions": [
+          "doctor",
+          "setup",
+          "demo",
+          "observe",
+          "check",
+          "diagnose",
+          "reset",
+          "stop",
+          "purge"
+        ]
+      }
+    },
+    "externalServices": [
+      {
+        "id": "lesson-06-directory",
+        "kind": "ldap-directory",
+        "lessonId": "06",
+        "resourceId": "ldap-directory",
+        "portId": "lesson-06-ldap-tcp",
+        "composeFile": "docker/ldap/compose.yml",
+        "composeService": "ldap",
+        "baseDn": "dc=example,dc=test",
+        "peopleBaseDn": "ou=people,dc=example,dc=test",
+        "groupsBaseDn": "ou=groups,dc=example,dc=test",
+        "bindDn": "uid=course-search,ou=service,dc=example,dc=test",
+        "bindPasswordStatePath": ".lab/containers/ldap-directory/service-password",
+        "transport": "loopback-cleartext-training"
+      }
+    ]
+  },
+  "ports": [
+    {
+      "id": "project-app-http",
+      "host": "127.0.0.1",
+      "port": 3000,
+      "protocol": "http",
+      "resourceId": "project-app",
+      "lessonIds": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "12",
+        "13",
+        "14"
+      ]
+    },
+    {
+      "id": "lesson-06-ldap-tcp",
+      "host": "127.0.0.1",
+      "port": 1389,
+      "protocol": "tcp",
+      "resourceId": "ldap-directory",
+      "lessonIds": [
+        "06"
+      ]
+    },
+    {
+      "id": "oauth-authorization-server-http",
+      "host": "127.0.0.1",
+      "port": 4100,
+      "protocol": "http",
+      "resourceId": "oauth-lab",
+      "lessonIds": [
+        "10",
+        "11",
+        "15"
+      ]
+    },
+    {
+      "id": "oauth-client-http",
+      "host": "127.0.0.1",
+      "port": 4101,
+      "protocol": "http",
+      "resourceId": "oauth-lab",
+      "lessonIds": [
+        "10",
+        "11",
+        "15"
+      ]
+    },
+    {
+      "id": "oauth-resource-api-http",
+      "host": "127.0.0.1",
+      "port": 4102,
+      "protocol": "http",
+      "resourceId": "oauth-lab",
+      "lessonIds": [
+        "10",
+        "11",
+        "15"
+      ]
+    }
+  ],
+  "resources": [
+    {
+      "id": "directory:lab-state",
+      "type": "directory",
+      "ownership": "course-created",
+      "locator": ".lab",
+      "resetPolicy": "preserve",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "setup",
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12",
+        "13",
+        "14",
+        "15",
+        "capstone"
+      ]
+    },
+    {
+      "id": "project-app",
+      "type": "process",
+      "ownership": "course-created",
+      "locator": ".lab/processes/project-app/current.json",
+      "resetPolicy": "stop-and-recreate",
+      "purgePolicy": "authenticated-stop-then-remove-owned-only",
+      "lessonIds": [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "12",
+        "13",
+        "14"
+      ]
+    },
+    {
+      "id": "data:lesson-01-submission",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/01",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "01"
+      ]
+    },
+    {
+      "id": "data:lesson-02-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/02",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "02"
+      ]
+    },
+    {
+      "id": "data:lesson-03-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/03",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "03"
+      ]
+    },
+    {
+      "id": "data:lesson-04-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/04",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "04"
+      ]
+    },
+    {
+      "id": "data:lesson-05-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/05",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "05"
+      ]
+    },
+    {
+      "id": "ldap-directory",
+      "type": "container",
+      "ownership": "course-created",
+      "locator": "docker/ldap/compose.yml#ldap",
+      "resetPolicy": "remove-and-recreate",
+      "purgePolicy": "verify-labels-and-remove-owned-only",
+      "lessonIds": [
+        "06"
+      ]
+    },
+    {
+      "id": "data:lesson-06-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/06",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "06"
+      ]
+    },
+    {
+      "id": "kerberos-lab",
+      "type": "container",
+      "ownership": "course-created",
+      "locator": "docker/kerberos/compose.yml#kdc,app,client",
+      "resetPolicy": "remove-and-recreate",
+      "purgePolicy": "verify-labels-and-remove-owned-only",
+      "lessonIds": [
+        "07"
+      ]
+    },
+    {
+      "id": "data:lesson-07-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/07",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "07"
+      ]
+    },
+    {
+      "id": "identity-platform-lab",
+      "type": "container",
+      "ownership": "course-created",
+      "locator": "docker/samba-ad/compose.yml#dc,app,client",
+      "resetPolicy": "remove-and-recreate",
+      "purgePolicy": "verify-labels-and-remove-owned-only",
+      "lessonIds": [
+        "08"
+      ]
+    },
+    {
+      "id": "data:lesson-08-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/08",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "08"
+      ]
+    },
+    {
+      "id": "saml-lab",
+      "type": "container",
+      "ownership": "course-created",
+      "locator": "docker/saml/compose.yml#keycloak,sp,user-agent",
+      "resetPolicy": "remove-and-recreate",
+      "purgePolicy": "verify-labels-and-remove-owned-only",
+      "lessonIds": [
+        "09"
+      ]
+    },
+    {
+      "id": "data:lesson-09-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/09",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "09"
+      ]
+    },
+    {
+      "id": "oauth-lab",
+      "type": "process",
+      "ownership": "course-created",
+      "locator": ".lab/processes/oauth-lab/current.json",
+      "resetPolicy": "stop-and-recreate",
+      "purgePolicy": "authenticated-stop-then-remove-owned-only",
+      "lessonIds": [
+        "10",
+        "11",
+        "15"
+      ]
+    },
+    {
+      "id": "data:lesson-10-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/10",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "10"
+      ]
+    },
+    {
+      "id": "data:lesson-11-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/11",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "11"
+      ]
+    },
+    {
+      "id": "data:lesson-12-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/12",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "12"
+      ]
+    },
+    {
+      "id": "data:lesson-13-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/13",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "13"
+      ]
+    },
+    {
+      "id": "data:lesson-14-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/14",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "14"
+      ]
+    },
+    {
+      "id": "data:lesson-15-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/15",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "15"
+      ]
+    },
+    {
+      "id": "data:capstone-workspace",
+      "type": "data",
+      "ownership": "course-created",
+      "locator": ".lab/submissions/capstone",
+      "resetPolicy": "recreate-template",
+      "purgePolicy": "remove-owned-only",
+      "lessonIds": [
+        "capstone"
+      ]
+    }
+  ],
+  "locks": [
+    {
+      "id": "lock:course",
+      "scope": "course",
+      "resourceIds": [
+        "directory:lab-state",
+        "project-app",
+        "data:lesson-01-submission",
+        "data:lesson-02-workspace",
+        "data:lesson-03-workspace",
+        "data:lesson-04-workspace",
+        "data:lesson-05-workspace",
+        "ldap-directory",
+        "data:lesson-06-workspace",
+        "kerberos-lab",
+        "data:lesson-07-workspace",
+        "identity-platform-lab",
+        "data:lesson-08-workspace",
+        "saml-lab",
+        "data:lesson-09-workspace",
+        "oauth-lab",
+        "data:lesson-10-workspace",
+        "data:lesson-11-workspace",
+        "data:lesson-12-workspace",
+        "data:lesson-13-workspace",
+        "data:lesson-14-workspace",
+        "data:lesson-15-workspace",
+        "data:capstone-workspace"
+      ]
+    }
+  ],
+  "lessons": [
+    {
+      "id": "setup",
+      "status": "candidate",
+      "requiredNodeMajor": 24,
+      "portIds": [],
+      "resourceIds": [
+        "directory:lab-state"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "README.md",
+        "course.mjs",
+        "course/lessons/setup/README.md",
+        "course/lessons/setup/assessment.yaml",
+        "course/lessons/setup/answer-key.md",
+        "course/lessons/setup/instructor-guide.md",
+        "course/runner/canonical.mjs",
+        "course/runner/assessment-contract.mjs",
+        "course/runner/cli.mjs",
+        "course/runner/constants.mjs",
+        "course/runner/course-lock.mjs",
+        "course/runner/evidence.mjs",
+        "course/runner/journal.mjs",
+        "course/runner/lifecycle.mjs",
+        "course/runner/lock.mjs",
+        "course/runner/managed-lifecycle.mjs",
+        "course/runner/managed-process-operation.mjs",
+        "course/runner/managed-process-state.mjs",
+        "course/runner/managed-process.mjs",
+        "course/runner/main.mjs",
+        "course/runner/manifest.mjs",
+        "course/runner/port.mjs",
+        "course/runner/process.mjs",
+        "course/runner/redact.mjs",
+        "course/runner/result.mjs",
+        "course/runner/schema.mjs",
+        "course/runner/state-purge-policy.mjs",
+        "course/runner/state.mjs",
+        "course/runner/support.mjs",
+        "course/runner/transaction.mjs",
+        "course-lock.json",
+        "curriculum/course-contract.json",
+        "curriculum/course-contract.source.sha256",
+        "curriculum/course-source.snapshot.json",
+        "curriculum/manifest.json",
+        "curriculum/schemas/assessment.schema.json",
+        "curriculum/schemas/course-contract.schema.json",
+        "curriculum/schemas/course-lock.schema.json",
+        "curriculum/schemas/evidence.schema.json",
+        "curriculum/schemas/journal.schema.json",
+        "curriculum/schemas/managed-process-launch.schema.json",
+        "curriculum/schemas/managed-process-operation.schema.json",
+        "curriculum/schemas/managed-process-pointer.schema.json",
+        "curriculum/schemas/managed-process.schema.json",
+        "curriculum/schemas/manifest.schema.json",
+        "curriculum/schemas/process-control-secret.schema.json",
+        "curriculum/schemas/runner-result.schema.json",
+        "curriculum/schemas/state-marker.schema.json",
+        "curriculum/schemas/state.schema.json",
+        "curriculum/schemas/support-matrix.schema.json",
+        "curriculum/schemas/transaction.schema.json",
+        "curriculum/schemas/usage-error.schema.json",
+        "curriculum/support-matrix.json",
+        "package.json",
+        "package-lock.json",
+        "scripts/run-integration-tests.mjs",
+        "scripts/sync-course-contract.mjs"
+      ]
+    },
+    {
+      "id": "01",
+      "status": "candidate",
+      "statusNote": "分類課題、回答workspace、fresh check、runner lifecycleを自動検証済み。provided caseであり、SAML、OpenID Connect、OAuthのruntime evidenceではない。human pilotは未完了",
+      "requiredNodeMajor": 24,
+      "portIds": [
+        "project-app-http"
+      ],
+      "resourceIds": [
+        "directory:lab-state",
+        "project-app",
+        "data:lesson-01-submission"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "README.md",
+        "apps/project-app/main.mjs",
+        "apps/project-app/runtime.mjs",
+        "apps/project-app/server.mjs",
+        "course/lessons/01/README.md",
+        "course/reading/lessons/01/README.md",
+        "course/reading/lessons/01/answer-key.md",
+        "course/lessons/01/assessment.mjs",
+        "course/lessons/01/assessment.yaml",
+        "course/lessons/01/answer-key.md",
+        "course/lessons/01/domain.mjs",
+        "course/lessons/01/instructor-guide.md",
+        "course/lessons/01/runner.mjs",
+        "course/lessons/01/workspace.mjs",
+        "course/runner/assessment-contract.mjs",
+        "course/runner/managed-lifecycle.mjs",
+        "course/runner/managed-process-operation.mjs",
+        "course/runner/managed-process-state.mjs",
+        "course/runner/managed-process.mjs",
+        "course/runner/port.mjs",
+        "course/runner/process.mjs",
+        "curriculum/schemas/managed-process-launch.schema.json",
+        "curriculum/schemas/managed-process-operation.schema.json",
+        "curriculum/schemas/managed-process-pointer.schema.json",
+        "curriculum/schemas/managed-process.schema.json",
+        "curriculum/schemas/process-control-secret.schema.json",
+        "test/lesson-01/domain-assessment.test.js",
+        "test/lesson-01/materials.test.js",
+        "test/lesson-01/runner-e2e.test.js",
+        "test/lesson-01/workspace.test.js",
+        "test/course/runner-port.test.js",
+        "test/project-app/http.test.js"
+      ]
+    },
+    {
+      "id": "02",
+      "status": "experimental",
+      "statusNote": "loopback上の実HTTP demo、observe、fresh-scenario checkを自動検証済み。human pilotと全support profileの実機検証は未完了",
+      "requiredNodeMajor": 24,
+      "portIds": [
+        "project-app-http"
+      ],
+      "resourceIds": [
+        "directory:lab-state",
+        "project-app",
+        "data:lesson-02-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "apps/project-app/http.mjs",
+        "apps/project-app/lessons/02/http-handler.mjs",
+        "apps/project-app/lessons/02/password-auth-service.mjs",
+        "apps/project-app/lessons/scenario-http.mjs",
+        "apps/project-app/main.mjs",
+        "apps/project-app/runtime.mjs",
+        "apps/project-app/scenario-registry.mjs",
+        "apps/project-app/server.mjs",
+        "course/lessons/02/README.md",
+        "course/reading/lessons/02/README.md",
+        "course/reading/lessons/02/answer-key.md",
+        "course/lessons/02/answer-key.md",
+        "course/lessons/02/assessment.mjs",
+        "course/lessons/02/assessment.yaml",
+        "course/lessons/02/extension.yaml",
+        "course/lessons/02/instructor-guide.md",
+        "course/lessons/02/runner.mjs",
+        "course/lessons/02/scenario.mjs",
+        "course/lessons/02/workspace-template.json",
+        "course/lessons/02/workspace.mjs",
+        "course/lessons/registry.mjs",
+        "course/runner/assessment-contract.mjs",
+        "course/runner/canonical.mjs",
+        "course/runner/lesson-workspace-layout.mjs",
+        "course/runner/lesson-workspace.mjs",
+        "course/runner/lifecycle.mjs",
+        "course/runner/main.mjs",
+        "course/runner/managed-lifecycle.mjs",
+        "course/runner/managed-node-bootstrap.mjs",
+        "course/runner/managed-process-operation.mjs",
+        "course/runner/managed-process-state.mjs",
+        "course/runner/managed-process.mjs",
+        "course/runner/port.mjs",
+        "course/runner/process.mjs",
+        "course/runner/project-app-runtime.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "course/runner/scenario-client.mjs",
+        "course/runner/state-purge-policy.mjs",
+        "course/runner/state.mjs",
+        "course/runner/support.mjs",
+        "packages/password/password-policy.mjs",
+        "packages/password/scrypt-password.mjs",
+        "test/lesson-02-03-runner-e2e.test.js",
+        "test/lesson-02/assessment.test.js",
+        "test/lesson-02/password-auth-service.test.js",
+        "test/lesson-02/runtime-scenario.test.js",
+        "test/lesson-02/scrypt-password.test.js"
+      ]
+    },
+    {
+      "id": "03",
+      "status": "experimental",
+      "statusNote": "loopback上の実Set-Cookie/Cookie traceとfresh-scenario checkを自動検証済み。Node.js clientによるheader観察でありbrowserのHttpOnlyとSameSite強制動作、human pilot、全support profileの実機検証は未完了",
+      "requiredNodeMajor": 24,
+      "portIds": [
+        "project-app-http"
+      ],
+      "resourceIds": [
+        "directory:lab-state",
+        "project-app",
+        "data:lesson-03-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "apps/project-app/http.mjs",
+        "apps/project-app/lessons/02/password-auth-service.mjs",
+        "apps/project-app/lessons/03/http-handler.mjs",
+        "apps/project-app/lessons/03/session-service.mjs",
+        "apps/project-app/lessons/scenario-http.mjs",
+        "apps/project-app/main.mjs",
+        "apps/project-app/runtime.mjs",
+        "apps/project-app/scenario-registry.mjs",
+        "apps/project-app/server.mjs",
+        "course/lessons/03/README.md",
+        "course/reading/lessons/03/README.md",
+        "course/reading/lessons/03/answer-key.md",
+        "course/lessons/03/answer-key.md",
+        "course/lessons/03/assessment.mjs",
+        "course/lessons/03/assessment.yaml",
+        "course/lessons/03/extension.yaml",
+        "course/lessons/03/instructor-guide.md",
+        "course/lessons/03/runner.mjs",
+        "course/lessons/03/scenario.mjs",
+        "course/lessons/03/workspace-template.json",
+        "course/lessons/03/workspace.mjs",
+        "course/lessons/registry.mjs",
+        "course/runner/assessment-contract.mjs",
+        "course/runner/lesson-workspace-layout.mjs",
+        "course/runner/lesson-workspace.mjs",
+        "course/runner/lifecycle.mjs",
+        "course/runner/main.mjs",
+        "course/runner/managed-lifecycle.mjs",
+        "course/runner/managed-node-bootstrap.mjs",
+        "course/runner/managed-process-operation.mjs",
+        "course/runner/managed-process-state.mjs",
+        "course/runner/managed-process.mjs",
+        "course/runner/port.mjs",
+        "course/runner/process.mjs",
+        "course/runner/project-app-runtime.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "course/runner/scenario-client.mjs",
+        "course/runner/state-purge-policy.mjs",
+        "course/runner/state.mjs",
+        "course/runner/support.mjs",
+        "packages/password/password-policy.mjs",
+        "packages/password/scrypt-password.mjs",
+        "packages/session/bounded-session-store.mjs",
+        "packages/session/session-cookie.mjs",
+        "packages/session/session-token.mjs",
+        "test/lesson-02-03-runner-e2e.test.js",
+        "test/lesson-03/assessment.test.js",
+        "test/lesson-03/bounded-session-store.test.js",
+        "test/lesson-03/runtime-scenario.test.js",
+        "test/lesson-03/session-service.test.js",
+        "test/lesson-03/session-token-cookie.test.js"
+      ]
+    },
+    {
+      "id": "04",
+      "status": "experimental",
+      "statusNote": "loopback上の実Cookie/HTTPとproject-core policyを使うfresh-scenario checkを自動検証済み。human pilotと全support profileの実機検証は未完了",
+      "requiredNodeMajor": 24,
+      "portIds": [
+        "project-app-http"
+      ],
+      "resourceIds": [
+        "directory:lab-state",
+        "project-app",
+        "data:lesson-04-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "apps/project-app/http.mjs",
+        "apps/project-app/lessons/02/password-auth-service.mjs",
+        "apps/project-app/lessons/03/session-service.mjs",
+        "apps/project-app/lessons/04/http-handler.mjs",
+        "apps/project-app/lessons/scenario-http.mjs",
+        "apps/project-app/main.mjs",
+        "apps/project-app/runtime.mjs",
+        "apps/project-app/scenario-registry.mjs",
+        "apps/project-app/server.mjs",
+        "course/lessons/04/README.md",
+        "course/reading/lessons/04/README.md",
+        "course/reading/lessons/04/answer-key.md",
+        "course/lessons/04/answer-key.md",
+        "course/lessons/04/assessment.mjs",
+        "course/lessons/04/assessment.yaml",
+        "course/lessons/04/extension.yaml",
+        "course/lessons/04/instructor-guide.md",
+        "course/lessons/04/runner.mjs",
+        "course/lessons/04/scenario.mjs",
+        "course/lessons/04/technical-design.md",
+        "course/lessons/04/workspace-template.json",
+        "course/lessons/04/workspace.mjs",
+        "course/lessons/registry.mjs",
+        "course/runner/assessment-contract.mjs",
+        "course/runner/canonical.mjs",
+        "course/runner/lesson-workspace-layout.mjs",
+        "course/runner/lesson-workspace.mjs",
+        "course/runner/lifecycle.mjs",
+        "course/runner/main.mjs",
+        "course/runner/managed-lifecycle.mjs",
+        "course/runner/managed-node-bootstrap.mjs",
+        "course/runner/managed-process-operation.mjs",
+        "course/runner/managed-process-state.mjs",
+        "course/runner/managed-process.mjs",
+        "course/runner/port.mjs",
+        "course/runner/process.mjs",
+        "course/runner/project-app-runtime.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "course/runner/scenario-client.mjs",
+        "course/runner/state-purge-policy.mjs",
+        "course/runner/state.mjs",
+        "course/runner/support.mjs",
+        "packages/password/password-policy.mjs",
+        "packages/password/scrypt-password.mjs",
+        "packages/session/bounded-session-store.mjs",
+        "packages/session/session-cookie.mjs",
+        "packages/session/session-token.mjs",
+        "services/project-core/audit-log.mjs",
+        "services/project-core/domain.mjs",
+        "services/project-core/index.mjs",
+        "services/project-core/service.mjs",
+        "services/project-core/store.mjs",
+        "test/lesson-04/adversarial.test.js",
+        "test/lesson-04/assessment.test.js",
+        "test/lesson-04/domain-contract.test.js",
+        "test/lesson-04/http-integration.test.js",
+        "test/lesson-04/pep-boundary.test.js",
+        "test/lesson-04/runner-e2e.test.js",
+        "test/lesson-04/runtime-scenario.test.js"
+      ]
+    },
+    {
+      "id": "05",
+      "status": "experimental",
+      "statusNote": "loopback上の実HTTP Basic challenge-responseとfresh-scenario checkを自動検証済み。TLSはtraining deviationとして未実装で、human pilotと全support profileの実機検証は未完了",
+      "requiredNodeMajor": 24,
+      "portIds": [
+        "project-app-http"
+      ],
+      "resourceIds": [
+        "directory:lab-state",
+        "project-app",
+        "data:lesson-05-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "apps/project-app/http.mjs",
+        "apps/project-app/lessons/02/password-auth-service.mjs",
+        "apps/project-app/lessons/05/basic-auth-service.mjs",
+        "apps/project-app/lessons/05/http-handler.mjs",
+        "apps/project-app/lessons/scenario-http.mjs",
+        "apps/project-app/main.mjs",
+        "apps/project-app/runtime.mjs",
+        "apps/project-app/scenario-registry.mjs",
+        "apps/project-app/server.mjs",
+        "course/lessons/05/README.md",
+        "course/reading/lessons/05/README.md",
+        "course/reading/lessons/05/answer-key.md",
+        "course/lessons/05/answer-key.md",
+        "course/lessons/05/assessment.mjs",
+        "course/lessons/05/assessment.yaml",
+        "course/lessons/05/extension.yaml",
+        "course/lessons/05/instructor-guide.md",
+        "course/lessons/05/runner.mjs",
+        "course/lessons/05/scenario.mjs",
+        "course/lessons/05/workspace-template.json",
+        "course/lessons/05/workspace.mjs",
+        "course/lessons/registry.mjs",
+        "course/runner/assessment-contract.mjs",
+        "course/runner/canonical.mjs",
+        "course/runner/lesson-workspace-layout.mjs",
+        "course/runner/lesson-workspace.mjs",
+        "course/runner/lifecycle.mjs",
+        "course/runner/main.mjs",
+        "course/runner/managed-lifecycle.mjs",
+        "course/runner/managed-node-bootstrap.mjs",
+        "course/runner/managed-process-operation.mjs",
+        "course/runner/managed-process-state.mjs",
+        "course/runner/managed-process.mjs",
+        "course/runner/port.mjs",
+        "course/runner/process.mjs",
+        "course/runner/project-app-runtime.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "course/runner/scenario-client.mjs",
+        "course/runner/state-purge-policy.mjs",
+        "course/runner/state.mjs",
+        "course/runner/support.mjs",
+        "packages/password/password-policy.mjs",
+        "packages/password/scrypt-password.mjs",
+        "test/lesson-05/assessment.test.js",
+        "test/lesson-05/basic-auth-service.test.js",
+        "test/lesson-05/http-integration.test.js",
+        "test/lesson-05/runner-e2e.test.js",
+        "test/lesson-05/runtime-scenario.test.js"
+      ]
+    },
+    {
+      "id": "06",
+      "status": "experimental",
+      "statusNote": "2026-07-12にmacOS arm64 / Node.js 24 / Docker Desktopで実OpenLDAP、実HTTP fresh scenario、ACL拒否、所有container lifecycle、source drift purgeのE2Eがpass。固定revision、macOS arm64以外、human pilotは未完了",
+      "requiredNodeMajor": 24,
+      "portIds": [
+        "project-app-http",
+        "lesson-06-ldap-tcp"
+      ],
+      "resourceIds": [
+        "directory:lab-state",
+        "project-app",
+        "ldap-directory",
+        "data:lesson-06-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "apps/project-app/lessons/06/directory-auth-service.mjs",
+        "apps/project-app/lessons/06/http-handler.mjs",
+        "apps/project-app/main.mjs",
+        "apps/project-app/runtime.mjs",
+        "apps/project-app/scenario-registry.mjs",
+        "apps/project-app/server.mjs",
+        "course/lessons/06/README.md",
+        "course/reading/lessons/06/README.md",
+        "course/reading/lessons/06/answer-key.md",
+        "course/lessons/06/answer-key.md",
+        "course/lessons/06/assessment.mjs",
+        "course/lessons/06/assessment.yaml",
+        "course/lessons/06/container.mjs",
+        "course/lessons/06/extension.yaml",
+        "course/lessons/06/instructor-guide.md",
+        "course/lessons/06/runner.mjs",
+        "course/lessons/06/scenario.mjs",
+        "course/lessons/06/technical-design.md",
+        "course/lessons/06/workspace-template.json",
+        "course/lessons/06/workspace.mjs",
+        "course/lessons/registry.mjs",
+        "course/runner/lesson-workspace-layout.mjs",
+        "course/runner/lesson-workspace.mjs",
+        "course/runner/lifecycle.mjs",
+        "course/runner/main.mjs",
+        "course/runner/managed-compose-command.mjs",
+        "course/runner/managed-compose-constants.mjs",
+        "course/runner/managed-compose-inspection.mjs",
+        "course/runner/managed-compose.mjs",
+        "course/runner/port.mjs",
+        "course/runner/project-app-runtime.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "course/runner/scenario-client.mjs",
+        "course/runner/state-purge-policy.mjs",
+        "course/runner/state.mjs",
+        "course/runner/support.mjs",
+        "curriculum/schemas/managed-compose-service.schema.json",
+        "docker/ldap/Dockerfile",
+        "docker/ldap/compose.yml",
+        "docker/ldap/entrypoint.sh",
+        "docker/ldap/seed.ldif.template",
+        "docker/ldap/slapd.conf.template",
+        "test-integration/06-ldap.test.js",
+        "test/course/managed-compose-command.test.js",
+        "test/course/managed-compose-ownership.test.js",
+        "test/lesson-06/assessment.test.js",
+        "test/lesson-06/directory-auth-service.test.js",
+        "test/lesson-06/http-integration.test.js"
+      ]
+    },
+    {
+      "id": "07",
+      "status": "experimental",
+      "statusNote": "macOS arm64 Docker Desktopの隔離networkで実MIT Kerberos V5、kinit・klist・kvno、GSSAPI HTTP Negotiate、所有container lifecycleを自動E2E済み。macOS arm64以外の実機検証とhuman pilotは未完了",
+      "requiredNodeMajor": 24,
+      "portIds": [],
+      "resourceIds": [
+        "directory:lab-state",
+        "kerberos-lab",
+        "data:lesson-07-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "apps/project-app/lessons/07/negotiate-header.mjs",
+        "course/lessons/07/README.md",
+        "course/reading/lessons/07/README.md",
+        "course/reading/lessons/07/answer-key.md",
+        "course/lessons/07/answer-key.md",
+        "course/lessons/07/assessment.mjs",
+        "course/lessons/07/assessment.yaml",
+        "course/lessons/07/container.mjs",
+        "course/lessons/07/extension.yaml",
+        "course/lessons/07/instructor-guide.md",
+        "course/lessons/07/lab-contract.mjs",
+        "course/lessons/07/protocol-adapter.mjs",
+        "course/lessons/07/runner.mjs",
+        "course/lessons/07/scenario.mjs",
+        "course/lessons/07/technical-design.md",
+        "course/lessons/07/workspace-template.json",
+        "course/lessons/07/workspace.mjs",
+        "course/lessons/registry.mjs",
+        "course/runner/lesson-workspace-layout.mjs",
+        "course/runner/lesson-workspace.mjs",
+        "course/runner/lifecycle.mjs",
+        "course/runner/main.mjs",
+        "course/runner/managed-compose.mjs",
+        "course/runner/project-app-runtime.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "course/runner/state-purge-policy.mjs",
+        "course/runner/state.mjs",
+        "course/runner/support.mjs",
+        "docker/kerberos/app/Dockerfile",
+        "docker/kerberos/app/package-lock.json",
+        "docker/kerberos/app/package.json",
+        "docker/kerberos/app/server.mjs",
+        "docker/kerberos/client/Dockerfile",
+        "docker/kerberos/compose.yml",
+        "docker/kerberos/kdc/Dockerfile",
+        "docker/kerberos/kdc/entrypoint.sh",
+        "docker/kerberos/kdc/kdc-healthcheck",
+        "docker/kerberos/kdc/kdc.conf",
+        "docker/kerberos/kdc/keytab-select",
+        "docker/kerberos/kdc/krb5.conf",
+        "test-integration/07-course-kerberos.test.js",
+        "test-integration/07-course-runner.test.js",
+        "test/lesson-07/assessment.test.js",
+        "test/lesson-07/materials.test.js",
+        "test/lesson-07/negotiate-header.test.js",
+        "test/lesson-07/protocol-adapter.test.js",
+        "test/lesson-07/runtime-scenario.test.js"
+      ]
+    },
+    {
+      "id": "08",
+      "status": "experimental",
+      "statusNote": "macOS arm64 Docker Desktopで実Samba AD互換DC、verified LDAPS、read-only service account、objectGUID由来opaque ID、Joiner/Mover/Leaver、session再検証、同一DCのkinit/klistを自動実測済み。Microsoft AD DS、FreeIPA、GPO、Windows join、複数OS、human pilotは未検証",
+      "requiredNodeMajor": 24,
+      "portIds": [],
+      "resourceIds": [
+        "directory:lab-state",
+        "identity-platform-lab",
+        "data:lesson-08-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "course/lessons/08/README.md",
+        "course/reading/lessons/08/README.md",
+        "course/reading/lessons/08/answer-key.md",
+        "course/lessons/08/answer-key.md",
+        "course/lessons/08/assessment.mjs",
+        "course/lessons/08/assessment.yaml",
+        "course/lessons/08/container.mjs",
+        "course/lessons/08/extension.yaml",
+        "course/lessons/08/instructor-guide.md",
+        "course/lessons/08/lab-contract.mjs",
+        "course/lessons/08/protocol-adapter.mjs",
+        "course/lessons/08/runner.mjs",
+        "course/lessons/08/scenario.mjs",
+        "course/lessons/08/technical-design.md",
+        "course/lessons/08/workspace-template.json",
+        "course/lessons/08/workspace.mjs",
+        "course/lessons/registry.mjs",
+        "course/runner/lesson-workspace-layout.mjs",
+        "course/runner/lesson-workspace.mjs",
+        "course/runner/lifecycle.mjs",
+        "course/runner/main.mjs",
+        "course/runner/managed-compose-command.mjs",
+        "course/runner/managed-compose-constants.mjs",
+        "course/runner/managed-compose-inspection.mjs",
+        "course/runner/managed-compose.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "course/runner/state-purge-policy.mjs",
+        "course/runner/state.mjs",
+        "course/runner/support.mjs",
+        "docker/samba-ad/Dockerfile",
+        "docker/samba-ad/app/Dockerfile",
+        "docker/samba-ad/app/client.mjs",
+        "docker/samba-ad/app/directory-login-flow.mjs",
+        "docker/samba-ad/app/package-lock.json",
+        "docker/samba-ad/app/package.json",
+        "docker/samba-ad/app/server.mjs",
+        "docker/samba-ad/client.Dockerfile",
+        "docker/samba-ad/compose.yml",
+        "docker/samba-ad/entrypoint.sh",
+        "docker/samba-ad/healthcheck.sh",
+        "docker/samba-ad/krb5.conf",
+        "docker/samba-ad/lesson08-admin",
+        "test/lesson-08/assessment.test.js",
+        "test/lesson-08/directory-login-flow.test.js"
+      ]
+    },
+    {
+      "id": "09",
+      "status": "experimental",
+      "statusNote": "macOS arm64 Docker Desktopで実Keycloak 26.7.0のSP-initiated SAML Web Browser SSO、strict ACS、11件の一条件拒否、所有container lifecycleを自動E2E済み。scripted HTTP User AgentでありGUI browser、複数OS、human pilotは未検証",
+      "requiredNodeMajor": 24,
+      "portIds": [],
+      "resourceIds": [
+        "directory:lab-state",
+        "saml-lab",
+        "data:lesson-09-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "course/lessons/09/README.md",
+        "course/lessons/09/submission-choices.json",
+        "course/reading/lessons/09/README.md",
+        "course/reading/lessons/09/answer-key.md",
+        "course/lessons/09/answer-key.md",
+        "course/lessons/09/assessment.mjs",
+        "course/lessons/09/assessment.yaml",
+        "course/lessons/09/container.mjs",
+        "course/lessons/09/extension.yaml",
+        "course/lessons/09/instructor-guide.md",
+        "course/lessons/09/lab-contract.mjs",
+        "course/lessons/09/protocol-adapter.mjs",
+        "course/lessons/09/runner.mjs",
+        "course/lessons/09/scenario.mjs",
+        "course/lessons/09/technical-design.md",
+        "course/lessons/09/workspace-template.json",
+        "course/lessons/09/workspace.mjs",
+        "course/lessons/registry.mjs",
+        "course/runner/lesson-workspace-layout.mjs",
+        "course/runner/lesson-workspace.mjs",
+        "course/runner/managed-compose-command.mjs",
+        "course/runner/managed-compose-constants.mjs",
+        "course/runner/managed-compose-inspection.mjs",
+        "course/runner/managed-compose.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "docker/saml/compose.yml",
+        "docker/saml/keycloak/Dockerfile",
+        "docker/saml/keycloak/entrypoint.sh",
+        "docker/saml/keycloak/lesson09-realm.json",
+        "docker/saml/sp/Dockerfile",
+        "docker/saml/sp/conformance.mjs",
+        "docker/saml/sp/http.mjs",
+        "docker/saml/sp/server.mjs",
+        "docker/saml/sp/session-store.mjs",
+        "docker/saml/user-agent/Dockerfile",
+        "docker/saml/user-agent/client.mjs",
+        "package-lock.json",
+        "package.json",
+        "packages/saml-strict/bounded-store.mjs",
+        "packages/saml-strict/fixture.mjs",
+        "packages/saml-strict/metadata.mjs",
+        "packages/saml-strict/service-provider.mjs",
+        "packages/saml-strict/xml-shape.mjs",
+        "test-integration/09-course-saml.test.js",
+        "test/lesson-09/assessment.test.js",
+        "test/lesson-09/contracts.test.js",
+        "test/lesson-09/strict-saml.test.js"
+      ]
+    },
+    {
+      "id": "10",
+      "status": "experimental",
+      "statusNote": "一つの所有processが分離した三originで実OAuth 2.0 Authorization Code + PKCE、opaque Access Token、RFC 7662 introspection、拒否scenarioを提供する。自動E2E済みだがhuman pilotと複数OS実機検証は未完了",
+      "requiredNodeMajor": 24,
+      "portIds": [
+        "oauth-authorization-server-http",
+        "oauth-client-http",
+        "oauth-resource-api-http"
+      ],
+      "resourceIds": [
+        "directory:lab-state",
+        "oauth-lab",
+        "data:lesson-10-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "apps/oauth-lab/authorization-server.mjs",
+        "apps/oauth-lab/client-server.mjs",
+        "apps/oauth-lab/config.mjs",
+        "apps/oauth-lab/crypto.mjs",
+        "apps/oauth-lab/digest-store.mjs",
+        "apps/oauth-lab/evidence.mjs",
+        "apps/oauth-lab/http.mjs",
+        "apps/oauth-lab/lab.mjs",
+        "apps/oauth-lab/main.mjs",
+        "apps/oauth-lab/resource-owner.mjs",
+        "apps/oauth-lab/resource-server.mjs",
+        "apps/oauth-lab/runtime.mjs",
+        "apps/oauth-lab/scenario-registry.mjs",
+        "apps/oauth-lab/user-agent.mjs",
+        "course/lessons/10/README.md",
+        "course/lessons/10/submission-choices.json",
+        "course/reading/lessons/10/README.md",
+        "course/reading/lessons/10/answer-key.md",
+        "course/lessons/10/answer-key.md",
+        "course/lessons/10/assessment.mjs",
+        "course/lessons/10/assessment.yaml",
+        "course/lessons/10/extension.yaml",
+        "course/lessons/10/instructor-guide.md",
+        "course/lessons/10/managed-lab.mjs",
+        "course/lessons/10/runner.mjs",
+        "course/lessons/10/scenario.mjs",
+        "course/lessons/10/technical-design.md",
+        "course/lessons/10/workspace-template.json",
+        "course/lessons/10/workspace.mjs",
+        "course/lessons/registry.mjs",
+        "course/runner/lesson-workspace-layout.mjs",
+        "course/runner/managed-process-control.mjs",
+        "course/runner/managed-process-inspect.mjs",
+        "course/runner/managed-process.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "test/lesson-10-11/actual-http.test.js",
+        "test/lesson-10-11/contracts.test.js",
+        "test/lesson-10-11/runner-e2e.test.js"
+      ]
+    },
+    {
+      "id": "11",
+      "status": "experimental",
+      "statusNote": "実Discovery、JWKS、RS256 ID Tokenをjoseで検証し、iss・aud・exp/iat・nonce・subの全条件後だけapp sessionを発行する。六つの一条件拒否を自動E2E済みだがhuman pilotと複数OS実機検証は未完了",
+      "requiredNodeMajor": 24,
+      "portIds": [
+        "oauth-authorization-server-http",
+        "oauth-client-http",
+        "oauth-resource-api-http"
+      ],
+      "resourceIds": [
+        "directory:lab-state",
+        "oauth-lab",
+        "data:lesson-11-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "apps/oauth-lab/authorization-server.mjs",
+        "apps/oauth-lab/client-server.mjs",
+        "apps/oauth-lab/config.mjs",
+        "apps/oauth-lab/crypto.mjs",
+        "apps/oauth-lab/digest-store.mjs",
+        "apps/oauth-lab/evidence.mjs",
+        "apps/oauth-lab/http.mjs",
+        "apps/oauth-lab/lab.mjs",
+        "apps/oauth-lab/main.mjs",
+        "apps/oauth-lab/resource-owner.mjs",
+        "apps/oauth-lab/resource-server.mjs",
+        "apps/oauth-lab/runtime.mjs",
+        "apps/oauth-lab/scenario-registry.mjs",
+        "apps/oauth-lab/user-agent.mjs",
+        "course/lessons/10/managed-lab.mjs",
+        "course/lessons/11/README.md",
+        "course/lessons/11/submission-choices.json",
+        "course/reading/lessons/11/README.md",
+        "course/reading/lessons/11/answer-key.md",
+        "course/lessons/11/answer-key.md",
+        "course/lessons/11/assessment.mjs",
+        "course/lessons/11/assessment.yaml",
+        "course/lessons/11/extension.yaml",
+        "course/lessons/11/instructor-guide.md",
+        "course/lessons/11/runner.mjs",
+        "course/lessons/11/scenario.mjs",
+        "course/lessons/11/technical-design.md",
+        "course/lessons/11/workspace-template.json",
+        "course/lessons/11/workspace.mjs",
+        "course/lessons/registry.mjs",
+        "course/runner/lesson-workspace-layout.mjs",
+        "course/runner/managed-process-control.mjs",
+        "course/runner/managed-process-inspect.mjs",
+        "course/runner/managed-process.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "test/lesson-10-11/actual-http.test.js",
+        "test/lesson-10-11/contracts.test.js",
+        "test/lesson-10-11/runner-e2e.test.js"
+      ]
+    },
+    {
+      "id": "12",
+      "status": "experimental",
+      "statusNote": "loopback上の実HTTPでRFC 6238 TOTP登録、pre-auth、第二要素後のsession、counter replay拒否、rate limit、single-use recovery codeを自動検証済み。実authenticator UI、production secret保管、human pilot、複数OS実機検証は未完了",
+      "requiredNodeMajor": 24,
+      "portIds": [
+        "project-app-http"
+      ],
+      "resourceIds": [
+        "directory:lab-state",
+        "project-app",
+        "data:lesson-12-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "apps/project-app/http.mjs",
+        "apps/project-app/lessons/02/password-auth-service.mjs",
+        "apps/project-app/lessons/12/http-handler.mjs",
+        "apps/project-app/lessons/12/mfa-service.mjs",
+        "apps/project-app/lessons/scenario-http.mjs",
+        "apps/project-app/main.mjs",
+        "apps/project-app/runtime.mjs",
+        "apps/project-app/scenario-registry.mjs",
+        "apps/project-app/server.mjs",
+        "course/lessons/12/README.md",
+        "course/reading/lessons/12/README.md",
+        "course/reading/lessons/12/answer-key.md",
+        "course/lessons/12/answer-key.md",
+        "course/lessons/12/assessment.mjs",
+        "course/lessons/12/assessment.yaml",
+        "course/lessons/12/extension.yaml",
+        "course/lessons/12/instructor-guide.md",
+        "course/lessons/12/runner.mjs",
+        "course/lessons/12/scenario.mjs",
+        "course/lessons/12/technical-design.md",
+        "course/lessons/12/workspace-template.json",
+        "course/lessons/12/workspace.mjs",
+        "course/lessons/registry.mjs",
+        "course/runner/assessment-contract.mjs",
+        "course/runner/lesson-workspace-layout.mjs",
+        "course/runner/lesson-workspace.mjs",
+        "course/runner/lifecycle.mjs",
+        "course/runner/main.mjs",
+        "course/runner/managed-lifecycle.mjs",
+        "course/runner/managed-node-bootstrap.mjs",
+        "course/runner/managed-process-operation.mjs",
+        "course/runner/managed-process-state.mjs",
+        "course/runner/managed-process.mjs",
+        "course/runner/port.mjs",
+        "course/runner/process.mjs",
+        "course/runner/project-app-runtime.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "course/runner/scenario-client.mjs",
+        "course/runner/state-purge-policy.mjs",
+        "course/runner/state.mjs",
+        "course/runner/support.mjs",
+        "packages/password/password-policy.mjs",
+        "packages/password/scrypt-password.mjs",
+        "packages/session/session-cookie.mjs",
+        "packages/session/session-token.mjs",
+        "packages/totp/totp.mjs",
+        "test/lesson-12/assessment.test.js",
+        "test/lesson-12/mfa-service.test.js",
+        "test/lesson-12/runner-e2e.test.js",
+        "test/lesson-12/runtime-scenario.test.js",
+        "test/lesson-12/totp.test.js"
+      ]
+    },
+    {
+      "id": "13",
+      "status": "experimental",
+      "statusNote": "Playwright 1.61.1のChromiumとCDP virtual authenticatorで実WebAuthn登録・username-bound認証・単一条件の拒否境界を自動検証する。実hardware/OS authenticator、real user gesture、複数OS、human pilot、固定revisionは未検証",
+      "requiredNodeMajor": 24,
+      "portIds": [
+        "project-app-http"
+      ],
+      "resourceIds": [
+        "directory:lab-state",
+        "project-app",
+        "data:lesson-13-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "apps/project-app/lessons/13-14/browser-page.mjs",
+        "apps/project-app/lessons/13-14/http-handler.mjs",
+        "apps/project-app/lessons/13-14/webauthn-service.mjs",
+        "apps/project-app/server.mjs",
+        "course/lessons/13/README.md",
+        "course/reading/lessons/13/README.md",
+        "course/reading/lessons/13/answer-key.md",
+        "course/lessons/13/answer-key.md",
+        "course/lessons/13/assessment.mjs",
+        "course/lessons/13/assessment.yaml",
+        "course/lessons/13/extension.yaml",
+        "course/lessons/13/instructor-guide.md",
+        "course/lessons/13/runner.mjs",
+        "course/lessons/13/scenario.mjs",
+        "course/lessons/13/technical-design.md",
+        "course/lessons/13/workspace-template.json",
+        "course/lessons/13/workspace.mjs",
+        "course/lessons/webauthn/browser-lab.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "course/runner/scenario-client.mjs",
+        "packages/session/session-cookie.mjs",
+        "packages/session/session-token.mjs",
+        "test/lesson-13-14/assessment.test.js",
+        "test/lesson-13-14/runner-e2e.test.js",
+        "test/lesson-13-14/runtime-scenario.test.js",
+        "test/lesson-13-14/webauthn-service.test.js"
+      ]
+    },
+    {
+      "id": "14",
+      "status": "experimental",
+      "statusNote": "2つのCDP virtual authenticatorでdiscoverable credentialのusernameなし認証、RP側失効、第二credential復旧、BE/BS観察、account disableとsession失効を自動検証する。実cloud同期・端末移行・human pilot・固定revisionは未検証",
+      "requiredNodeMajor": 24,
+      "portIds": [
+        "project-app-http"
+      ],
+      "resourceIds": [
+        "directory:lab-state",
+        "project-app",
+        "data:lesson-14-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "apps/project-app/lessons/13-14/browser-page.mjs",
+        "apps/project-app/lessons/13-14/http-handler.mjs",
+        "apps/project-app/lessons/13-14/webauthn-service.mjs",
+        "apps/project-app/server.mjs",
+        "course/lessons/14/README.md",
+        "course/reading/lessons/14/README.md",
+        "course/reading/lessons/14/answer-key.md",
+        "course/lessons/14/answer-key.md",
+        "course/lessons/14/assessment.mjs",
+        "course/lessons/14/assessment.yaml",
+        "course/lessons/14/extension.yaml",
+        "course/lessons/14/instructor-guide.md",
+        "course/lessons/14/runner.mjs",
+        "course/lessons/14/scenario.mjs",
+        "course/lessons/14/technical-design.md",
+        "course/lessons/14/workspace-template.json",
+        "course/lessons/14/workspace.mjs",
+        "course/lessons/webauthn/browser-lab.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "course/runner/scenario-client.mjs",
+        "packages/session/session-cookie.mjs",
+        "packages/session/session-token.mjs",
+        "test/lesson-13-14/assessment.test.js",
+        "test/lesson-13-14/runner-e2e.test.js",
+        "test/lesson-13-14/runtime-scenario.test.js",
+        "test/lesson-13-14/webauthn-service.test.js"
+      ]
+    },
+    {
+      "id": "15",
+      "status": "experimental",
+      "statusNote": "分離した三originの実HTTPでRFC 8707 resource indicator、RFC 9068準拠JWT Access Token、remote JWKS検証、scope判定、project-coreのオブジェクト認可を自動E2Eする。固定revision、複数OS実機検証、human pilotは未完了",
+      "requiredNodeMajor": 24,
+      "portIds": [
+        "oauth-authorization-server-http",
+        "oauth-client-http",
+        "oauth-resource-api-http"
+      ],
+      "resourceIds": [
+        "directory:lab-state",
+        "oauth-lab",
+        "data:lesson-15-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "apps/oauth-lab/authorization-server.mjs",
+        "apps/oauth-lab/client-server.mjs",
+        "apps/oauth-lab/config.mjs",
+        "apps/oauth-lab/crypto.mjs",
+        "apps/oauth-lab/digest-store.mjs",
+        "apps/oauth-lab/evidence.mjs",
+        "apps/oauth-lab/http.mjs",
+        "apps/oauth-lab/lab.mjs",
+        "apps/oauth-lab/main.mjs",
+        "apps/oauth-lab/resource-owner.mjs",
+        "apps/oauth-lab/resource-server.mjs",
+        "apps/oauth-lab/runtime.mjs",
+        "apps/oauth-lab/scenario-registry.mjs",
+        "apps/oauth-lab/user-agent.mjs",
+        "course/lessons/10/managed-lab.mjs",
+        "course/lessons/15/README.md",
+        "course/lessons/15/submission-choices.json",
+        "course/reading/lessons/15/README.md",
+        "course/reading/lessons/15/answer-key.md",
+        "course/lessons/15/answer-key.md",
+        "course/lessons/15/assessment.mjs",
+        "course/lessons/15/assessment.yaml",
+        "course/lessons/15/extension.yaml",
+        "course/lessons/15/instructor-guide.md",
+        "course/lessons/15/runner.mjs",
+        "course/lessons/15/scenario.mjs",
+        "course/lessons/15/technical-design.md",
+        "course/lessons/15/workspace-template.json",
+        "course/lessons/15/workspace.mjs",
+        "course/lessons/registry.mjs",
+        "course/runner/lesson-workspace-layout.mjs",
+        "course/runner/managed-process-control.mjs",
+        "course/runner/managed-process-inspect.mjs",
+        "course/runner/managed-process.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "services/project-core/audit-log.mjs",
+        "services/project-core/domain.mjs",
+        "services/project-core/index.mjs",
+        "services/project-core/service.mjs",
+        "services/project-core/store.mjs",
+        "test/lesson-15/actual-http.test.js",
+        "test/lesson-15/contracts.test.js",
+        "test/lesson-15/runner-e2e.test.js"
+      ]
+    },
+    {
+      "id": "capstone",
+      "status": "experimental",
+      "statusNote": "固定した架空ケースを用いるローカル演習、2トラックの自動評価、隔離E2Eを実装済み。複数OS実機検証とhuman pilotは未完了",
+      "requiredNodeMajor": 24,
+      "portIds": [],
+      "resourceIds": [
+        "directory:lab-state",
+        "data:capstone-workspace"
+      ],
+      "lockIds": [
+        "lock:course"
+      ],
+      "sourceFiles": [
+        "course/lessons/capstone/README.md",
+        "course/lessons/capstone/submission-choices.json",
+        "course/lessons/capstone/answer-key.md",
+        "course/lessons/capstone/assessment.mjs",
+        "course/lessons/capstone/assessment.yaml",
+        "course/lessons/capstone/instructor-guide.md",
+        "course/lessons/capstone/model.mjs",
+        "course/lessons/capstone/runner.mjs",
+        "course/lessons/capstone/scenario.mjs",
+        "course/lessons/capstone/technical-design.md",
+        "course/lessons/capstone/workspace-template.json",
+        "course/lessons/capstone/workspace.mjs",
+        "course/lessons/registry.mjs",
+        "course/runner/lesson-workspace-layout.mjs",
+        "course/runner/runtime-lesson.mjs",
+        "test/lesson-capstone/assessment.test.js",
+        "test/lesson-capstone/contracts.test.js",
+        "test/lesson-capstone/runner-e2e.test.js",
+        "test/lesson-capstone/scenario.test.js"
+      ]
+    }
+  ]
+}

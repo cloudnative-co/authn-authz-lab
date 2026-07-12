@@ -1,0 +1,154 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "01",
+  "assessment": {
+    "id": "AA01-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA01-O1",
+      "AA01-O2"
+    ],
+    "type": "provided-case-scenario",
+    "evidence": "実プロトコルの実行証跡ではないprovided case 10件の分類結果と、5つの責任境界に対応する検証者",
+    "passCriteria": "10事例中9件以上を正しく分類し、5つの責任境界と検証者を記載する",
+    "labTask": {
+      "instructionsRef": "course/lessons/01/README.md",
+      "predict": "有効なsessionを持つ利用者のproject削除が拒否されたとき、直接失敗した責任境界を実行前に予測する",
+      "execute": "doctor、setup、demo、observeの後に.lab/submissions/01/submission.jsonを手作業で編集し、10件のclassificationと5つのverifierを回答してcheckする",
+      "rejectOrFail": "誤分類を含む回答でcheckがfailする場合は未達条件を確認し、答えを自動転記せず根拠を見直して回答ファイルを修正する",
+      "evidence": "10事例中9件以上の分類正答と5境界すべてのverifier正答を示すcheck結果とevidenceIdを確認する",
+      "practicalTransfer": "自分が扱うSaaSまたはWebアプリで、資格情報、session、操作許可、外部identity、委任API権限の各検証者を5行で特定する"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "course contractから導出された全required checkがpassし、分類9/10以上かつ検証者5/5を満たせば合格",
+      "failureRule": "分類が8/10以下、検証者に1件でも誤りがある、または回答ファイルを手作業で完成していなければ不合格"
+    },
+    "answerKeyRef": "course/lessons/01/answer-key.md",
+    "instructorGuideRef": "course/lessons/01/instructor-guide.md",
+    "automatedCheckRefs": [
+      "course/lessons/01/assessment.mjs",
+      "course/lessons/01/runner.mjs",
+      "test/course/runner-port.test.js",
+      "test/lesson-01/domain-assessment.test.js",
+      "test/lesson-01/materials.test.js",
+      "test/lesson-01/runner-e2e.test.js",
+      "test/lesson-01/workspace.test.js",
+      "test/project-app/http.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA01-C1",
+        "mode": "lab",
+        "assessmentId": "AA01-A1",
+        "objectiveIds": [
+          "AA01-O1",
+          "AA01-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO1",
+          "AA-CO2",
+          "AA-CO5"
+        ],
+        "evidenceType": "provided-case-scenario",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA01-C2",
+        "mode": "lab",
+        "assessmentId": "AA01-A1",
+        "objectiveIds": [
+          "AA01-O1",
+          "AA01-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO1",
+          "AA-CO2",
+          "AA-CO5"
+        ],
+        "evidenceType": "provided-case-scenario",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs lesson 01 doctor",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs lesson 01 setup",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs lesson 01 demo",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs lesson 01 observe",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "learner-action",
+        "step": 5,
+        "path": ".lab/submissions/01/submission.json",
+        "task": "10件のclassificationと5つのverifierを手作業で入力する",
+        "completionCriterion": "TODOが残らず、JSONとしてparseでき、すべての回答欄が許可値で埋まっている"
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson 01 check",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA01-C1",
+          "AA01-C2"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs lesson 01 stop",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": true
+      }
+    ],
+    "optionalRecoveryScenarios": [
+      {
+        "id": "discard-and-restart",
+        "trigger": "現在の回答を破棄して最初からやり直す場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson 01 reset",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      }
+    ]
+  }
+}

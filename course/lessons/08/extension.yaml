@@ -1,0 +1,31 @@
+{
+  "$schema": "curriculum/schemas/extension.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "08",
+  "status": "implemented",
+  "title": "JML同期と緊急session失効の運用設計",
+  "estimatedMinutes": 90,
+  "prerequisiteCheckIds": ["AA08-C1", "AA08-C2"],
+  "tasks": [
+    {
+      "id": "AA08-X1",
+      "prompt": "自環境のimmutable identity key、rename・merge・rehire時の扱い、raw identifierをapplicationへ露出しない変換を設計する",
+      "acceptance": "DNやmailをimmutableとせず、source of truth、変換key rotation、照合と復旧がある"
+    },
+    {
+      "id": "AA08-X2",
+      "prompt": "directory groupからapplication roleへのmapping tableについてowner、review、change history、test、rollbackを設計する",
+      "acceptance": "組織所属groupと権限付与groupを区別し、group名をroleへ無条件コピーしない"
+    },
+    {
+      "id": "AA08-X3",
+      "prompt": "disableから既存session失効までのSLO、通常再検証、event-driven revoke、緊急失効、directory障害時の挙動を時系列で設計する",
+      "acceptance": "directory disableだけでapplication sessionが即時消えると仮定せず、確認可能な失効経路がある"
+    }
+  ],
+  "evidenceBoundary": {
+    "allowed": ["opaque ID形式", "mapping rule", "固定reason", "status", "boolean", "担当role", "SLO"],
+    "forbidden": ["password", "bind secret", "session token", "raw objectGUID", "DN", "private key", "実container identity"]
+  }
+}

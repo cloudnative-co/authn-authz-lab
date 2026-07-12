@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "13",
+  "answers": {
+    "AA13-C1": {
+      "userHandle": "TODO",
+      "registrationPersistence": "TODO",
+      "ceremonyAPI": "TODO",
+      "attestation": "TODO"
+    },
+    "AA13-C2": {
+      "challengeOrigin": "TODO",
+      "rpID": "TODO",
+      "assertionSignature": "TODO",
+      "transactionReplay": "TODO"
+    },
+    "AA13-C3": {
+      "signCount": "TODO",
+      "userHandleCheck": "TODO",
+      "failureSurface": "TODO",
+      "virtualAuthenticator": "TODO"
+    }
+  }
+}

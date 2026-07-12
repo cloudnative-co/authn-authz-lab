@@ -1,0 +1,116 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "15",
+  "sourceOfTruth": "assessment-validator-shared-choice-contract",
+  "instructions": [
+    "choices配列の掲載順は正答を示しません。ただし、回答として作る配列内の順序は手順や優先順位として採点される場合があります。",
+    "scalarはTODO文字列を候補1つへ置換します。exact-arrayは配列全体を候補1つへ置換します。",
+    "array-elementsは指定数の要素を候補から選び、教材本文の依存順に並べます。uniqueがtrueなら重複させません。"
+  ],
+  "entries": [
+    {
+      "path": "answers.AA15-C1.accessTokenProfile",
+      "kind": "scalar",
+      "choices": [
+        "rfc9068-signed-rs256-at+jwt",
+        "unsigned-decodable-jwt"
+      ]
+    },
+    {
+      "path": "answers.AA15-C1.clientTreatment",
+      "kind": "scalar",
+      "choices": [
+        "decode-and-authorize-in-client",
+        "opaque-forward-only"
+      ]
+    },
+    {
+      "path": "answers.AA15-C1.resourceIndicator",
+      "kind": "scalar",
+      "choices": [
+        "client-selected-audience-without-validation",
+        "rfc8707-exact-resource-to-audience"
+      ]
+    },
+    {
+      "path": "answers.AA15-C1.validation",
+      "kind": "scalar",
+      "choices": [
+        "decode-exp-and-scope-only",
+        "jwks-signature-typ-iss-aud-exp-sub-client-id-iat-jti-scope"
+      ]
+    },
+    {
+      "path": "answers.AA15-C2.idTokenConfusion",
+      "kind": "scalar",
+      "choices": [
+        "accepted-when-signature-matches",
+        "rejected-by-explicit-type"
+      ]
+    },
+    {
+      "path": "answers.AA15-C2.insufficientScope",
+      "kind": "scalar",
+      "choices": [
+        "401-invalid-token",
+        "403-bearer-insufficient-scope-before-policy"
+      ]
+    },
+    {
+      "path": "answers.AA15-C2.invalidToken",
+      "kind": "scalar",
+      "choices": [
+        "401-bearer-invalid-token-before-policy",
+        "403-policy-result"
+      ]
+    },
+    {
+      "path": "answers.AA15-C2.validationOrder",
+      "kind": "scalar",
+      "choices": [
+        "scope-and-policy-before-signature",
+        "token-then-scope-then-project-policy"
+      ]
+    },
+    {
+      "path": "answers.AA15-C3.crossTenant",
+      "kind": "scalar",
+      "choices": [
+        "403-with-resource-detail",
+        "404-resource-concealed"
+      ]
+    },
+    {
+      "path": "answers.AA15-C3.owner",
+      "kind": "scalar",
+      "choices": [
+        "204-delete",
+        "403-policy-forbidden"
+      ]
+    },
+    {
+      "path": "answers.AA15-C3.policyDecisionPoint",
+      "kind": "scalar",
+      "choices": [
+        "jwt-scope-is-the-only-policy",
+        "project-core-after-token-and-scope"
+      ]
+    },
+    {
+      "path": "answers.AA15-C3.sameTenantViewer",
+      "kind": "scalar",
+      "choices": [
+        "204-because-scope-present",
+        "403-policy-forbidden"
+      ]
+    },
+    {
+      "path": "answers.AA15-C3.unknownObject",
+      "kind": "scalar",
+      "choices": [
+        "200-empty-object",
+        "404-resource-concealed"
+      ]
+    }
+  ]
+}

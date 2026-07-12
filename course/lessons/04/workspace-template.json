@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "04",
+  "answers": {
+    "AA04-C1": {
+      "sessionFailure": "TODO",
+      "principalSource": "TODO",
+      "authorizationAttributes": "TODO",
+      "callerClaims": "TODO",
+      "unauthenticatedAudit": "TODO"
+    },
+    "AA04-C2": {
+      "ownerDelete": "TODO",
+      "viewerDelete": "TODO",
+      "decisionMutationAudit": "TODO"
+    },
+    "AA04-C3": {
+      "concealmentPolicy": "TODO",
+      "bolaDefense": "TODO"
+    },
+    "AA04-C4": {
+      "auditFields": "TODO",
+      "auditSecrets": "TODO",
+      "retention": "TODO",
+      "decisionCoverage": "TODO"
+    }
+  }
+}

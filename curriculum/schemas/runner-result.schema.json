@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cloudnative.co.jp/schemas/auth-authz/runner-result.schema.json",
+  "title": "Course runner command result",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schemaVersion", "runId", "courseId", "scope", "lessonId", "command", "status", "checkIds", "diagnostics", "reasonCode", "recovery", "durationMs", "evidenceId"],
+  "properties": {
+    "$schema": { "const": "curriculum/schemas/runner-result.schema.json" },
+    "schemaVersion": { "const": 1 },
+    "runId": { "$ref": "#/$defs/id" },
+    "courseId": { "$ref": "#/$defs/id" },
+    "scope": { "enum": ["course", "lesson"] },
+    "lessonId": { "type": ["string", "null"] },
+    "command": { "$ref": "#/$defs/command" },
+    "status": { "enum": ["pass", "fail", "blocked", "safe-noop"] },
+    "checkIds": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/id" },
+      "uniqueItems": true
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/diagnostic" }
+    },
+    "reasonCode": { "type": ["string", "null"] },
+    "recovery": {
+      "type": "array",
+      "items": { "type": "string", "minLength": 1 },
+      "uniqueItems": true
+    },
+    "durationMs": { "type": "integer", "minimum": 0 },
+    "evidenceId": { "type": ["string", "null"] }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1 },
+    "command": {
+      "enum": ["doctor", "setup", "demo", "observe", "check", "diagnose", "reset", "stop", "purge"]
+    },
+    "diagnostic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "actual", "expected", "message"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z][a-z0-9.-]*$" },
+        "status": { "enum": ["pass", "fail", "warn"] },
+        "actual": { "type": ["string", "null"] },
+        "expected": { "type": ["string", "null"] },
+        "message": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

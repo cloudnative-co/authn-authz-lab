@@ -1,0 +1,287 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "capstone",
+  "assessment": {
+    "id": "AA-CAP-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA-CAP-O1",
+      "AA-CAP-O2"
+    ],
+    "type": "automated-track-simulation-and-instructor-rubric",
+    "evidence": "架空組織の同一caseに対し、developerまたはiam-operationsの構造化成果物をfresh simulatorへ入力し、責任分界、credential/JML、federation、API認可、MFA/Passkey、優先リスク、track統合の7 check、5重大拒否test、未解決Criticalを検証する。自由記述の意味理解は自動判定せず講師rubricへ分離する",
+    "passCriteria": "選択した1trackでAA-CAP-C1からAA-CAP-C7が全件pass、機械採点100点中80点以上、重大拒否test skip 0かつfailure 0、未解決Critical 0を満たす。加えて学校・社内研修の修了判定では講師が自由記述rubricを80%以上で採点する",
+    "labTask": {
+      "instructionsRef": "course/lessons/capstone/README.md",
+      "predict": "架空組織の5 observationから責任owner、3 Critical、拒否順、JML・緊急失効・MFA/Passkey recoveryの期待結果を予測し、developerまたはiam-operationsを1つ選ぶ",
+      "execute": "doctor、setup、demo、observe後にsubmission.jsonの共通controlと選択trackのpolicyまたはrunbookを編集し、5重大testをrunにしてcheckする",
+      "rejectOrFail": "critical controlを1つ外す、重大testをskipする、Criticalを未解決にする、token→scope→tenant→object順を崩す、SAML semantic validationやleaver/recovery revocationを欠くとfresh checkがfailすることを確認する",
+      "evidence": "AA-CAP-C1からC7、scorePercent、criticalSkipCount、criticalFailureCount、unresolvedCriticalがfresh checkでpassし、credential、PII、raw token、filesystem pathを含まないevidenceIdを確認する",
+      "practicalTransfer": "講師rubricで責任分界、代替案、残存risk、実装または運用上のtradeoffを説明し、自組織へ持ち帰る90日計画を別途レビューする"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "機械判定は全7 check、80%以上、重大拒否skip/failure 0、未解決Critical 0をすべて要求する。自由記述は機械判定に混ぜずinstructor-guide.mdのrubricで別採点する",
+      "failureRule": "いずれかのrequired check不一致、80%未満、重大拒否のskipまたはfailure、未解決Critical、track不整合、TODO・未知field・未知値があれば機械判定は不合格。講師rubricが80%未満なら研修修了は保留する"
+    },
+    "answerKeyRef": "course/lessons/capstone/answer-key.md",
+    "instructorGuideRef": "course/lessons/capstone/instructor-guide.md",
+    "automatedCheckRefs": [
+      "course/lessons/capstone/model.mjs",
+      "course/lessons/capstone/assessment.mjs",
+      "course/lessons/capstone/runner.mjs",
+      "course/lessons/capstone/scenario.mjs",
+      "course/lessons/capstone/workspace.mjs",
+      "test/lesson-capstone/assessment.test.js",
+      "test/lesson-capstone/contracts.test.js",
+      "test/lesson-capstone/runner-e2e.test.js",
+      "test/lesson-capstone/scenario.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA-CAP-C1",
+        "mode": "lab",
+        "assessmentId": "AA-CAP-A1",
+        "objectiveIds": [
+          "AA-CAP-O1",
+          "AA-CAP-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO1",
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5",
+          "AA-CO6",
+          "AA-CO7"
+        ],
+        "evidenceType": "automated-track-simulation-and-instructor-rubric",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA-CAP-C2",
+        "mode": "lab",
+        "assessmentId": "AA-CAP-A1",
+        "objectiveIds": [
+          "AA-CAP-O1",
+          "AA-CAP-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO1",
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5",
+          "AA-CO6",
+          "AA-CO7"
+        ],
+        "evidenceType": "automated-track-simulation-and-instructor-rubric",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA-CAP-C3",
+        "mode": "lab",
+        "assessmentId": "AA-CAP-A1",
+        "objectiveIds": [
+          "AA-CAP-O1",
+          "AA-CAP-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO1",
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5",
+          "AA-CO6",
+          "AA-CO7"
+        ],
+        "evidenceType": "automated-track-simulation-and-instructor-rubric",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA-CAP-C4",
+        "mode": "lab",
+        "assessmentId": "AA-CAP-A1",
+        "objectiveIds": [
+          "AA-CAP-O1",
+          "AA-CAP-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO1",
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5",
+          "AA-CO6",
+          "AA-CO7"
+        ],
+        "evidenceType": "automated-track-simulation-and-instructor-rubric",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA-CAP-C5",
+        "mode": "lab",
+        "assessmentId": "AA-CAP-A1",
+        "objectiveIds": [
+          "AA-CAP-O1",
+          "AA-CAP-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO1",
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5",
+          "AA-CO6",
+          "AA-CO7"
+        ],
+        "evidenceType": "automated-track-simulation-and-instructor-rubric",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA-CAP-C6",
+        "mode": "lab",
+        "assessmentId": "AA-CAP-A1",
+        "objectiveIds": [
+          "AA-CAP-O1",
+          "AA-CAP-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO1",
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5",
+          "AA-CO6",
+          "AA-CO7"
+        ],
+        "evidenceType": "automated-track-simulation-and-instructor-rubric",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA-CAP-C7",
+        "mode": "lab",
+        "assessmentId": "AA-CAP-A1",
+        "objectiveIds": [
+          "AA-CAP-O1",
+          "AA-CAP-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO1",
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5",
+          "AA-CO6",
+          "AA-CO7"
+        ],
+        "evidenceType": "automated-track-simulation-and-instructor-rubric",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs lesson capstone doctor",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs lesson capstone setup",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs lesson capstone demo",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs lesson capstone observe",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "learner-action",
+        "step": 5,
+        "path": ".lab/submissions/capstone/submission.json",
+        "task": "developerまたはiam-operationsを1つ選び、共通control、5 risk、選択track artifact、5重大testを構造化値で完成する。説明は講師rubricへ提出し、JSONへsecret・PII・filesystem pathを書かない",
+        "completionCriterion": "TODOが0、未選択trackがnot-selected、選択trackの全fieldが許可値、重大testがすべてrun、Critical dispositionがすべてresolved"
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson capstone check",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA-CAP-C1",
+          "AA-CAP-C2",
+          "AA-CAP-C3",
+          "AA-CAP-C4",
+          "AA-CAP-C5",
+          "AA-CAP-C6",
+          "AA-CAP-C7"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs lesson capstone stop",
+        "expectedStatus": "safe-noop",
+        "checkIds": [],
+        "terminal": true
+      }
+    ],
+    "optionalRecoveryScenarios": [
+      {
+        "id": "diagnose-capstone-workspace",
+        "trigger": "demo前、JSON破損、track不整合、reset後の状態を確認する場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson capstone diagnose",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      },
+      {
+        "id": "discard-and-recreate-capstone",
+        "trigger": "現在のcapstone回答とruntimeを破棄して最初からやり直す場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson capstone reset",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      }
+    ]
+  }
+}

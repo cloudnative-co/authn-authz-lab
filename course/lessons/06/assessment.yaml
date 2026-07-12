@@ -1,0 +1,158 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "06",
+  "assessment": {
+    "id": "AA06-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA06-O1",
+      "AA06-O2"
+    ],
+    "type": "integration-and-explanation",
+    "evidence": "runner所有の実OpenLDAPに対するfresh HTTP scenarioで、read-only service bind、people search、user DN bind、group search、Alice成功とgroup、wrong・unknown・empty・filter injectionのgeneric 422、空passwordのnetwork未到達、structured EqualityFilter、credentialとcontainer control値を含まないruntime evidenceを確認する",
+    "passCriteria": "checkが保存済みruntimeを信用せず実OpenLDAPへ再接続し、AA06-C1でbind/search/DN/attribute/groupの区別とAliceのengineering・security所属を確認し、AA06-C2でwrong・unknown・empty・injectionの同一422とWWW-Authenticate非発行、emptyのnetwork前拒否、filter escape、read-only非admin service account、loopback cleartext deviationとproductionのStartTLS/LDAPS要件、trace redactionを確認する",
+    "labTask": {
+      "instructionsRef": "course/lessons/06/README.md",
+      "predict": "service account bind、mail search、user DN bind、member group searchの順序と、wrong・unknown・empty・injectionの外部status、emptyのnetwork到達有無を予測する",
+      "execute": "runnerだけでdoctor、setup、demo、observeを実行し、実OpenLDAPの秘匿済みtraceを観察してsubmission.jsonを完成する。checkはfresh actual LDAP scenarioを再実行する",
+      "rejectOrFail": "Docker未導入・daemon停止・Compose欠落・port競合、TODO・未知値、空passwordをnetworkへ送る誤答、raw filter連結、admin常用、cleartext LDAPのproduction承認でfail closedすることを確認する",
+      "evidence": "AA06-C1とAA06-C2がpassし、password、service bind password、raw input、container ID、Compose project、install IDを含まないevidenceIdを確認する",
+      "practicalTransfer": "自組織のdirectory連携についてsearch base、attribute、group model、service account ACL、TLS、certificate validation、timeout/size limit、generic failure、audit redactionを確認する"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "fresh actual LDAPの成功・拒否・operation trace・秘匿境界と回答が一致し、AA06-C1とAA06-C2が全件passすれば合格",
+      "failureRule": "runtimeまたは回答が1件でも不一致、TODO・未知field、admin bind常用、空passwordのnetwork送信、raw filter連結、HTTP challengeのない401、credentialまたはcontainer control値の証跡保存なら不合格"
+    },
+    "answerKeyRef": "course/lessons/06/answer-key.md",
+    "instructorGuideRef": "course/lessons/06/instructor-guide.md",
+    "automatedCheckRefs": [
+      "apps/project-app/lessons/06/directory-auth-service.mjs",
+      "apps/project-app/lessons/06/http-handler.mjs",
+      "course/lessons/06/assessment.mjs",
+      "course/lessons/06/container.mjs",
+      "course/lessons/06/runner.mjs",
+      "course/lessons/06/scenario.mjs",
+      "test/lesson-06/assessment.test.js",
+      "test/lesson-06/directory-auth-service.test.js",
+      "test/lesson-06/http-integration.test.js",
+      "test-integration/06-ldap.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA06-C1",
+        "mode": "lab",
+        "assessmentId": "AA06-A1",
+        "objectiveIds": [
+          "AA06-O1",
+          "AA06-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO5",
+          "AA-CO7"
+        ],
+        "evidenceType": "integration-and-explanation",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA06-C2",
+        "mode": "lab",
+        "assessmentId": "AA06-A1",
+        "objectiveIds": [
+          "AA06-O1",
+          "AA06-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO5",
+          "AA-CO7"
+        ],
+        "evidenceType": "integration-and-explanation",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs lesson 06 doctor",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs lesson 06 setup",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs lesson 06 demo",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs lesson 06 observe",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "learner-action",
+        "step": 5,
+        "path": ".lab/submissions/06/submission.json",
+        "task": "runtime.jsonの実LDAP operationと秘匿境界を根拠にAA06-C1とAA06-C2を手作業で入力する",
+        "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えずに全回答欄が許可値で埋まっている"
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson 06 check",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA06-C1",
+          "AA06-C2"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs lesson 06 stop",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": true
+      }
+    ],
+    "optionalRecoveryScenarios": [
+      {
+        "id": "discard-and-recreate-directory",
+        "trigger": "現在のLesson 06回答とdirectory generationを破棄して最初からやり直す場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson 06 reset",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      }
+    ]
+  }
+}

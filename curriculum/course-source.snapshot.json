@@ -1,0 +1,1397 @@
+{
+  "schemaVersion": 2,
+  "courseId": "auth-authz",
+  "title": "情シスのための認証認可入門",
+  "status": "design-review",
+  "estimatedMinutes": 1935,
+  "extensionMinutes": 765,
+  "prerequisites": {
+    "readingPath": [],
+    "labPath": ["releaseで指定したNode.js LTS", "HTTP method・status・headerの基礎", "JSONの基礎", "terminalの基本操作"],
+    "acquisition": "Git cloneまたはGit不要のrelease archive",
+    "environment": "WebとREADMEでNode.jsの導入を案内し、起動後のdoctorがNode.js version、Docker、browser、port、CPU architectureを判定する"
+  },
+  "lessonContract": ["予測", "実行", "拒否ケース", "証拠", "実務への転用"],
+  "assessmentArtifactContract": {
+    "readingReferenceField": "lessons[].readingAssessmentRef",
+    "labReferenceField": "lessons[].assessments[].artifactSetRef",
+    "readingRequiredEntries": ["id", "mode", "taskRef", "instructions", "rubric", "answerKeyRef", "requiredChecks", "questions"],
+    "readingRubricRequiredEntries": ["scoringMethod", "questionCount", "passingScore", "passRate", "retryPolicy"],
+    "readingQuestionRequiredEntries": ["id", "requiredCheckId", "returnToHeading", "prompt", "options"],
+    "labRequiredEntries": ["artifactStatus", "labTask", "rubric", "answerKeyRef", "instructorGuideRef", "automatedCheckRefs", "requiredChecks", "procedure"],
+    "labRequiredEntriesWhen": "artifactStatus=implemented",
+    "plannedRequiredEntries": ["artifactStatus", "implementationNote"],
+    "labTaskRequiredEntries": ["instructionsRef", "predict", "execute", "rejectOrFail", "evidence", "practicalTransfer"],
+    "procedureStepKinds": ["command", "learner-action"],
+    "recoveryScenarioField": "optionalRecoveryScenarios",
+    "requiredCheckSchema": ["id", "mode", "assessmentId", "objectiveIds", "courseOutcomeIds", "evidenceType", "required", "mappingBasis"],
+    "artifactStatusRule": "implementedは実在する実習・採点・解答・講師資料・自動検証・手順を必須とし、plannedは未実装であることを明示して実在を装う参照を持たない",
+    "pathRule": "checkのmodeごとに認定するcourseOutcomeIdsを分け、reading modeはAA-CO3をcoverできない",
+    "releaseGate": "reading参照は固定記事content SHA、lab参照は固定sample commitで全参照先が実在し、requiredCheckIdsがobjectiveIdsとcourseOutcomeIdsを100% coverする"
+  },
+  "extensionArtifactContract": {
+    "referenceField": "lessons[].extensionTaskRef",
+    "requiredEntries": ["$schema", "schemaVersion", "courseId", "lessonId", "status", "title", "estimatedMinutes", "prerequisiteCheckIds", "tasks", "evidenceBoundary"],
+    "taskRequiredEntries": ["id", "prompt", "acceptance"],
+    "releaseGate": "extensionMinutesが正のlessonは参照先が固定sample commitに実在し、schema検証に合格し、estimatedMinutesと全requiredCheckIdsが一致する。標準1935分には含めない"
+  },
+  "visualEvidenceContract": {
+    "articleEvidencePath": "reviews/article-quality/evidence.json#qualityReview.visualAidPlan",
+    "roles": ["conceptual-model", "protocol-spec", "runtime-evidence", "official-source", "decorative"],
+    "protocolRequirement": "primarySourceRefsへ公開HTTPS一次情報の直接URLを記録し、主体・矢印・field・検証項目を照合する",
+    "runtimeRequirement": "workspace内runtimeEvidenceRefと40文字または64文字の完全commit SHAで、passしたscenarioおよびsample revisionへ固定する",
+    "coverageRequirement": "04-draft.mdの全画像を1件ずつreviewし、未記録画像を許可しない",
+    "mobileRequirement": "ブログの360px表示で主要主体、矢印、運搬物、検証項目、training deviationを拡大なし・重要テキスト実効12px相当以上を目安に判読できること。密集図は2〜3枚へ分割し、原寸だけの目視で合格にしない",
+    "mobileEvidencePath": "reviews/2026-07-12-infographic-fidelity-manifest.json#images",
+    "stalenessRule": "article content SHA、sample commit、scenario、output digestの変更で該当画像をstaleにする"
+  },
+  "learningPaths": {
+    "complete": {
+      "recommended": true,
+      "requiredLessonIds": ["setup", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "capstone"],
+      "requiredCourseOutcomeIds": ["AA-CO1", "AA-CO2", "AA-CO3", "AA-CO4", "AA-CO5", "AA-CO6", "AA-CO7"],
+      "estimatedMinutes": 1935,
+      "assessmentMode": "integrated-article-lab-then-reading-check",
+      "sequencePolicy": "準備ラボの全required checkと再setupを先に完了し、各回の記事を上から読みながら記事内の予測、lab lifecycle、required checkを一度だけ実行する。記事を読み終えた後に読解5問で4問以上を確認し、最後にcapstoneを完了する",
+      "completionPolicy": "準備ラボの全required check、各回の読解5問で4問以上、各labの全required check、重大拒否caseのskip 0件、capstone rubric 80%以上"
+    },
+    "reading": {
+      "requiredLessonIds": ["01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15"],
+      "requiredCourseOutcomeIds": ["AA-CO1", "AA-CO2", "AA-CO4", "AA-CO5", "AA-CO6", "AA-CO7"],
+      "estimatedMinutes": 695,
+      "assessmentMode": "reading",
+      "completionPolicy": "各回のcase-based理解確認80%以上。実行を要するAA-CO3の修了は認定しない"
+    },
+    "lab": {
+      "requiredLessonIds": ["setup", "01", "02", "03", "04", "05", "06", "07", "08", "09", "10", "11", "12", "13", "14", "15", "capstone"],
+      "requiredCourseOutcomeIds": ["AA-CO1", "AA-CO2", "AA-CO3", "AA-CO4", "AA-CO5", "AA-CO6", "AA-CO7"],
+      "estimatedMinutes": 1240,
+      "extensionMinutes": 765,
+      "assessmentMode": "lab",
+      "completionPolicy": "全required check成功、各labのsubmission.jsonを採点する理解確認80%以上（読解5問とは別）、重大拒否caseのskip 0件、capstone rubric 80%以上"
+    },
+    "instructor": {
+      "inherits": "lab",
+      "additionalEstimatedMinutes": 240,
+      "timeAllocationMinutes": {"guideReview": 60, "recoveryDrill": 60, "gradingCalibration": 60, "teachingRehearsal": 60},
+      "completionPolicy": "講師ガイドを使った復旧drill、採点calibration、授業進行rehearsalを完了する"
+    }
+  },
+  "executionPolicy": {
+    "priorLessonRuntimeStateRequired": false,
+    "runtimeDependenciesSource": "sample repository curriculum/manifest.json",
+    "defaultLockScope": "course",
+    "resourceLockIdsSource": "sample repository curriculum/manifest.json",
+    "cliGrammar": {
+      "courseLevel": "node course.mjs doctor|setup|diagnose|stop|reset|purge",
+      "lessonLevel": "node course.mjs lesson <id> doctor|setup|demo|observe|check|diagnose|reset|stop|purge"
+    },
+    "exitCodes": {
+      "0": "pass-or-safe-noop",
+      "2": "invalid-input-or-schema",
+      "10": "learning-check-failed",
+      "20": "prerequisite-missing",
+      "21": "lock-conflict",
+      "30": "infrastructure-or-owned-resource-failure",
+      "31": "timeout",
+      "signal": "128-plus-signal-number"
+    },
+    "lockPolicy": {
+      "none": ["global-doctor"],
+      "read": ["lesson-doctor", "observe", "diagnose"],
+      "write": ["setup", "demo", "check", "reset", "stop", "purge"]
+    },
+    "stateIdentity": "course ID、repository realpath、schema version、install ID、source revision、source digestが一致するstateだけを利用する",
+    "stateMigration": "暗黙migrationは行わず、schema/source不一致時はdiagnoseと所有確認済みstop/purgeだけを許可する",
+    "stateCommands": {
+      "stop": "processとcontainerを停止し、学習データとevidenceを保持する",
+      "reset": "対象lessonをseed状態へ戻し、evidenceを保持する",
+      "purge": "教材管理下のprocess、container、volume、data、internal evidenceを削除し、明示的なexport先には触れない"
+    }
+  },
+  "sampleRepository": {
+    "url": "https://github.com/cloudnative-co/auth-authz-sample-app",
+    "requiredAnonymousAccessBeforePublication": true,
+    "distributionMode": null,
+    "releaseTag": null,
+    "commitSha": null,
+    "manifestPath": "curriculum/manifest.json",
+    "runnerSchemaPath": "curriculum/schemas/runner-result.schema.json",
+    "supportMatrixPath": "curriculum/support-matrix.json",
+    "courseLockPath": "course-lock.json",
+    "deviationRegisterPath": "curriculum/deviations.yaml"
+  },
+  "courseOutcomes": [
+    { "id": "AA-CO1", "statement": "HTTPの往復を見て、認証、セッション、認可、フェデレーション、委任認可の失敗箇所を分類する" },
+    { "id": "AA-CO2", "statement": "credential、cookie、ticket、assertion、tokenについて、発行者、運搬者、検証者、寿命を追跡する" },
+    { "id": "AA-CO3", "statement": "正常系と拒否系を再現し、HTTP応答とログから結果を説明する" },
+    { "id": "AA-CO4", "statement": "受け手に必要な署名、issuer、audience、期限、nonce、state、PKCE、scope、resource認可を特定する" },
+    { "id": "AA-CO5", "statement": "典型的な認証認可の失敗を診断し、修正案を選ぶ" },
+    { "id": "AA-CO6", "statement": "MFA、WebAuthn、Passkeyを登録、復旧、失効、利用者体験まで含めて評価する" },
+    { "id": "AA-CO7", "statement": "企業のID基盤とSaaS/API連携を最小権限、ライフサイクル、監査、例外管理の観点でレビューする" }
+  ],
+  "lessons": [
+    {
+      "id": "setup",
+      "kind": "course-setup",
+      "module": "orientation",
+      "articleSlug": null,
+      "learningPrerequisites": [],
+      "estimatedMinutes": 60,
+      "extensionMinutes": 0,
+      "timeAllocationMinutes": {"reading": 20, "readingAssessment": 0, "lab": 30, "assessment": 10, "sessions": 1},
+      "environmentRef": "curriculum/support-matrix.json#lessons.setup",
+      "objectives": [
+        { "id": "AA-SETUP-O1", "courseOutcomeIds": [], "statement": "自分の環境が選択した学習経路の要件を満たすか診断する" },
+        { "id": "AA-SETUP-O2", "courseOutcomeIds": [], "statement": "教材を起動、確認、停止、初期化し、診断結果を読める" }
+      ],
+      "assessments": [
+        {
+          "id": "AA-SETUP-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA-SETUP-O1", "AA-SETUP-O2"],
+          "type": "automated",
+          "artifactSetRef": "course/lessons/setup/assessment.yaml#AA-SETUP-A1",
+          "requiredCheckIds": ["AA-SETUP-C1", "AA-SETUP-C2", "AA-SETUP-C3"],
+          "evidence": "checkが保存するdoctor・setup・reset後の再診断結果と、terminal purgeが返す残存resource 0件のJSON結果",
+          "passCriteria": "checkが全required checkをpassとしてevidence IDを返し、続くpurgeがpassかつ教材所有resource 0件を返す",
+          "labTask": {
+            "instructionsRef": "course/lessons/setup/README.md",
+            "predict": "doctor、setup、reset、purgeのうち、どの操作が教材stateを作成・更新・削除するかを実行前に予測する",
+            "execute": "READMEの順に環境診断、state作成、診断、reset、再診断、check、terminal purgeを実行する",
+            "rejectOrFail": "blockedまたはfailではreasonCodeとrecoveryを読み、所有確認を回避する手作業削除やprocess停止をせずに復旧する",
+            "evidence": "checkの全required checkがpassしたevidenceIdと、purge結果のdiagnostics[]内でidが\"resources.remaining\"の要素のactualが文字列\"0\"であることを確認する",
+            "practicalTransfer": "自組織の研修環境準備へ、前提診断、再実行可能な初期化、理由付き失敗、安全な完全削除の流れを対応づける"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "course contractから導出された全required checkがpassし、terminal purgeで教材所有resourceの残存0件を確認できれば合格",
+            "failureRule": "required checkが1件でも未達、evidenceIdが空、またはpurge後の残存0件を確認できなければ不合格"
+          },
+          "answerKeyRef": "course/lessons/setup/answer-key.md",
+          "instructorGuideRef": "course/lessons/setup/instructor-guide.md",
+          "automatedCheckRefs": [
+            "course/runner/main.mjs",
+            "course/runner/lifecycle.mjs",
+            "test/course/assessment-contract.test.js",
+            "test/course/runner-lifecycle.test.js",
+            "test/course/runner-state.test.js"
+          ],
+          "procedure": [
+          { "kind": "command", "step": 1, "command": "node course.mjs doctor", "expectedStatus": "pass", "checkIds": ["AA-SETUP-C1"], "terminal": false },
+          { "kind": "command", "step": 2, "command": "node course.mjs setup", "expectedStatus": "pass", "checkIds": ["AA-SETUP-C2"], "terminal": false },
+          { "kind": "command", "step": 3, "command": "node course.mjs diagnose", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+          { "kind": "command", "step": 4, "command": "node course.mjs reset", "expectedStatus": "pass", "checkIds": ["AA-SETUP-C3"], "terminal": false },
+          { "kind": "command", "step": 5, "command": "node course.mjs diagnose", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+          { "kind": "command", "step": 6, "command": "node course.mjs lesson setup check --json", "expectedStatus": "pass", "checkIds": ["AA-SETUP-C1", "AA-SETUP-C2", "AA-SETUP-C3"], "terminal": false },
+          { "kind": "command", "step": 7, "command": "node course.mjs purge --yes --json", "expectedStatus": "pass", "checkIds": ["AA-SETUP-C3"], "terminal": true }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "01",
+      "kind": "article-lesson",
+      "module": "web-foundations",
+      "articleSlug": "auth-authz-01-login-basics",
+      "learningPrerequisites": [],
+      "estimatedMinutes": 75,
+      "extensionMinutes": 0,
+      "timeAllocationMinutes": {"reading": 30, "readingAssessment": 15, "lab": 15, "assessment": 15, "sessions": 1},
+      "environmentRef": "curriculum/support-matrix.json#lessons.01",
+      "readingAssessmentRef": "episodes/01-auth-authz-01-login-basics/assessment.yaml#AA01-A1",
+      "objectives": [
+        { "id": "AA01-O1", "courseOutcomeIds": ["AA-CO1", "AA-CO2"], "statement": "request trace内の各stepと失敗箇所を、認証、セッション、認可、フェデレーション、委任認可へ分類する" },
+        { "id": "AA01-O2", "courseOutcomeIds": ["AA-CO1", "AA-CO5"], "statement": "失敗した責任と確認すべき担当コンポーネントを特定する" }
+      ],
+      "assessments": [
+        {
+          "id": "AA01-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA01-O1", "AA01-O2"],
+          "type": "provided-case-scenario",
+          "artifactSetRef": "course/lessons/01/assessment.yaml#AA01-A1",
+          "requiredCheckIds": ["AA01-C1", "AA01-C2"],
+          "evidence": "実プロトコルの実行証跡ではないprovided case 10件の分類結果と、5つの責任境界に対応する検証者",
+          "passCriteria": "10事例中9件以上を正しく分類し、5つの責任境界と検証者を記載する",
+          "labTask": {
+            "instructionsRef": "course/lessons/01/README.md",
+            "predict": "有効なsessionを持つ利用者のproject削除が拒否されたとき、直接失敗した責任境界を実行前に予測する",
+            "execute": "doctor、setup、demo、observeの後に.lab/submissions/01/submission.jsonを手作業で編集し、10件のclassificationと5つのverifierを回答してcheckする",
+            "rejectOrFail": "誤分類を含む回答でcheckがfailする場合は未達条件を確認し、答えを自動転記せず根拠を見直して回答ファイルを修正する",
+            "evidence": "10事例中9件以上の分類正答と5境界すべてのverifier正答を示すcheck結果とevidenceIdを確認する",
+            "practicalTransfer": "自分が扱うSaaSまたはWebアプリで、資格情報、session、操作許可、外部identity、委任API権限の各検証者を5行で特定する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "course contractから導出された全required checkがpassし、分類9/10以上かつ検証者5/5を満たせば合格",
+            "failureRule": "分類が8/10以下、検証者に1件でも誤りがある、または回答ファイルを手作業で完成していなければ不合格"
+          },
+          "answerKeyRef": "course/lessons/01/answer-key.md",
+          "instructorGuideRef": "course/lessons/01/instructor-guide.md",
+          "automatedCheckRefs": [
+            "course/lessons/01/assessment.mjs",
+            "course/lessons/01/runner.mjs",
+            "test/course/runner-port.test.js",
+            "test/lesson-01/domain-assessment.test.js",
+            "test/lesson-01/materials.test.js",
+            "test/lesson-01/runner-e2e.test.js",
+            "test/lesson-01/workspace.test.js",
+            "test/project-app/http.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 01 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 01 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 01 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 01 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/01/submission.json", "task": "10件のclassificationと5つのverifierを手作業で入力する", "completionCriterion": "TODOが残らず、JSONとしてparseでき、すべての回答欄が許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 01 check", "expectedStatus": "pass", "checkIds": ["AA01-C1", "AA01-C2"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 01 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-restart",
+              "trigger": "現在の回答を破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 01 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "02",
+      "kind": "article-lesson",
+      "module": "web-foundations",
+      "articleSlug": "auth-authz-02-password-authentication",
+      "learningPrerequisites": ["01"],
+      "estimatedMinutes": 90,
+      "extensionMinutes": 45,
+      "extensionTaskRef": "course/lessons/02/extension.yaml",
+      "timeAllocationMinutes": {"reading": 25, "readingAssessment": 15, "lab": 35, "assessment": 15, "sessions": 2},
+      "environmentRef": "curriculum/support-matrix.json#lessons.02",
+      "readingAssessmentRef": "episodes/02-auth-authz-02-password-authentication/assessment.yaml#AA02-A1",
+      "objectives": [
+        { "id": "AA02-O1", "courseOutcomeIds": ["AA-CO2", "AA-CO3"], "statement": "パスワード登録と照合の処理を追跡する" },
+        { "id": "AA02-O2", "courseOutcomeIds": ["AA-CO2", "AA-CO5"], "statement": "平文、hash、salt、rate limitの役割を評価する" }
+      ],
+      "assessments": [
+        {
+          "id": "AA02-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA02-O1", "AA02-O2"],
+          "type": "automated-and-explanation",
+          "artifactSetRef": "course/lessons/02/assessment.yaml#AA02-A1",
+          "requiredCheckIds": ["AA02-C1", "AA02-C2", "AA02-C3"],
+          "evidence": "loopback上の実HTTPで毎回新規scenarioを実行し、password保存表現、成功200、generic 422、3回目の429とRetry-After、30秒後の復旧を秘匿済みruntime evidenceと短答で確認する",
+          "passCriteria": "checkが保存済みruntimeを信用せずfresh scenarioを再実行し、平文非保存、同一passwordのsalt差、session未発行、誤passwordと未知identifierの同一422、3回目の429、per-identifier制限とglobal KDF容量保護が未実装である境界を、AA02-C1からAA02-C3の全件で確認する",
+          "labTask": {
+            "instructionsRef": "course/lessons/02/README.md",
+            "predict": "同じpasswordを2回保存したときのsalt差と、誤passwordと未知identifierの外部応答を実行前に予測する",
+            "execute": "doctor、setup、demo、observeを実行して.lab/submissions/02/runtime.jsonを観察し、許可値だけで.lab/submissions/02/submission.jsonを完成する。checkは保存済みruntimeとは別のfresh scenarioを実HTTPで再実行する",
+            "rejectOrFail": "TODO、未知値、または意図的な誤答でcheckがfailすることを確認し、失敗したcheck IDに対応する保存、認証応答、rate limitの観察へ戻る",
+            "evidence": "AA02-C1からAA02-C3が同一check実行内のfresh scenarioでpassし、raw password、identifier、scenario ID、保存表現全体を証跡へ残さないevidenceIdを確認する",
+            "practicalTransfer": "自分が扱う認証基盤で、password保存algorithmとparameter、Unicode正規化、online rate limit、global KDF容量保護、漏えい時の移行方針を個別に確認する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "fresh scenarioの実HTTP検証と回答が一致し、AA02-C1、AA02-C2、AA02-C3の全件がpassすれば合格",
+            "failureRule": "runtime条件または回答が1件でも不一致、TODOまたは未知fieldが残る、保存済みruntimeだけを根拠にする、per-identifier rate limitをglobal KDF容量保護と誤認すれば不合格"
+          },
+          "answerKeyRef": "course/lessons/02/answer-key.md",
+          "instructorGuideRef": "course/lessons/02/instructor-guide.md",
+          "automatedCheckRefs": [
+            "course/lessons/02/assessment.mjs",
+            "course/lessons/02/runner.mjs",
+            "course/lessons/02/scenario.mjs",
+            "course/lessons/02/workspace.mjs",
+            "test/lesson-02/assessment.test.js",
+            "test/lesson-02/password-auth-service.test.js",
+            "test/lesson-02/runtime-scenario.test.js",
+            "test/lesson-02/scrypt-password.test.js",
+            "test/lesson-02-03-runner-e2e.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 02 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 02 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 02 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 02 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/02/submission.json", "task": "runtime.jsonの秘匿済み観察結果を根拠にAA02-C1からAA02-C3の回答を手作業で入力する", "completionCriterion": "TODOが残らず、JSONとしてparseでき、field構造を変えずにすべての回答欄が許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 02 check", "expectedStatus": "pass", "checkIds": ["AA02-C1", "AA02-C2", "AA02-C3"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 02 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-restart",
+              "trigger": "現在の第02回答を破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 02 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "03",
+      "kind": "article-lesson",
+      "module": "web-foundations",
+      "articleSlug": "auth-authz-03-session-management",
+      "learningPrerequisites": ["02"],
+      "estimatedMinutes": 105,
+      "extensionMinutes": 45,
+      "extensionTaskRef": "course/lessons/03/extension.yaml",
+      "timeAllocationMinutes": {"reading": 30, "readingAssessment": 15, "lab": 45, "assessment": 15, "sessions": 2},
+      "environmentRef": "curriculum/support-matrix.json#lessons.03",
+      "readingAssessmentRef": "episodes/03-auth-authz-03-session-management/assessment.yaml#AA03-A1",
+      "objectives": [
+        { "id": "AA03-O1", "courseOutcomeIds": ["AA-CO2"], "statement": "Cookie、Session ID、Session Storeを区別して追跡する" },
+        { "id": "AA03-O2", "courseOutcomeIds": ["AA-CO3", "AA-CO5"], "statement": "認証時のSession ID更新と、logout、期限切れ、server失効後の拒否を確認する" }
+      ],
+      "assessments": [
+        {
+          "id": "AA03-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA03-O1", "AA03-O2"],
+          "type": "automated-and-trace",
+          "artifactSetRef": "course/lessons/03/assessment.yaml#AA03-A1",
+          "requiredCheckIds": ["AA03-C1", "AA03-C2", "AA03-C3", "AA03-C4"],
+          "evidence": "loopback上の実HTTPでSet-Cookieを受信しCookieを送信するNode.js clientのtraceとして、login rotation、absolute expiry、logoutのMax-Age=0、server側失効後のgeneric 403を秘匿済みruntime evidenceと短答で確認する。このCookie session APIはHTTP認証challengeを使わず、browserによるHttpOnlyとSameSiteの強制動作は証拠範囲に含めない",
+          "passCriteria": "checkが保存済みruntimeを信用せずfresh scenarioを再実行し、Cookie、opaque Session ID、digestのみを持つSession Storeを区別し、login時のtoken更新、古いtoken、期限切れ、logout済みtoken、server失効済みtokenの拒否をAA03-C1からAA03-C4の全件で確認する。HttpOnlyとSameSiteはheader属性の観察に限定し、browser強制動作を検証済みと表現しない",
+          "labTask": {
+            "instructionsRef": "course/lessons/03/README.md",
+            "predict": "login前tokenの再利用可否、browser Cookieだけを消すlogoutの限界、有効期限内のserver側失効を実行前に予測する",
+            "execute": "doctor、setup、demo、observeを実行して.lab/submissions/03/runtime.jsonを観察し、許可値だけで.lab/submissions/03/submission.jsonを完成する。checkは毎回fresh scenarioを作り、実際のSet-CookieとCookieを通る実HTTP traceを再実行する",
+            "rejectOrFail": "TODO、未知値、または意図的な誤答でcheckがfailすることを確認し、失敗したcheck IDに対応するCookie、rotation、expiry、logout、revocationの観察へ戻る",
+            "evidence": "AA03-C1からAA03-C4が同一check実行内のfresh scenarioでpassし、raw Cookie、Session ID、scenario ID、完全なdigestを証跡へ残さないevidenceIdを確認する。browserによるHttpOnlyとSameSiteの強制動作は未検証として区別する",
+            "practicalTransfer": "自分が扱うWebアプリでCookie属性、Session IDのentropyとserver保存形式、rotation、absolute timeoutとidle timeout、logoutの両側処理、管理側失効を個別に確認する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "fresh scenarioの実HTTP Set-Cookie/Cookie traceと回答が一致し、AA03-C1、AA03-C2、AA03-C3、AA03-C4の全件がpassすれば合格",
+            "failureRule": "runtime条件または回答が1件でも不一致、TODOまたは未知fieldが残る、保存済みruntimeだけを根拠にする、Node.js header観察をbrowserのHttpOnlyまたはSameSite強制検証と誤認すれば不合格"
+          },
+          "answerKeyRef": "course/lessons/03/answer-key.md",
+          "instructorGuideRef": "course/lessons/03/instructor-guide.md",
+          "automatedCheckRefs": [
+            "course/lessons/03/assessment.mjs",
+            "course/lessons/03/runner.mjs",
+            "course/lessons/03/scenario.mjs",
+            "course/lessons/03/workspace.mjs",
+            "test/lesson-03/assessment.test.js",
+            "test/lesson-03/bounded-session-store.test.js",
+            "test/lesson-03/runtime-scenario.test.js",
+            "test/lesson-03/session-service.test.js",
+            "test/lesson-03/session-token-cookie.test.js",
+            "test/lesson-02-03-runner-e2e.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 03 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 03 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 03 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 03 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/03/submission.json", "task": "runtime.jsonの秘匿済み観察結果を根拠にAA03-C1からAA03-C4の回答を手作業で入力する", "completionCriterion": "TODOが残らず、JSONとしてparseでき、field構造を変えずにすべての回答欄が許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 03 check", "expectedStatus": "pass", "checkIds": ["AA03-C1", "AA03-C2", "AA03-C3", "AA03-C4"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 03 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-restart",
+              "trigger": "現在の第03回答を破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 03 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "04",
+      "kind": "article-lesson",
+      "module": "web-foundations",
+      "articleSlug": "auth-authz-04-application-authorization",
+      "learningPrerequisites": ["03"],
+      "estimatedMinutes": 105,
+      "extensionMinutes": 45,
+      "extensionTaskRef": "course/lessons/04/extension.yaml",
+      "timeAllocationMinutes": {"reading": 30, "readingAssessment": 15, "lab": 45, "assessment": 15, "sessions": 2},
+      "environmentRef": "curriculum/support-matrix.json#lessons.04",
+      "readingAssessmentRef": "episodes/04-auth-authz-04-application-authorization/assessment.yaml#AA04-A1",
+      "objectives": [
+        { "id": "AA04-O1", "courseOutcomeIds": ["AA-CO4"], "statement": "subject、resource、action、contextから許可・拒否を予測する" },
+        { "id": "AA04-O2", "courseOutcomeIds": ["AA-CO1", "AA-CO3", "AA-CO5"], "statement": "Cookie session APIの403、resource秘匿の404、HTTP認証challengeの401を文脈で使い分ける" }
+      ],
+      "assessments": [
+        {
+          "id": "AA04-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA04-O1", "AA04-O2"],
+          "type": "automated-and-scenario",
+          "artifactSetRef": "course/lessons/04/assessment.yaml#AA04-A1",
+          "requiredCheckIds": ["AA04-C1", "AA04-C2", "AA04-C3", "AA04-C4"],
+          "evidence": "loopback上の実CookieとHTTPで毎回fresh scenarioを実行し、Cookie sessionなしのgeneric 403とchallengeなし、owner 204、viewer 403、outsider・other-tenant・missing・repeatの同一404、caller-supplied principal・role・tenantの無効化、秘匿済みbounded auditを確認する",
+          "passCriteria": "checkが保存済みruntimeを信用せずfresh scenarioを再実行し、AA04-C1からAA04-C4の全件で、PEPがCookie sessionからprincipalを確定して未認証requestをproject-coreへ渡さないこと、project-coreのsource of recordでownerだけを許可すること、viewer拒否とresource秘匿404を区別すること、許可・拒否とmutation・auditがatomicであること、auditが限定field・secret非保存・64件上限であることを確認する。401はWWW-Authenticateを伴うHTTP認証challengeの別文脈として説明し、この実行APIでは返さない",
+          "labTask": {
+            "instructionsRef": "course/lessons/04/README.md",
+            "predict": "Cookieなし、偽装owner header付きviewer、same-tenant outsider、cross-tenant subject、owner削除と再削除のstatus、mutation、auditを実行前に予測する",
+            "execute": "doctor、setup、demo、observeを実行して.lab/submissions/04/runtime.jsonを観察し、許可値だけで.lab/submissions/04/submission.jsonを完成する。checkは保存済みruntimeとは別のfresh scenarioを実CookieとHTTPで再実行する",
+            "rejectOrFail": "TODO、未知値、または意図的な誤答でcheckがfailすることを確認し、失敗したcheck IDに対応するPEP、owner/viewer policy、resource秘匿、auditの観察へ戻る",
+            "evidence": "AA04-C1からAA04-C4が同一check実行内のfresh scenarioでpassし、password、identifier、raw Cookie、Session ID、scenario ID、完全digest、control tokenを証跡へ残さないevidenceIdを確認する",
+            "practicalTransfer": "自分が扱うAPIでprincipal、tenant、role、ownershipのsource of record、subject-resource-action判定、resource秘匿policy、transaction境界、audit fieldと保持上限を個別に確認する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "fresh scenarioの実Cookie・HTTP・project-core検証と回答が一致し、AA04-C1、AA04-C2、AA04-C3、AA04-C4の全件がpassすれば合格",
+            "failureRule": "runtime条件または回答が1件でも不一致、TODOまたは未知fieldが残る、保存済みruntimeだけを根拠にする、caller-supplied role・tenantを信用する、resource存在を404 response差で漏らす、credentialまたはsessionをauditへ残す場合は不合格"
+          },
+          "answerKeyRef": "course/lessons/04/answer-key.md",
+          "instructorGuideRef": "course/lessons/04/instructor-guide.md",
+          "automatedCheckRefs": [
+            "course/lessons/04/assessment.mjs",
+            "course/lessons/04/runner.mjs",
+            "course/lessons/04/scenario.mjs",
+            "course/lessons/04/workspace.mjs",
+            "test/lesson-04/adversarial.test.js",
+            "test/lesson-04/assessment.test.js",
+            "test/lesson-04/domain-contract.test.js",
+            "test/lesson-04/http-integration.test.js",
+            "test/lesson-04/pep-boundary.test.js",
+            "test/lesson-04/runner-e2e.test.js",
+            "test/lesson-04/runtime-scenario.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 04 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 04 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 04 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 04 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/04/submission.json", "task": "runtime.jsonの秘匿済み観察結果を根拠にAA04-C1からAA04-C4の回答を手作業で入力する", "completionCriterion": "TODOが残らず、JSONとしてparseでき、field構造を変えずにすべての回答欄が許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 04 check", "expectedStatus": "pass", "checkIds": ["AA04-C1", "AA04-C2", "AA04-C3", "AA04-C4"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 04 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-restart",
+              "trigger": "現在の第04回答を破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 04 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "05",
+      "kind": "article-lesson",
+      "module": "web-foundations",
+      "articleSlug": "auth-authz-05-basic-authentication",
+      "learningPrerequisites": ["01"],
+      "estimatedMinutes": 70,
+      "extensionMinutes": 30,
+      "extensionTaskRef": "course/lessons/05/extension.yaml",
+      "timeAllocationMinutes": {"reading": 25, "readingAssessment": 10, "lab": 25, "assessment": 10, "sessions": 1},
+      "environmentRef": "curriculum/support-matrix.json#lessons.05",
+      "readingAssessmentRef": "episodes/05-auth-authz-05-basic-authentication/assessment.yaml#AA05-A1",
+      "objectives": [
+        { "id": "AA05-O1", "courseOutcomeIds": ["AA-CO1", "AA-CO2", "AA-CO3"], "statement": "Basic challengeとAuthorization headerを読み取る" },
+        { "id": "AA05-O2", "courseOutcomeIds": ["AA-CO5", "AA-CO7"], "statement": "Basic認証が適する範囲とTLS、ログ、共有IDの制約を判断する" }
+      ],
+      "assessments": [
+        {
+          "id": "AA05-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA05-O1", "AA05-O2"],
+          "type": "automated-and-decision",
+          "artifactSetRef": "course/lessons/05/assessment.yaml#AA05-A1",
+          "requiredCheckIds": ["AA05-C1", "AA05-C2"],
+          "evidence": "loopback上の実HTTPで401とBasic realm/UTF-8 challenge、Authorization header付き200、次requestの再challenge、Set-Cookie非発行を確認し、headerとdecoded credentialを残さない秘匿済みruntime evidenceと採用判断を照合する",
+          "passCriteria": "checkが保存済みruntimeを信用せずfresh scenarioを再実行し、AA05-C1でRFC 7617のchallenge、canonical Base64 UTF-8 NFC user-id:password、200、毎request認証、session非発行を確認し、AA05-C2でBase64が暗号化ではないこと、productionのTLS必須、Authorizationとdecoded credentialのlog非保存、適用範囲を確認する",
+          "labTask": {
+            "instructionsRef": "course/lessons/05/README.md",
+            "predict": "Authorizationなし、誤credential、正しいcredential、成功後にheaderを外した次requestのstatusとheaderを予測する",
+            "execute": "doctor、setup、demo、observeを実行して.lab/submissions/05/runtime.jsonを観察し、許可値だけでsubmission.jsonを完成する。checkはfresh scenarioで実HTTP Basic exchangeを再実行する",
+            "rejectOrFail": "TODO、未知値、またはBase64を暗号化とする誤答でcheckがfailすることを確認し、challenge traceとTLS・log・適用判断へ戻る",
+            "evidence": "AA05-C1とAA05-C2がpassし、Authorization header、user-id、password、decoded user-pass、scenario IDを証跡へ残さないevidenceIdを確認する",
+            "practicalTransfer": "自分が扱うendpointについてTLS、realmとprotection space、credential保管・rotation、共有ID、log redaction、MFA/SSO要件を確認し、Basic採否を記録する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "fresh scenarioの401 challenge、200、header再要求、session非発行、秘匿境界と回答が一致し、AA05-C1とAA05-C2の全件がpassすれば合格",
+            "failureRule": "runtime条件または回答が1件でも不一致、TODOまたは未知fieldが残る、401にWWW-Authenticateがない、Base64を暗号化と誤認、loopback HTTPをproduction承認、credentialをlogへ残す採用判断なら不合格"
+          },
+          "answerKeyRef": "course/lessons/05/answer-key.md",
+          "instructorGuideRef": "course/lessons/05/instructor-guide.md",
+          "automatedCheckRefs": [
+            "apps/project-app/lessons/05/basic-auth-service.mjs",
+            "apps/project-app/lessons/05/http-handler.mjs",
+            "course/lessons/05/assessment.mjs",
+            "course/lessons/05/runner.mjs",
+            "course/lessons/05/scenario.mjs",
+            "course/lessons/05/workspace.mjs",
+            "test/lesson-05/assessment.test.js",
+            "test/lesson-05/basic-auth-service.test.js",
+            "test/lesson-05/http-integration.test.js",
+            "test/lesson-05/runner-e2e.test.js",
+            "test/lesson-05/runtime-scenario.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 05 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 05 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 05 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 05 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/05/submission.json", "task": "runtime.jsonの秘匿済み観察結果を根拠にAA05-C1とAA05-C2の回答を手作業で入力する", "completionCriterion": "TODOが残らず、JSONとしてparseでき、field構造を変えずにすべての回答欄が許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 05 check", "expectedStatus": "pass", "checkIds": ["AA05-C1", "AA05-C2"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 05 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-restart",
+              "trigger": "現在の第05回答を破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 05 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "06",
+      "kind": "article-lesson",
+      "module": "enterprise-identity",
+      "articleSlug": "auth-authz-06-ldap-directory",
+      "learningPrerequisites": ["01"],
+      "estimatedMinutes": 105,
+      "extensionMinutes": 60,
+      "extensionTaskRef": "course/lessons/06/extension.yaml",
+      "timeAllocationMinutes": {"reading": 30, "readingAssessment": 15, "lab": 45, "assessment": 15, "sessions": 2},
+      "environmentRef": "curriculum/support-matrix.json#lessons.06",
+      "readingAssessmentRef": "episodes/06-auth-authz-06-ldap-directory/assessment.yaml#AA06-A1",
+      "objectives": [
+        { "id": "AA06-O1", "courseOutcomeIds": ["AA-CO2"], "statement": "LDAP bind、search、DN、attribute、groupを区別する" },
+        { "id": "AA06-O2", "courseOutcomeIds": ["AA-CO3", "AA-CO5", "AA-CO7"], "statement": "空passwordとfilter injectionが拒否されることを確認する" }
+      ],
+      "assessments": [
+        {
+          "id": "AA06-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA06-O1", "AA06-O2"],
+          "type": "integration-and-explanation",
+          "artifactSetRef": "course/lessons/06/assessment.yaml#AA06-A1",
+          "requiredCheckIds": ["AA06-C1", "AA06-C2"],
+          "evidence": "runner所有の実OpenLDAPに対するfresh HTTP scenarioで、read-only service bind、people search、user DN bind、group search、Alice成功とgroup、wrong・unknown・empty・filter injectionのgeneric 422、空passwordのnetwork未到達、structured EqualityFilter、credentialとcontainer control値を含まないruntime evidenceを確認する",
+          "passCriteria": "checkが保存済みruntimeを信用せず実OpenLDAPへ再接続し、AA06-C1でbind/search/DN/attribute/groupの区別とAliceのengineering・security所属を確認し、AA06-C2でwrong・unknown・empty・injectionの同一422とWWW-Authenticate非発行、emptyのnetwork前拒否、filter escape、read-only非admin service account、loopback cleartext deviationとproductionのStartTLS/LDAPS要件、trace redactionを確認する",
+          "labTask": {
+            "instructionsRef": "course/lessons/06/README.md",
+            "predict": "service account bind、mail search、user DN bind、member group searchの順序と、wrong・unknown・empty・injectionの外部status、emptyのnetwork到達有無を予測する",
+            "execute": "runnerだけでdoctor、setup、demo、observeを実行し、実OpenLDAPの秘匿済みtraceを観察してsubmission.jsonを完成する。checkはfresh actual LDAP scenarioを再実行する",
+            "rejectOrFail": "Docker未導入・daemon停止・Compose欠落・port競合、TODO・未知値、空passwordをnetworkへ送る誤答、raw filter連結、admin常用、cleartext LDAPのproduction承認でfail closedすることを確認する",
+            "evidence": "AA06-C1とAA06-C2がpassし、password、service bind password、raw input、container ID、Compose project、install IDを含まないevidenceIdを確認する",
+            "practicalTransfer": "自組織のdirectory連携についてsearch base、attribute、group model、service account ACL、TLS、certificate validation、timeout/size limit、generic failure、audit redactionを確認する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "fresh actual LDAPの成功・拒否・operation trace・秘匿境界と回答が一致し、AA06-C1とAA06-C2が全件passすれば合格",
+            "failureRule": "runtimeまたは回答が1件でも不一致、TODO・未知field、admin bind常用、空passwordのnetwork送信、raw filter連結、HTTP challengeのない401、credentialまたはcontainer control値の証跡保存なら不合格"
+          },
+          "answerKeyRef": "course/lessons/06/answer-key.md",
+          "instructorGuideRef": "course/lessons/06/instructor-guide.md",
+          "automatedCheckRefs": [
+            "apps/project-app/lessons/06/directory-auth-service.mjs",
+            "apps/project-app/lessons/06/http-handler.mjs",
+            "course/lessons/06/assessment.mjs",
+            "course/lessons/06/container.mjs",
+            "course/lessons/06/runner.mjs",
+            "course/lessons/06/scenario.mjs",
+            "test/lesson-06/assessment.test.js",
+            "test/lesson-06/directory-auth-service.test.js",
+            "test/lesson-06/http-integration.test.js",
+            "test-integration/06-ldap.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 06 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 06 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 06 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 06 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/06/submission.json", "task": "runtime.jsonの実LDAP operationと秘匿境界を根拠にAA06-C1とAA06-C2を手作業で入力する", "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えずに全回答欄が許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 06 check", "expectedStatus": "pass", "checkIds": ["AA06-C1", "AA06-C2"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 06 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-recreate-directory",
+              "trigger": "現在のLesson 06回答とdirectory generationを破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 06 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "07",
+      "kind": "article-lesson",
+      "module": "enterprise-identity",
+      "articleSlug": "auth-authz-07-kerberos-authentication",
+      "learningPrerequisites": ["01"],
+      "estimatedMinutes": 105,
+      "extensionMinutes": 60,
+      "extensionTaskRef": "course/lessons/07/extension.yaml",
+      "timeAllocationMinutes": {"reading": 30, "readingAssessment": 15, "lab": 45, "assessment": 15, "sessions": 2},
+      "environmentRef": "curriculum/support-matrix.json#lessons.07",
+      "readingAssessmentRef": "episodes/07-auth-authz-07-kerberos-authentication/assessment.yaml#AA07-A1",
+      "objectives": [
+        { "id": "AA07-O1", "courseOutcomeIds": ["AA-CO2"], "statement": "AS、TGS、serviceの間でTGTとService Ticketを追跡する" },
+        { "id": "AA07-O2", "courseOutcomeIds": ["AA-CO3", "AA-CO5", "AA-CO7"], "statement": "SPN、時刻、keytabの不整合を診断する" }
+      ],
+      "assessments": [
+        {
+          "id": "AA07-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA07-O1", "AA07-O2"],
+          "type": "integration-and-diagnosis",
+          "artifactSetRef": "course/lessons/07/assessment.yaml#AA07-A1",
+          "requiredCheckIds": ["AA07-C1", "AA07-C2"],
+          "evidence": "runner所有の隔離network内にある実MIT Kerberos V5 KDC、client、GSSAPI acceptorへfresh scenarioを実行し、kinit直後のTGT、HTTP Negotiate後のservice ticket、401 challenge、principal付き200、誤SPNのTGS拒否、client processだけの時刻ずれによるAP拒否、stale keytabのkvno不一致によるacceptor拒否とcurrent keytab復旧を確認する。password、Authorization/response token、keytab、native error、container control値はruntime evidenceへ残さない",
+          "passCriteria": "AA07-C1でAS・TGS・APとTGT・HTTP service ticketを区別し、401 Negotiate challenge、GSSAPI acceptor、alice principalの200、Kerberos mechanismの1回のclient tokenとfinal acceptor tokenを確認する。AA07-C2で誤SPN・process-local時刻ずれ・stale kvnoを正しい境界で診断し、同じgeneric 401、host clock不変更、keytab復旧、TLS production要件、証跡秘匿を確認し、診断5件中4件以上に正答する",
+          "labTask": {
+            "instructionsRef": "course/lessons/07/README.md",
+            "predict": "kinit直後とHTTP Negotiate後のcredential cache、未認証challenge、誤SPN・時刻ずれ・stale keytabが失敗するAS/TGS/AP境界を予測する",
+            "execute": "runnerだけでdoctor、setup、demo、observeを実行し、隔離network内の実MIT Kerberos V5とGSSAPIの秘匿済みruntime.jsonを観察してsubmission.jsonを完成する。checkは保存済みruntimeを信用せずfresh actual protocol scenarioを再実行する",
+            "rejectOrFail": "Docker未導入・daemon停止・Compose欠落・所有/config不整合、TODO・未知値、TGTとservice ticketの混同、誤SPNをHTTP処理後のpassword failureとする誤答、host clock変更、stale kvno無視、一般SPNEGO・browser対応を実証済みとする誤答でfail closedすることを確認する",
+            "evidence": "AA07-C1とAA07-C2がpassし、password、Authorization/response token、keytab、native error、container ID、Compose project、install IDを含まないevidenceIdを確認する",
+            "practicalTransfer": "自組織のKerberos連携についてrealm、DNS、SPN重複、NTP許容差、keytab配布権限、kvno rotation、HTTP Negotiateのmechanism/browser scope、TLS、generic failure、audit redactionを確認する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "fresh actual KerberosのAS・TGS・AP正常経路、3拒否境界、keytab復旧、mechanism scope、秘匿境界と回答が一致し、診断5件中4件以上かつAA07-C1とAA07-C2が全件passすれば合格",
+            "failureRule": "runtimeまたは回答が1件でも不一致、TODO・未知field、TGTとservice ticketの混同、誤SPN・時刻ずれ・kvno不一致の境界誤認、host clock変更、一般SPNEGO continuationまたはbrowser動作の過剰一般化、credentialやtokenやkeytabの証跡保存なら不合格"
+          },
+          "answerKeyRef": "course/lessons/07/answer-key.md",
+          "instructorGuideRef": "course/lessons/07/instructor-guide.md",
+          "automatedCheckRefs": [
+            "apps/project-app/lessons/07/negotiate-header.mjs",
+            "course/lessons/07/assessment.mjs",
+            "course/lessons/07/container.mjs",
+            "course/lessons/07/protocol-adapter.mjs",
+            "course/lessons/07/runner.mjs",
+            "course/lessons/07/scenario.mjs",
+            "docker/kerberos/app/server.mjs",
+            "docker/kerberos/compose.yml",
+            "test/lesson-07/assessment.test.js",
+            "test/lesson-07/negotiate-header.test.js",
+            "test/lesson-07/protocol-adapter.test.js",
+            "test/lesson-07/runtime-scenario.test.js",
+            "test-integration/07-course-kerberos.test.js",
+            "test-integration/07-course-runner.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 07 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 07 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 07 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 07 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/07/submission.json", "task": "runtime.jsonのAS・TGS・AP証跡と秘匿境界を根拠にAA07-C1、AA07-C2、診断5件を手作業で入力する", "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えずに全回答欄が許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 07 check", "expectedStatus": "pass", "checkIds": ["AA07-C1", "AA07-C2"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 07 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-recreate-kerberos-lab",
+              "trigger": "現在のLesson 07回答、KDC、keytab generationを破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 07 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "08",
+      "kind": "article-lesson",
+      "module": "enterprise-identity",
+      "articleSlug": "auth-authz-08-ad-freeipa-identity-platform",
+      "learningPrerequisites": ["06", "07"],
+      "estimatedMinutes": 110,
+      "extensionMinutes": 90,
+      "extensionTaskRef": "course/lessons/08/extension.yaml",
+      "timeAllocationMinutes": {"reading": 30, "readingAssessment": 20, "lab": 40, "assessment": 20, "sessions": 2},
+      "environmentRef": "curriculum/support-matrix.json#lessons.08",
+      "readingAssessmentRef": "episodes/08-auth-authz-08-ad-freeipa-identity-platform/assessment.yaml#AA08-A1",
+      "objectives": [
+        { "id": "AA08-O1", "courseOutcomeIds": ["AA-CO7"], "statement": "ID基盤がdirectory、authentication、policy、lifecycleをどう束ねるか説明する" },
+        { "id": "AA08-O2", "courseOutcomeIds": ["AA-CO4", "AA-CO7"], "statement": "directory groupとapplication roleの対応づけをレビューする" }
+      ],
+      "assessments": [
+        {
+          "id": "AA08-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA08-O1", "AA08-O2"],
+          "type": "integration-and-design-review",
+          "artifactSetRef": "course/lessons/08/assessment.yaml#AA08-A1",
+          "requiredCheckIds": ["AA08-C1", "AA08-C2"],
+          "evidence": "隔離した実Samba AD互換DCへCA・hostname検証付きLDAPSで接続し、read-only service bind、structured user search、resolved-user bind、group search、objectGUID由来opaque ID、明示group-to-role mapping、Joiner/Mover/Leaver、application session再検証、同一DCへのkinit/klistを実行する。password、bind secret、session token、raw objectGUID、DN、container identityはruntime evidenceへ残さない",
+          "passCriteria": "AA08-C1でruntime境界、verified LDAPS、stable identity、LDAPとKerberosの経路分離を確認し、AA08-C2でread-only service account、明示mapping、MoverとLeaverにおけるdirectory状態と既存sessionの時差を説明する。保存済みruntimeではなくfresh JML scenarioと回答が一致する",
+          "labTask": {
+            "instructionsRef": "course/lessons/08/README.md",
+            "predict": "Joiner、OU moveとrole変更、account disableの各時点で、新規login、既存session、再検証後のsession、application roleがどう変わるか予測する",
+            "execute": "runnerだけでdoctor、setup、demo、observeを実行し、実Samba AD互換DC、verified LDAPS application、Kerberos clientのJML証跡を観察してsubmission.jsonを完成する。checkはuser削除からfresh sequenceを再実行する",
+            "rejectOrFail": "service accountのwriteがinsufficient access、新規loginのwrong passwordとdisabled accountが同じgeneric 422、Mover/Leaverの旧sessionが再検証で失効し、foreign resourceやhost portへ触れないことを確認する",
+            "evidence": "AA08-C1とAA08-C2がpassし、stableIdPreserved、directoryLocationChanged、role transition、session revoke reason、TGT存在を秘匿済みbooleanと固定値で確認する",
+            "practicalTransfer": "自環境のimmutable ID、group-to-role mapping owner、session再検証契機、disable-to-revoke SLO、緊急失効、service accountとTLS trustの管理を設計する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "fresh actual protocol/stateのruntime条件、AA08-C1、AA08-C2、診断4件中3件以上が一致し、秘匿境界を満たせば合格",
+            "failureRule": "製品能力の一般化、cleartextまたは未検証TLS、DN/mailをimmutable key化、group=role、disable=既存session即時失効、admin bind必須、LDAPとKerberos経路混同、TODO・未知field、credentialまたはraw identifier保存のいずれかがあれば不合格"
+          },
+          "answerKeyRef": "course/lessons/08/answer-key.md",
+          "instructorGuideRef": "course/lessons/08/instructor-guide.md",
+          "automatedCheckRefs": [
+            "course/lessons/08/assessment.mjs",
+            "course/lessons/08/container.mjs",
+            "course/lessons/08/lab-contract.mjs",
+            "course/lessons/08/protocol-adapter.mjs",
+            "course/lessons/08/runner.mjs",
+            "course/lessons/08/scenario.mjs",
+            "docker/samba-ad/app/directory-login-flow.mjs",
+            "docker/samba-ad/app/server.mjs",
+            "docker/samba-ad/compose.yml",
+            "test-integration/08-course-identity-platform.test.js",
+            "test-integration/08-course-runner.test.js",
+            "test/lesson-08/assessment.test.js",
+            "test/lesson-08/directory-login-flow.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 08 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 08 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 08 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 08 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/08/submission.json", "task": "runtime.jsonのverified LDAPS、stable identity、mapping、JML、session、Kerberos証跡を根拠にAA08-C1、AA08-C2、診断4件を入力する", "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えず全回答欄が許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 08 check", "expectedStatus": "pass", "checkIds": ["AA08-C1", "AA08-C2"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 08 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-recreate-identity-platform-lab",
+              "trigger": "現在のLesson 08回答、runtime secret、Samba DC database、runtime CA、sessionを破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 08 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "09",
+      "kind": "article-lesson",
+      "module": "enterprise-identity",
+      "articleSlug": "auth-authz-09-saml-sso",
+      "learningPrerequisites": ["01", "03"],
+      "estimatedMinutes": 120,
+      "extensionMinutes": 60,
+      "extensionTaskRef": "course/lessons/09/extension.yaml",
+      "timeAllocationMinutes": {"reading": 30, "readingAssessment": 15, "lab": 60, "assessment": 15, "sessions": 2},
+      "environmentRef": "curriculum/support-matrix.json#lessons.09",
+      "readingAssessmentRef": "episodes/09-auth-authz-09-saml-sso/assessment.yaml#AA09-A1",
+      "objectives": [
+        { "id": "AA09-O1", "courseOutcomeIds": ["AA-CO2", "AA-CO3"], "statement": "SP-initiated SSOをAuthnRequestからapp sessionまで追跡する" },
+        { "id": "AA09-O2", "courseOutcomeIds": ["AA-CO4", "AA-CO5"], "statement": "signature、issuer、Audience、Destination、InResponseTo、SubjectConfirmation、期限、replayを検証する" }
+      ],
+      "assessments": [
+        {
+          "id": "AA09-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA09-O1", "AA09-O2"],
+          "type": "browser-e2e-and-rejection",
+          "artifactSetRef": "course/lessons/09/assessment.yaml#AA09-A1",
+          "requiredCheckIds": ["AA09-C1", "AA09-C2"],
+          "evidence": "runner所有のinternal networkで実Keycloak 26.7.0、strict SP、scripted HTTP User Agentを動かし、SP AuthnRequest、Keycloak login、署名済みHTTP-POST SAMLResponse、ACS、local app sessionまで追跡する。別系統のruntime生成test keyによる署名fixtureでsignature、Response/Assertion issuer、Audience、Destination、Response/SubjectConfirmation InResponseTo、bearer Method、Recipient、expiry、exact replayを一条件ずつ拒否し、raw XML、NameID、Cookie、password、private key、container control値はruntime evidenceへ残さない",
+          "passCriteria": "AA09-C1で実Keycloak正常flowのHTTP-Redirect AuthnRequest、login、HTTP-POST Response、全検証後のapp session、scripted User Agentの限定scopeを確認する。AA09-C2でResponse/Assertion両署名、issuer、Audience/Conditions、Destination、二つのInResponseTo、bearer SubjectConfirmation、Recipient、期限、Response/Assertion/request IDのone-time化を確認し、11拒否すべてがgeneric 400、期待固定reason、session未発行となり、診断5件中4件以上に正答する",
+          "labTask": {
+            "instructionsRef": "course/lessons/09/README.md",
+            "predict": "AuthnRequestとSAMLResponseのbinding、署名とAudience/Recipientの別責務、app session発行者、exact replayの結果を実行前に予測する",
+            "execute": "runnerだけでdoctor、setup、demo、observeを実行し、実Keycloak traceと別系統conformance fixtureを区別してruntime.jsonを観察し、submission.jsonを完成する。checkはfresh actual scenarioを再実行する",
+            "rejectOrFail": "Docker・ownership・config不整合、duplicate/oversize ACS input、10種類の1条件違反とexact replay、TODO・未知値、metadata/AuthnRequestだけをSSO成功とする誤答、scripted agentをGUI browserへ一般化する誤答でfail closedすることを確認する",
+            "evidence": "AA09-C1とAA09-C2がpassし、実Keycloak正常trace、11件の期待reason一致、各拒否のsession未発行、raw SAMLResponse・Assertion・NameID・Cookie・password・private key非保存を確認する",
+            "practicalTransfer": "自組織のSAML連携についてentityID、ACS、IdP issuer、metadata trust、証明書rotation、Audience、Recipient、request/replay TTL、generic failure、app session失効を確認する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "fresh actual Keycloak flowとruntime署名fixtureの全runtime条件、AA09-C1、AA09-C2、診断5件中4件以上、秘匿境界が一致すれば合格",
+            "failureRule": "metadata/AuthnRequestだけの成功、署名だけの検証、Response/Assertion issuer・Destination・SubjectConfirmation未検証、replay許可、検証前session発行、Keycloak/GUI browserへの過剰一般化、TODO・未知field、raw identity/credential/key保存のいずれかがあれば不合格"
+          },
+          "answerKeyRef": "course/lessons/09/answer-key.md",
+          "instructorGuideRef": "course/lessons/09/instructor-guide.md",
+          "automatedCheckRefs": [
+            "course/lessons/09/assessment.mjs",
+            "course/lessons/09/container.mjs",
+            "course/lessons/09/protocol-adapter.mjs",
+            "course/lessons/09/runner.mjs",
+            "course/lessons/09/scenario.mjs",
+            "docker/saml/compose.yml",
+            "docker/saml/sp/server.mjs",
+            "docker/saml/user-agent/client.mjs",
+            "packages/saml-strict/service-provider.mjs",
+            "packages/saml-strict/xml-shape.mjs",
+            "test/lesson-09/assessment.test.js",
+            "test/lesson-09/contracts.test.js",
+            "test/lesson-09/strict-saml.test.js",
+            "test-integration/09-course-saml.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 09 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 09 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 09 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 09 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/09/submission.json", "task": "runtime.jsonの実Keycloak trace、strict validation、one-fault/replay拒否、秘匿境界を根拠にAA09-C1、AA09-C2、診断5件を手作業で入力する", "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えずに全回答欄が許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 09 check", "expectedStatus": "pass", "checkIds": ["AA09-C1", "AA09-C2"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 09 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-recreate-saml-lab",
+              "trigger": "現在のLesson 09回答、Keycloak realm、runtime key、session、fixture stateを破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 09 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "10",
+      "kind": "article-lesson",
+      "module": "modern-federation-api",
+      "articleSlug": "auth-authz-10-oauth-basics-for-oidc",
+      "learningPrerequisites": ["01"],
+      "estimatedMinutes": 140,
+      "extensionMinutes": 60,
+      "extensionTaskRef": "course/lessons/10/extension.yaml",
+      "timeAllocationMinutes": {"reading": 35, "readingAssessment": 20, "lab": 65, "assessment": 20, "sessions": 2},
+      "environmentRef": "curriculum/support-matrix.json#lessons.10",
+      "readingAssessmentRef": "episodes/10-auth-authz-10-oauth-basics-for-oidc/assessment.yaml#AA10-A1",
+      "objectives": [
+        { "id": "AA10-O1", "courseOutcomeIds": ["AA-CO2", "AA-CO3"], "statement": "OAuthのroleとAuthorization Code + PKCEの往復を追跡する" },
+        { "id": "AA10-O2", "courseOutcomeIds": ["AA-CO4", "AA-CO5"], "statement": "state、redirect URI、PKCE、code再利用の失敗を診断する" }
+      ],
+      "assessments": [
+        {
+          "id": "AA10-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA10-O1", "AA10-O2"],
+          "type": "browser-e2e-and-rejection",
+          "artifactSetRef": "course/lessons/10/assessment.yaml#AA10-A1",
+          "requiredCheckIds": ["AA10-C1", "AA10-C2"],
+          "evidence": "固定した三originの実HTTPでAuthorization Code + PKCE S256、opaque Access Token、RFC 7662 introspection、Bearer APIを実行し、state不一致、PKCE不一致、一回消費済みcode、未登録redirect URI、不正Bearer、scope不足を一条件ずつ拒否する。password、state、verifier、code、token、Cookie、secret、scenario IDはruntime evidenceへ残さない",
+          "passCriteria": "AA10-C1で四role、三origin、codeからopaque token、introspection、project:read付きAPI 200を確認する。AA10-C2でstate不一致はtoken交換前、PKCE不一致とcode replayはinvalid_grant、未登録redirect URIはredirectなし400、不正Bearerは401 invalid_token、scope不足は403 insufficient_scopeとなり、保存済みruntimeではなくfresh scenarioと回答が一致する",
+          "labTask": {
+            "instructionsRef": "course/lessons/10/README.md",
+            "predict": "password入力先、state不一致時の停止地点、誤verifier後のcode再利用、scope不足の401/403を予測する",
+            "execute": "runnerだけでdoctor、setup、demo、observeを実行し、所有process上の実OAuth HTTP scenarioから秘匿済みruntime.jsonを観察してsubmission.jsonを完成する。checkはfresh isolated scenarioを再実行する",
+            "rejectOrFail": "三portの外部占有、所有process identity不整合、state・PKCE・code一回性・redirect URI・Bearer・scopeの拒否不一致、TODO・未知field、runtimeへのcredential混入でfail closedすることを確認する",
+            "evidence": "AA10-C1とAA10-C2がpassし、password、state、verifier、code、Access Token、Cookie、secret、scenario IDを含まないevidenceIdを確認する",
+            "practicalTransfer": "管理対象Client/APIについてpublic/confidential、redirect URI完全一致、PKCE S256、stateの期限と一回性、最小scope、token log、audience・expiry・scope、401/403を確認する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "fresh actual HTTPの正常経路、六つの拒否境界、秘匿境界と回答が一致し、AA10-C1とAA10-C2が全件passすれば合格",
+            "failureRule": "runtimeまたは回答が1件でも不一致、TODO・未知field、roleやstate/PKCEの混同、code replay受理、未登録URIへのredirect、不正Bearerの成功、scope不足の401、credentialの証拠保存なら不合格"
+          },
+          "answerKeyRef": "course/lessons/10/answer-key.md",
+          "instructorGuideRef": "course/lessons/10/instructor-guide.md",
+          "automatedCheckRefs": [
+            "apps/oauth-lab/authorization-server.mjs",
+            "apps/oauth-lab/client-server.mjs",
+            "apps/oauth-lab/resource-server.mjs",
+            "course/lessons/10/assessment.mjs",
+            "course/lessons/10/managed-lab.mjs",
+            "course/lessons/10/runner.mjs",
+            "course/lessons/10/scenario.mjs",
+            "test/lesson-10-11/actual-http.test.js",
+            "test/lesson-10-11/contracts.test.js",
+            "test/lesson-10-11/runner-e2e.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 10 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 10 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 10 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 10 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/10/submission.json", "task": "runtime.jsonの正常経路、拒否地点、status、秘匿境界を根拠にAA10-C1とAA10-C2の回答を手作業で入力する", "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えずに全回答欄が許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 10 check", "expectedStatus": "pass", "checkIds": ["AA10-C1", "AA10-C2"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 10 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-recreate-oauth-lab",
+              "trigger": "現在のLesson 10回答、runtime、OAuth lab generationを破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 10 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "11",
+      "kind": "article-lesson",
+      "module": "modern-federation-api",
+      "articleSlug": "auth-authz-11-openid-connect",
+      "learningPrerequisites": ["03", "10"],
+      "estimatedMinutes": 120,
+      "extensionMinutes": 60,
+      "extensionTaskRef": "course/lessons/11/extension.yaml",
+      "timeAllocationMinutes": {"reading": 30, "readingAssessment": 15, "lab": 60, "assessment": 15, "sessions": 2},
+      "environmentRef": "curriculum/support-matrix.json#lessons.11",
+      "readingAssessmentRef": "episodes/11-auth-authz-11-openid-connect/assessment.yaml#AA11-A1",
+      "objectives": [
+        { "id": "AA11-O1", "courseOutcomeIds": ["AA-CO2", "AA-CO3", "AA-CO4"], "statement": "discoveryとJWKSを使ってID Tokenを検証する" },
+        { "id": "AA11-O2", "courseOutcomeIds": ["AA-CO4", "AA-CO5"], "statement": "ID TokenとAccess Tokenを用途と検証者で区別する" }
+      ],
+      "assessments": [
+        {
+          "id": "AA11-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA11-O1", "AA11-O2"],
+          "type": "interop-and-rejection",
+          "artifactSetRef": "course/lessons/11/assessment.yaml#AA11-A1",
+          "requiredCheckIds": ["AA11-C1", "AA11-C2"],
+          "evidence": "固定issuerから実DiscoveryとJWKSをHTTP取得し、joseでRS256署名、iss、aud、exp/iat、nonce、subを検証してからopaque app sessionを発行する。signature、issuer、audience、expiry、nonce、Access Token取り違えを一条件ずつ拒否し、token、nonce、Cookie、private key、control情報はruntime evidenceへ残さない",
+          "passCriteria": "AA11-C1でID Tokenがback-channel Token Responseへ届き、discovery/JWKSと全検証条件の後だけapp sessionと200が成立する。AA11-C2で六つの一条件不正が通常callbackで400となりsessionを発行せず、重複Cookieも403となり、保存済みruntimeではなくfresh scenarioと回答が一致する",
+          "labTask": {
+            "instructionsRef": "course/lessons/11/README.md",
+            "predict": "ID Tokenの到達経路、署名が正しい別issuer/audience、Access Token取り違え、emailと(issuer, sub)のaccount keyを予測する",
+            "execute": "runnerだけでdoctor、setup、demo、observeを実行し、所有process上の実OIDC HTTP scenarioから秘匿済みruntime.jsonを観察してsubmission.jsonを完成する。checkはfresh isolated scenarioを再実行する",
+            "rejectOrFail": "三portの外部占有、所有process identity不整合、discovery/JWKS/algorithm/iss/aud/exp/iat/nonce/subの検証不一致、Access Token取り違え、重複Cookie、TODO・未知field、runtimeへのcredential混入でfail closedすることを確認する",
+            "evidence": "AA11-C1とAA11-C2がpassし、ID Token、Access Token、nonce、state、verifier、code、Cookie、password、private key、scenario IDを含まないevidenceIdを確認する",
+            "practicalTransfer": "管理対象RPについて固定issuer、discovery issuer完全一致、JWKS取得先、algorithm allowlist、全ID Token検証、front-channel露出、(issuer, sub) link、app session失効を確認する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "fresh actual HTTPの正常OIDC経路、六つの一条件拒否、session未発行、Cookie境界、秘匿境界と回答が一致し、AA11-C1とAA11-C2が全件passすれば合格",
+            "failureRule": "runtimeまたは回答が1件でも不一致、TODO・未知field、JWT decodeや署名だけで受理、Access Tokenをログイン証明にする、iss/aud/time/nonce/sub不検証、不正tokenでsession発行、credentialの証拠保存なら不合格"
+          },
+          "answerKeyRef": "course/lessons/11/answer-key.md",
+          "instructorGuideRef": "course/lessons/11/instructor-guide.md",
+          "automatedCheckRefs": [
+            "apps/oauth-lab/authorization-server.mjs",
+            "apps/oauth-lab/client-server.mjs",
+            "apps/oauth-lab/scenario-registry.mjs",
+            "course/lessons/10/managed-lab.mjs",
+            "course/lessons/11/assessment.mjs",
+            "course/lessons/11/runner.mjs",
+            "course/lessons/11/scenario.mjs",
+            "test/lesson-10-11/actual-http.test.js",
+            "test/lesson-10-11/contracts.test.js",
+            "test/lesson-10-11/runner-e2e.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 11 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 11 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 11 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 11 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/11/submission.json", "task": "runtime.jsonのID Token到達経路、検証条件、拒否結果、session未発行、秘匿境界を根拠にAA11-C1とAA11-C2の回答を手作業で入力する", "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えずに全回答欄が許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 11 check", "expectedStatus": "pass", "checkIds": ["AA11-C1", "AA11-C2"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 11 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-recreate-oidc-lab",
+              "trigger": "現在のLesson 11回答、runtime、OIDC lab generationを破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 11 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "12",
+      "kind": "article-lesson",
+      "module": "strong-authentication",
+      "articleSlug": "auth-authz-12-multi-factor-authentication",
+      "learningPrerequisites": ["02"],
+      "estimatedMinutes": 105,
+      "extensionMinutes": 45,
+      "extensionTaskRef": "course/lessons/12/extension.yaml",
+      "timeAllocationMinutes": {"reading": 30, "readingAssessment": 15, "lab": 45, "assessment": 15, "sessions": 2},
+      "environmentRef": "curriculum/support-matrix.json#lessons.12",
+      "readingAssessmentRef": "episodes/12-auth-authz-12-multi-factor-authentication/assessment.yaml#AA12-A1",
+      "objectives": [
+        { "id": "AA12-O1", "courseOutcomeIds": ["AA-CO6"], "statement": "知識、所持、生体のfactorと方式の強さを分類する" },
+        { "id": "AA12-O2", "courseOutcomeIds": ["AA-CO3", "AA-CO5", "AA-CO6"], "statement": "TOTP登録と二段階ログインを完了し、replay、fallback、復旧を評価する" }
+      ],
+      "assessments": [
+        {
+          "id": "AA12-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA12-O1", "AA12-O2"],
+          "type": "automated-and-decision",
+          "artifactSetRef": "course/lessons/12/assessment.yaml#AA12-A1",
+          "requiredCheckIds": ["AA12-C1", "AA12-C2", "AA12-C3"],
+          "evidence": "freshな実HTTP scenarioでpassword再確認後のTOTP登録、現在codeによる確認、pre-auth、第二要素後のsession発行、同一counter replay、期限切れ、誤値、account単位rate limit、single-use recovery code、secret非保存を観察し、factor強度と復旧判断を照合する",
+          "passCriteria": "AA12-C1で登録とsession gate、AA12-C2でreplay・generic拒否・rate limit・redaction、AA12-C3でfactor分類・phishing耐性・recovery・WebAuthn選択がfresh runtimeと回答の両方で一致する",
+          "labTask": {
+            "instructionsRef": "course/lessons/12/README.md",
+            "predict": "password後のsession、登録確認、同一counter再利用、誤値と期限切れの外部応答、TOTPのphishing耐性、recovery code保存を予測する",
+            "execute": "doctor、setup、demo、observeを実行し、登録、pre-auth、TOTP、session、拒否、rate limit、recovery、redactionをruntime.jsonで確認してsubmission.jsonを完成する",
+            "rejectOrFail": "TODO、未知値、password後のsession発行、同一counter再利用、原因別の外部応答、無制限guess、secret保存、TOTPをphishing-resistantとする回答がfailすることを確認する",
+            "evidence": "AA12-C1からAA12-C3がfresh scenarioでpassし、password、secret、provisioning URI、TOTP、recovery code、cookie/tokenを含まないevidenceIdを確認する",
+            "practicalTransfer": "自環境のenrollment、secret保管、clock/window、replay、rate limit、recovery、session、WebAuthn移行のownerと未確認事項を記録する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "fresh scenarioの登録、二段階login、replay拒否、generic失敗、rate limit、single-use recovery、redactionと回答が一致し、AA12-C1、AA12-C2、AA12-C3がすべてpassすれば合格",
+            "failureRule": "runtimeまたは回答が1件でも不一致、TODOや未知field、passwordだけのapplication session、成功counter再利用、secret/code/token保存、TOTPをphishing-resistantとする判断があれば不合格"
+          },
+          "answerKeyRef": "course/lessons/12/answer-key.md",
+          "instructorGuideRef": "course/lessons/12/instructor-guide.md",
+          "automatedCheckRefs": [
+            "packages/totp/totp.mjs",
+            "apps/project-app/lessons/12/mfa-service.mjs",
+            "apps/project-app/lessons/12/http-handler.mjs",
+            "course/lessons/12/assessment.mjs",
+            "course/lessons/12/runner.mjs",
+            "course/lessons/12/scenario.mjs",
+            "course/lessons/12/workspace.mjs",
+            "test/lesson-12/totp.test.js",
+            "test/lesson-12/mfa-service.test.js",
+            "test/lesson-12/runner-e2e.test.js",
+            "test/lesson-12/runtime-scenario.test.js",
+            "test/lesson-12/assessment.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 12 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 12 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 12 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 12 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/12/submission.json", "task": "runtime.jsonと一次情報を根拠にAA12-C1からAA12-C3の12回答を許可値で入力する", "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えずにすべての回答欄が許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 12 check", "expectedStatus": "pass", "checkIds": ["AA12-C1", "AA12-C2", "AA12-C3"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 12 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-restart-mfa-lab",
+              "trigger": "現在の第12回答とruntimeを破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 12 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "13",
+      "kind": "article-lesson",
+      "module": "strong-authentication",
+      "articleSlug": "auth-authz-13-fido-webauthn",
+      "learningPrerequisites": ["12"],
+      "estimatedMinutes": 140,
+      "extensionMinutes": 60,
+      "extensionTaskRef": "course/lessons/13/extension.yaml",
+      "timeAllocationMinutes": {"reading": 35, "readingAssessment": 20, "lab": 65, "assessment": 20, "sessions": 2},
+      "environmentRef": "curriculum/support-matrix.json#lessons.13",
+      "readingAssessmentRef": "episodes/13-auth-authz-13-fido-webauthn/assessment.yaml#AA13-A1",
+      "objectives": [
+        { "id": "AA13-O1", "courseOutcomeIds": ["AA-CO2", "AA-CO3", "AA-CO6"], "statement": "WebAuthn登録と認証でchallenge、origin、RP ID、署名を追跡する" },
+        { "id": "AA13-O2", "courseOutcomeIds": ["AA-CO4", "AA-CO5"], "statement": "challenge、origin、RP ID、userHandle、署名の不一致が拒否される理由を説明する" }
+      ],
+      "assessments": [
+        {
+          "id": "AA13-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA13-O1", "AA13-O2"],
+          "type": "browser-e2e-and-rejection",
+          "artifactSetRef": "course/lessons/13/assessment.yaml#AA13-A1",
+          "requiredCheckIds": ["AA13-C1", "AA13-C2", "AA13-C3"],
+          "evidence": "Playwright 1.61.1 ChromiumのCDP virtual authenticatorでactual navigator.credentials.create/getを実行し、失敗登録のRP非保存、username-bound認証、challenge・別origin・foreign RP ID・signature・transaction replay・userHandleの単一条件を拒否する。64-byte random user handle、UV、attestation none、signCount解釈、redactionをfresh scenarioで照合する",
+          "passCriteria": "AA13-C1でactual ceremonyと検証後保存、AA13-C2でusername-bound成功と6拒否境界、AA13-C3でattestation none、signCount、userHandle mapping、generic failure、virtual authenticatorの限界がruntimeと回答の両方で一致する",
+          "labTask": {
+            "instructionsRef": "course/lessons/13/README.md",
+            "predict": "失敗登録の保存、create/get、challenge・origin・RP ID・signature・userHandle・replayの検証者、signCountとvirtual authenticatorの証明範囲を予測する",
+            "execute": "doctorでChromiumを実起動確認し、setup、demo、observeでactual WebAuthn ceremonyと単一条件の拒否を実行し、秘匿済みruntime.jsonからsubmission.jsonを完成する",
+            "rejectOrFail": "PII由来user handle、検証前保存、browserだけの検証、credential IDだけの認証、再利用transaction、signCountをclone証明、virtual fixtureを実hardware証明とする回答がfailすることを確認する",
+            "evidence": "AA13-C1/C2/C3がfresh browser scenarioでpassし、challenge、userHandle、credential ID、public key、attestation object、assertion、signature、tokenを含まないevidenceIdを確認する",
+            "practicalTransfer": "自環境のRP ID、許可origin、user handle、transaction、credential record、session、失効、risk signal、実機testのownerを記録する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "actual create/get、失敗時RP非保存、username-bound成功、6拒否境界、64-byte random handle、generic failure、redactionと回答が一致し、AA13-C1/C2/C3がすべてpassすれば合格",
+            "failureRule": "runtimeまたは回答が1件でも不一致、TODO、未知field、challenge/origin/RP ID/signature/UV/userHandle未検証、signCountまたはvirtual authenticatorの過大評価があれば不合格"
+          },
+          "answerKeyRef": "course/lessons/13/answer-key.md",
+          "instructorGuideRef": "course/lessons/13/instructor-guide.md",
+          "automatedCheckRefs": [
+            "apps/project-app/lessons/13-14/webauthn-service.mjs",
+            "apps/project-app/lessons/13-14/http-handler.mjs",
+            "apps/project-app/lessons/13-14/browser-page.mjs",
+            "course/lessons/webauthn/browser-lab.mjs",
+            "course/lessons/13/assessment.mjs",
+            "course/lessons/13/runner.mjs",
+            "course/lessons/13/scenario.mjs",
+          "course/lessons/13/workspace.mjs",
+          "test/lesson-13-14/webauthn-service.test.js",
+          "test/lesson-13-14/runtime-scenario.test.js",
+          "test/lesson-13-14/assessment.test.js",
+          "test/lesson-13-14/runner-e2e.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 13 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 13 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 13 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 13 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/13/submission.json", "task": "runtime.jsonと一次仕様からAA13-C1からAA13-C3の12回答を許可値で入力する", "completionCriterion": "TODOが残らず、構造を変えず、全fieldが許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 13 check", "expectedStatus": "pass", "checkIds": ["AA13-C1", "AA13-C2", "AA13-C3"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 13 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-restart-webauthn-lab",
+              "trigger": "現在の第13回答とruntimeを破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 13 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "14",
+      "kind": "article-lesson",
+      "module": "strong-authentication",
+      "articleSlug": "auth-authz-14-passkey-login",
+      "learningPrerequisites": ["03", "13"],
+      "estimatedMinutes": 105,
+      "extensionMinutes": 45,
+      "extensionTaskRef": "course/lessons/14/extension.yaml",
+      "timeAllocationMinutes": {"reading": 30, "readingAssessment": 15, "lab": 45, "assessment": 15, "sessions": 2},
+      "environmentRef": "curriculum/support-matrix.json#lessons.14",
+      "readingAssessmentRef": "episodes/14-auth-authz-14-passkey-login/assessment.yaml#AA14-A1",
+      "objectives": [
+        { "id": "AA14-O1", "courseOutcomeIds": ["AA-CO2", "AA-CO6"], "statement": "discoverable credentialによるusernameなしのログインを説明する" },
+        { "id": "AA14-O2", "courseOutcomeIds": ["AA-CO6", "AA-CO7"], "statement": "同期、端末変更、復旧、退職時失効を含む導入案を作る" }
+      ],
+      "assessments": [
+        {
+          "id": "AA14-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA14-O1", "AA14-O2"],
+          "type": "browser-e2e-and-lifecycle",
+          "artifactSetRef": "course/lessons/14/assessment.yaml#AA14-A1",
+          "requiredCheckIds": ["AA14-C1", "AA14-C2"],
+          "evidence": "2つのCDP virtual authenticatorでdiscoverable credentialのusernameなし認証、RP側失効後のassertion拒否とauthenticator credential残存、第二credential復旧、BE/BS、account disable、session invalidationをactual create/getで観察する",
+          "passCriteria": "AA14-C1でusernameなし認証、RP失効、private credential残存、第二credential復旧、AA14-C2でBE/BS、cloud同期非証明、account/session失効、signCount、redactionがruntimeと回答の両方で一致する",
+          "labTask": {
+            "instructionsRef": "course/lessons/14/README.md",
+            "predict": "empty allowCredentials、returned userHandle、RP失効、authenticator private credential、第二credential、BE/BS、account disable後のsessionとassertionを予測する",
+            "execute": "doctor、setup、demo、observeで2つのvirtual authenticatorによるusernameなし認証、失効、復旧、backup flags、account lifecycleを実行し、runtime.jsonからsubmission.jsonを完成する",
+            "rejectOrFail": "RPが端末private keyを遠隔削除できる、CDP flagsが実cloud同期を証明する、credential 1本で復旧十分、account disable後もsession有効、signCount 0がclone証明という回答がfailすることを確認する",
+            "evidence": "AA14-C1/C2がfresh browser scenarioでpassし、credential ID、userHandle、public key、assertion、signature、tokenを含まないevidenceIdを確認する",
+            "practicalTransfer": "複数credential登録、紛失、RP失効、account disable、session失効、全喪失recovery、通知、監査、accessibilityのownerを記録する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "discoverable login、RP失効後拒否、private credential残存、第二credential復旧、BE/BS、cloud同期非証明、account/session失効、redactionと回答が一致し、AA14-C1/C2がともにpassすれば合格",
+            "failureRule": "runtimeまたは回答が1件でも不一致、TODO、未知field、private key遠隔削除、virtual flagsの実同期証明、signCountのclone断定、disable後session維持があれば不合格"
+          },
+          "answerKeyRef": "course/lessons/14/answer-key.md",
+          "instructorGuideRef": "course/lessons/14/instructor-guide.md",
+          "automatedCheckRefs": [
+            "apps/project-app/lessons/13-14/webauthn-service.mjs",
+            "apps/project-app/lessons/13-14/http-handler.mjs",
+            "apps/project-app/lessons/13-14/browser-page.mjs",
+            "course/lessons/webauthn/browser-lab.mjs",
+            "course/lessons/14/assessment.mjs",
+            "course/lessons/14/runner.mjs",
+            "course/lessons/14/scenario.mjs",
+          "course/lessons/14/workspace.mjs",
+          "test/lesson-13-14/webauthn-service.test.js",
+          "test/lesson-13-14/runtime-scenario.test.js",
+          "test/lesson-13-14/assessment.test.js",
+          "test/lesson-13-14/runner-e2e.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 14 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 14 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 14 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 14 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/14/submission.json", "task": "runtime.jsonと一次仕様からAA14-C1とAA14-C2の8回答を許可値で入力する", "completionCriterion": "TODOが残らず、構造を変えず、全fieldが許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 14 check", "expectedStatus": "pass", "checkIds": ["AA14-C1", "AA14-C2"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 14 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-restart-passkey-lab",
+              "trigger": "現在の第14回答とruntimeを破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 14 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "15",
+      "kind": "article-lesson",
+      "module": "modern-federation-api",
+      "articleSlug": "auth-authz-15-oauth-api-authorization",
+      "learningPrerequisites": ["04", "10", "11"],
+      "estimatedMinutes": 140,
+      "extensionMinutes": 60,
+      "extensionTaskRef": "course/lessons/15/extension.yaml",
+      "timeAllocationMinutes": {"reading": 35, "readingAssessment": 20, "lab": 65, "assessment": 20, "sessions": 2},
+      "environmentRef": "curriculum/support-matrix.json#lessons.15",
+      "readingAssessmentRef": "episodes/15-auth-authz-15-oauth-api-authorization/assessment.yaml#AA15-A1",
+      "objectives": [
+        { "id": "AA15-O1", "courseOutcomeIds": ["AA-CO3", "AA-CO4", "AA-CO5"], "statement": "RFC 8707 resource indicatorからRFC 9068 JWT Access Tokenを取得し、Resource ServerでJWKS、RS256、typ、iss、aud、exp、sub、client_id、iat、jti、scopeを検証する" },
+        { "id": "AA15-O2", "courseOutcomeIds": ["AA-CO3", "AA-CO4", "AA-CO5", "AA-CO7"], "statement": "ClientはAccess Tokenをopaqueに扱い、Resource Serverでscopeとproject-coreのtenant・ownership認可を分離してBOLAとcross-tenant accessを拒否する" }
+      ],
+      "assessments": [
+        {
+          "id": "AA15-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA15-O1", "AA15-O2"],
+          "type": "actual-http-jwt-api-authorization-and-rejection",
+          "artifactSetRef": "course/lessons/15/assessment.yaml#AA15-A1",
+          "requiredCheckIds": ["AA15-C1", "AA15-C2", "AA15-C3"],
+          "evidence": "三originの実HTTPでAuthorization Code + PKCE、resource indicator、RS256署名JWT Access Token、remote JWKS検証、scope、project-core認可を実行する。runner所有fresh scenarioでmalformed、signature、issuer、audience、expiry、typ、ID Token混同、必須claim欠損、scope不足、viewer、cross-tenant、未知objectを一条件ずつ拒否し、秘密値を保存しない",
+          "passCriteria": "resourceとaudience、at+jwt、RS256/JWKS、Clientのopaque処理、Token不正401、scope不足403、Token/scope不正時のproject-core未到達、viewer 403、cross-tenant/未知object 404、owner 204がfresh scenarioと回答で一致し、AA15-C1/C2/C3をすべて満たす",
+          "labTask": {
+            "instructionsRef": "course/lessons/15/README.md",
+            "predict": "wrong typ、scope不足、cross-tenant、ownerについて401/403/404/204とproject-core到達有無を予測する",
+            "execute": "runnerだけでdoctor、setup、demo、observeを実行し、実HTTPのJWT検証、scope検証、project-core認可を分離した秘匿済みruntime.jsonからsubmission.jsonを完成する",
+            "rejectOrFail": "resource不一致、malformed、bad signature/issuer/audience/expiry/typ、ID Token混同、必須claim欠損は401、scope不足は403、viewerは403、cross-tenant/未知objectは404となり、Token不正とscope不足ではproject-coreを呼ばないことを確認する",
+            "evidence": "AA15-C1/C2/C3がpassし、Access Token、code、verifier、Cookie、credential、鍵、scenario IDを含まないevidenceIdを確認する",
+            "practicalTransfer": "管理APIについてissuer/JWKS、resource/audience、alg/typ、必須claim、scope、principal mapping、tenant/ownership policy、401/403/404、鍵rotationと失効を確認する"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "fresh actual HTTPの正常系、Token負例、scope境界、project-core認可、秘匿境界と回答が一致し、AA15-C1/C2/C3が全件passすれば合格",
+            "failureRule": "runtimeまたは回答が1件でも不一致、TODO・未知field、JWT decodeだけの受理、ID Token受理、scope不足401、Token不正時のpolicy実行、cross-tenant存在漏えい、credential/Token/鍵の保存なら不合格"
+          },
+          "answerKeyRef": "course/lessons/15/answer-key.md",
+          "instructorGuideRef": "course/lessons/15/instructor-guide.md",
+          "automatedCheckRefs": [
+            "apps/oauth-lab/authorization-server.mjs",
+            "apps/oauth-lab/client-server.mjs",
+            "apps/oauth-lab/resource-server.mjs",
+            "course/lessons/15/assessment.mjs",
+            "course/lessons/15/runner.mjs",
+            "course/lessons/15/scenario.mjs",
+            "services/project-core/service.mjs",
+            "test/lesson-15/actual-http.test.js",
+            "test/lesson-15/contracts.test.js",
+            "test/lesson-15/runner-e2e.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson 15 doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson 15 setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson 15 demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson 15 observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/15/submission.json", "task": "runtime.jsonの検証順、status、project-core到達booleanを根拠にAA15-C1/C2/C3を手作業で入力する", "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えず全回答が許可値で埋まっている" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson 15 check", "expectedStatus": "pass", "checkIds": ["AA15-C1", "AA15-C2", "AA15-C3"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson 15 stop", "expectedStatus": "pass", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "discard-and-recreate-lesson-15",
+              "trigger": "現在のLesson 15回答、runtime、OAuth lab generationを破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson 15 reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "capstone",
+      "kind": "course-capstone",
+      "module": "capstone",
+      "articleSlug": null,
+      "learningPrerequisites": ["04", "08", "09", "11", "14", "15"],
+      "estimatedMinutes": 240,
+      "extensionMinutes": 0,
+      "timeAllocationMinutes": {"reading": 30, "readingAssessment": 0, "lab": 165, "assessment": 45, "sessions": 4},
+      "environmentRef": "curriculum/support-matrix.json#lessons.capstone",
+      "tracks": ["developer", "iam-operations"],
+      "objectives": [
+        { "id": "AA-CAP-O1", "courseOutcomeIds": ["AA-CO1", "AA-CO2", "AA-CO4", "AA-CO5", "AA-CO7"], "statement": "架空企業の認証認可構成から責任分界と優先リスクを特定する" },
+        { "id": "AA-CAP-O2", "courseOutcomeIds": ["AA-CO3", "AA-CO4", "AA-CO5", "AA-CO6", "AA-CO7"], "statement": "開発またはIAM運用trackに応じた改善成果物と検証証跡をまとめる" }
+      ],
+      "assessments": [
+        {
+          "id": "AA-CAP-A1",
+          "artifactStatus": "implemented",
+          "objectiveIds": ["AA-CAP-O1", "AA-CAP-O2"],
+          "type": "automated-track-simulation-and-instructor-rubric",
+          "artifactSetRef": "course/lessons/capstone/assessment.yaml#AA-CAP-A1",
+          "requiredCheckIds": ["AA-CAP-C1", "AA-CAP-C2", "AA-CAP-C3", "AA-CAP-C4", "AA-CAP-C5", "AA-CAP-C6", "AA-CAP-C7"],
+          "evidence": "架空組織の同一caseに対し、developerまたはiam-operationsの構造化成果物をfresh simulatorへ入力し、責任分界、credential/JML、federation、API認可、MFA/Passkey、優先リスク、track統合の7 check、5重大拒否test、未解決Criticalを検証する。自由記述の意味理解は自動判定せず講師rubricへ分離する",
+          "passCriteria": "選択した1trackでAA-CAP-C1からAA-CAP-C7が全件pass、機械採点100点中80点以上、重大拒否test skip 0かつfailure 0、未解決Critical 0を満たす。加えて学校・社内研修の修了判定では講師が自由記述rubricを80%以上で採点する",
+          "labTask": {
+            "instructionsRef": "course/lessons/capstone/README.md",
+            "predict": "架空組織の5 observationから責任owner、3 Critical、拒否順、JML・緊急失効・MFA/Passkey recoveryの期待結果を予測し、developerまたはiam-operationsを1つ選ぶ",
+            "execute": "doctor、setup、demo、observe後にsubmission.jsonの共通controlと選択trackのpolicyまたはrunbookを編集し、5重大testをrunにしてcheckする",
+            "rejectOrFail": "critical controlを1つ外す、重大testをskipする、Criticalを未解決にする、token→scope→tenant→object順を崩す、SAML semantic validationやleaver/recovery revocationを欠くとfresh checkがfailすることを確認する",
+            "evidence": "AA-CAP-C1からC7、scorePercent、criticalSkipCount、criticalFailureCount、unresolvedCriticalがfresh checkでpassし、credential、PII、raw token、filesystem pathを含まないevidenceIdを確認する",
+            "practicalTransfer": "講師rubricで責任分界、代替案、残存risk、実装または運用上のtradeoffを説明し、自組織へ持ち帰る90日計画を別途レビューする"
+          },
+          "rubric": {
+            "scoringMethod": "all-required-checks",
+            "passRule": "機械判定は全7 check、80%以上、重大拒否skip/failure 0、未解決Critical 0をすべて要求する。自由記述は機械判定に混ぜずinstructor-guide.mdのrubricで別採点する",
+            "failureRule": "いずれかのrequired check不一致、80%未満、重大拒否のskipまたはfailure、未解決Critical、track不整合、TODO・未知field・未知値があれば機械判定は不合格。講師rubricが80%未満なら研修修了は保留する"
+          },
+          "answerKeyRef": "course/lessons/capstone/answer-key.md",
+          "instructorGuideRef": "course/lessons/capstone/instructor-guide.md",
+          "automatedCheckRefs": [
+            "course/lessons/capstone/model.mjs",
+            "course/lessons/capstone/assessment.mjs",
+            "course/lessons/capstone/runner.mjs",
+            "course/lessons/capstone/scenario.mjs",
+            "course/lessons/capstone/workspace.mjs",
+            "test/lesson-capstone/assessment.test.js",
+            "test/lesson-capstone/contracts.test.js",
+            "test/lesson-capstone/runner-e2e.test.js",
+            "test/lesson-capstone/scenario.test.js"
+          ],
+          "procedure": [
+            { "kind": "command", "step": 1, "command": "node course.mjs lesson capstone doctor", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 2, "command": "node course.mjs lesson capstone setup", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 3, "command": "node course.mjs lesson capstone demo", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "command", "step": 4, "command": "node course.mjs lesson capstone observe", "expectedStatus": "pass", "checkIds": [], "terminal": false },
+            { "kind": "learner-action", "step": 5, "path": ".lab/submissions/capstone/submission.json", "task": "developerまたはiam-operationsを1つ選び、共通control、5 risk、選択track artifact、5重大testを構造化値で完成する。説明は講師rubricへ提出し、JSONへsecret・PII・filesystem pathを書かない", "completionCriterion": "TODOが0、未選択trackがnot-selected、選択trackの全fieldが許可値、重大testがすべてrun、Critical dispositionがすべてresolved" },
+            { "kind": "command", "step": 6, "command": "node course.mjs lesson capstone check", "expectedStatus": "pass", "checkIds": ["AA-CAP-C1", "AA-CAP-C2", "AA-CAP-C3", "AA-CAP-C4", "AA-CAP-C5", "AA-CAP-C6", "AA-CAP-C7"], "terminal": false },
+            { "kind": "command", "step": 7, "command": "node course.mjs lesson capstone stop", "expectedStatus": "safe-noop", "checkIds": [], "terminal": true }
+          ],
+          "optionalRecoveryScenarios": [
+            {
+              "id": "diagnose-capstone-workspace",
+              "trigger": "demo前、JSON破損、track不整合、reset後の状態を確認する場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson capstone diagnose", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            },
+            {
+              "id": "discard-and-recreate-capstone",
+              "trigger": "現在のcapstone回答とruntimeを破棄して最初からやり直す場合",
+              "procedure": [
+                { "kind": "command", "step": 1, "command": "node course.mjs lesson capstone reset", "expectedStatus": "pass", "checkIds": [], "terminal": false }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

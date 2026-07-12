@@ -1,0 +1,173 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "02",
+  "assessment": {
+    "id": "AA02-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA02-O1",
+      "AA02-O2"
+    ],
+    "type": "automated-and-explanation",
+    "evidence": "loopback上の実HTTPで毎回新規scenarioを実行し、password保存表現、成功200、generic 422、3回目の429とRetry-After、30秒後の復旧を秘匿済みruntime evidenceと短答で確認する",
+    "passCriteria": "checkが保存済みruntimeを信用せずfresh scenarioを再実行し、平文非保存、同一passwordのsalt差、session未発行、誤passwordと未知identifierの同一422、3回目の429、per-identifier制限とglobal KDF容量保護が未実装である境界を、AA02-C1からAA02-C3の全件で確認する",
+    "labTask": {
+      "instructionsRef": "course/lessons/02/README.md",
+      "predict": "同じpasswordを2回保存したときのsalt差と、誤passwordと未知identifierの外部応答を実行前に予測する",
+      "execute": "doctor、setup、demo、observeを実行して.lab/submissions/02/runtime.jsonを観察し、許可値だけで.lab/submissions/02/submission.jsonを完成する。checkは保存済みruntimeとは別のfresh scenarioを実HTTPで再実行する",
+      "rejectOrFail": "TODO、未知値、または意図的な誤答でcheckがfailすることを確認し、失敗したcheck IDに対応する保存、認証応答、rate limitの観察へ戻る",
+      "evidence": "AA02-C1からAA02-C3が同一check実行内のfresh scenarioでpassし、raw password、identifier、scenario ID、保存表現全体を証跡へ残さないevidenceIdを確認する",
+      "practicalTransfer": "自分が扱う認証基盤で、password保存algorithmとparameter、Unicode正規化、online rate limit、global KDF容量保護、漏えい時の移行方針を個別に確認する"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "fresh scenarioの実HTTP検証と回答が一致し、AA02-C1、AA02-C2、AA02-C3の全件がpassすれば合格",
+      "failureRule": "runtime条件または回答が1件でも不一致、TODOまたは未知fieldが残る、保存済みruntimeだけを根拠にする、per-identifier rate limitをglobal KDF容量保護と誤認すれば不合格"
+    },
+    "answerKeyRef": "course/lessons/02/answer-key.md",
+    "instructorGuideRef": "course/lessons/02/instructor-guide.md",
+    "automatedCheckRefs": [
+      "course/lessons/02/assessment.mjs",
+      "course/lessons/02/runner.mjs",
+      "course/lessons/02/scenario.mjs",
+      "course/lessons/02/workspace.mjs",
+      "test/lesson-02/assessment.test.js",
+      "test/lesson-02/password-auth-service.test.js",
+      "test/lesson-02/runtime-scenario.test.js",
+      "test/lesson-02/scrypt-password.test.js",
+      "test/lesson-02-03-runner-e2e.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA02-C1",
+        "mode": "lab",
+        "assessmentId": "AA02-A1",
+        "objectiveIds": [
+          "AA02-O1",
+          "AA02-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO5"
+        ],
+        "evidenceType": "automated-and-explanation",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA02-C2",
+        "mode": "lab",
+        "assessmentId": "AA02-A1",
+        "objectiveIds": [
+          "AA02-O1",
+          "AA02-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO5"
+        ],
+        "evidenceType": "automated-and-explanation",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA02-C3",
+        "mode": "lab",
+        "assessmentId": "AA02-A1",
+        "objectiveIds": [
+          "AA02-O1",
+          "AA02-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO5"
+        ],
+        "evidenceType": "automated-and-explanation",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs lesson 02 doctor",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs lesson 02 setup",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs lesson 02 demo",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs lesson 02 observe",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "learner-action",
+        "step": 5,
+        "path": ".lab/submissions/02/submission.json",
+        "task": "runtime.jsonの秘匿済み観察結果を根拠にAA02-C1からAA02-C3の回答を手作業で入力する",
+        "completionCriterion": "TODOが残らず、JSONとしてparseでき、field構造を変えずにすべての回答欄が許可値で埋まっている"
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson 02 check",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA02-C1",
+          "AA02-C2",
+          "AA02-C3"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs lesson 02 stop",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": true
+      }
+    ],
+    "optionalRecoveryScenarios": [
+      {
+        "id": "discard-and-restart",
+        "trigger": "現在の第02回答を破棄して最初からやり直す場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson 02 reset",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      }
+    ]
+  }
+}

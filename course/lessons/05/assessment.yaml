@@ -1,0 +1,161 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "05",
+  "assessment": {
+    "id": "AA05-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA05-O1",
+      "AA05-O2"
+    ],
+    "type": "automated-and-decision",
+    "evidence": "loopback上の実HTTPで401とBasic realm/UTF-8 challenge、Authorization header付き200、次requestの再challenge、Set-Cookie非発行を確認し、headerとdecoded credentialを残さない秘匿済みruntime evidenceと採用判断を照合する",
+    "passCriteria": "checkが保存済みruntimeを信用せずfresh scenarioを再実行し、AA05-C1でRFC 7617のchallenge、canonical Base64 UTF-8 NFC user-id:password、200、毎request認証、session非発行を確認し、AA05-C2でBase64が暗号化ではないこと、productionのTLS必須、Authorizationとdecoded credentialのlog非保存、適用範囲を確認する",
+    "labTask": {
+      "instructionsRef": "course/lessons/05/README.md",
+      "predict": "Authorizationなし、誤credential、正しいcredential、成功後にheaderを外した次requestのstatusとheaderを予測する",
+      "execute": "doctor、setup、demo、observeを実行して.lab/submissions/05/runtime.jsonを観察し、許可値だけでsubmission.jsonを完成する。checkはfresh scenarioで実HTTP Basic exchangeを再実行する",
+      "rejectOrFail": "TODO、未知値、またはBase64を暗号化とする誤答でcheckがfailすることを確認し、challenge traceとTLS・log・適用判断へ戻る",
+      "evidence": "AA05-C1とAA05-C2がpassし、Authorization header、user-id、password、decoded user-pass、scenario IDを証跡へ残さないevidenceIdを確認する",
+      "practicalTransfer": "自分が扱うendpointについてTLS、realmとprotection space、credential保管・rotation、共有ID、log redaction、MFA/SSO要件を確認し、Basic採否を記録する"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "fresh scenarioの401 challenge、200、header再要求、session非発行、秘匿境界と回答が一致し、AA05-C1とAA05-C2の全件がpassすれば合格",
+      "failureRule": "runtime条件または回答が1件でも不一致、TODOまたは未知fieldが残る、401にWWW-Authenticateがない、Base64を暗号化と誤認、loopback HTTPをproduction承認、credentialをlogへ残す採用判断なら不合格"
+    },
+    "answerKeyRef": "course/lessons/05/answer-key.md",
+    "instructorGuideRef": "course/lessons/05/instructor-guide.md",
+    "automatedCheckRefs": [
+      "apps/project-app/lessons/05/basic-auth-service.mjs",
+      "apps/project-app/lessons/05/http-handler.mjs",
+      "course/lessons/05/assessment.mjs",
+      "course/lessons/05/runner.mjs",
+      "course/lessons/05/scenario.mjs",
+      "course/lessons/05/workspace.mjs",
+      "test/lesson-05/assessment.test.js",
+      "test/lesson-05/basic-auth-service.test.js",
+      "test/lesson-05/http-integration.test.js",
+      "test/lesson-05/runner-e2e.test.js",
+      "test/lesson-05/runtime-scenario.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA05-C1",
+        "mode": "lab",
+        "assessmentId": "AA05-A1",
+        "objectiveIds": [
+          "AA05-O1",
+          "AA05-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO1",
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO5",
+          "AA-CO7"
+        ],
+        "evidenceType": "automated-and-decision",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA05-C2",
+        "mode": "lab",
+        "assessmentId": "AA05-A1",
+        "objectiveIds": [
+          "AA05-O1",
+          "AA05-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO1",
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO5",
+          "AA-CO7"
+        ],
+        "evidenceType": "automated-and-decision",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs lesson 05 doctor",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs lesson 05 setup",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs lesson 05 demo",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs lesson 05 observe",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "learner-action",
+        "step": 5,
+        "path": ".lab/submissions/05/submission.json",
+        "task": "runtime.jsonの秘匿済み観察結果を根拠にAA05-C1とAA05-C2の回答を手作業で入力する",
+        "completionCriterion": "TODOが残らず、JSONとしてparseでき、field構造を変えずにすべての回答欄が許可値で埋まっている"
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson 05 check",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA05-C1",
+          "AA05-C2"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs lesson 05 stop",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": true
+      }
+    ],
+    "optionalRecoveryScenarios": [
+      {
+        "id": "discard-and-restart",
+        "trigger": "現在の第05回答を破棄して最初からやり直す場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson 05 reset",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      }
+    ]
+  }
+}

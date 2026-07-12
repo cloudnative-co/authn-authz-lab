@@ -1,0 +1,24 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "02",
+  "answers": {
+    "AA02-C1": {
+      "storedFormat": "TODO",
+      "passwordNormalization": "TODO",
+      "scryptProfile": "TODO",
+      "plaintextStorage": "TODO",
+      "samePasswordSalts": "TODO"
+    },
+    "AA02-C2": {
+      "successfulResult": "TODO",
+      "wrongAndUnknownFailure": "TODO",
+      "sessionIssuance": "TODO"
+    },
+    "AA02-C3": {
+      "thresholdResponse": "TODO",
+      "offlineGuessingControl": "TODO",
+      "onlineGuessingControl": "TODO",
+      "rateLimitScope": "TODO"
+    }
+  }
+}

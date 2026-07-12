@@ -1,0 +1,158 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "10",
+  "assessment": {
+    "id": "AA10-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA10-O1",
+      "AA10-O2"
+    ],
+    "type": "browser-e2e-and-rejection",
+    "evidence": "固定した三originの実HTTPでAuthorization Code + PKCE S256、opaque Access Token、RFC 7662 introspection、Bearer APIを実行し、state不一致、PKCE不一致、一回消費済みcode、未登録redirect URI、不正Bearer、scope不足を一条件ずつ拒否する。password、state、verifier、code、token、Cookie、secret、scenario IDはruntime evidenceへ残さない",
+    "passCriteria": "AA10-C1で四role、三origin、codeからopaque token、introspection、project:read付きAPI 200を確認する。AA10-C2でstate不一致はtoken交換前、PKCE不一致とcode replayはinvalid_grant、未登録redirect URIはredirectなし400、不正Bearerは401 invalid_token、scope不足は403 insufficient_scopeとなり、保存済みruntimeではなくfresh scenarioと回答が一致する",
+    "labTask": {
+      "instructionsRef": "course/lessons/10/README.md",
+      "predict": "password入力先、state不一致時の停止地点、誤verifier後のcode再利用、scope不足の401/403を予測する",
+      "execute": "runnerだけでdoctor、setup、demo、observeを実行し、所有process上の実OAuth HTTP scenarioから秘匿済みruntime.jsonを観察してsubmission.jsonを完成する。checkはfresh isolated scenarioを再実行する",
+      "rejectOrFail": "三portの外部占有、所有process identity不整合、state・PKCE・code一回性・redirect URI・Bearer・scopeの拒否不一致、TODO・未知field、runtimeへのcredential混入でfail closedすることを確認する",
+      "evidence": "AA10-C1とAA10-C2がpassし、password、state、verifier、code、Access Token、Cookie、secret、scenario IDを含まないevidenceIdを確認する",
+      "practicalTransfer": "管理対象Client/APIについてpublic/confidential、redirect URI完全一致、PKCE S256、stateの期限と一回性、最小scope、token log、audience・expiry・scope、401/403を確認する"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "fresh actual HTTPの正常経路、六つの拒否境界、秘匿境界と回答が一致し、AA10-C1とAA10-C2が全件passすれば合格",
+      "failureRule": "runtimeまたは回答が1件でも不一致、TODO・未知field、roleやstate/PKCEの混同、code replay受理、未登録URIへのredirect、不正Bearerの成功、scope不足の401、credentialの証拠保存なら不合格"
+    },
+    "answerKeyRef": "course/lessons/10/answer-key.md",
+    "instructorGuideRef": "course/lessons/10/instructor-guide.md",
+    "automatedCheckRefs": [
+      "apps/oauth-lab/authorization-server.mjs",
+      "apps/oauth-lab/client-server.mjs",
+      "apps/oauth-lab/resource-server.mjs",
+      "course/lessons/10/assessment.mjs",
+      "course/lessons/10/managed-lab.mjs",
+      "course/lessons/10/runner.mjs",
+      "course/lessons/10/scenario.mjs",
+      "test/lesson-10-11/actual-http.test.js",
+      "test/lesson-10-11/contracts.test.js",
+      "test/lesson-10-11/runner-e2e.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA10-C1",
+        "mode": "lab",
+        "assessmentId": "AA10-A1",
+        "objectiveIds": [
+          "AA10-O1",
+          "AA10-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5"
+        ],
+        "evidenceType": "browser-e2e-and-rejection",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA10-C2",
+        "mode": "lab",
+        "assessmentId": "AA10-A1",
+        "objectiveIds": [
+          "AA10-O1",
+          "AA10-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO2",
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5"
+        ],
+        "evidenceType": "browser-e2e-and-rejection",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs lesson 10 doctor",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs lesson 10 setup",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs lesson 10 demo",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs lesson 10 observe",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "learner-action",
+        "step": 5,
+        "path": ".lab/submissions/10/submission.json",
+        "task": "runtime.jsonの正常経路、拒否地点、status、秘匿境界を根拠にAA10-C1とAA10-C2の回答を手作業で入力する",
+        "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えずに全回答欄が許可値で埋まっている"
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson 10 check",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA10-C1",
+          "AA10-C2"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs lesson 10 stop",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": true
+      }
+    ],
+    "optionalRecoveryScenarios": [
+      {
+        "id": "discard-and-recreate-oauth-lab",
+        "trigger": "現在のLesson 10回答、runtime、OAuth lab generationを破棄して最初からやり直す場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson 10 reset",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      }
+    ]
+  }
+}

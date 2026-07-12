@@ -1,0 +1,166 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://cloudnative.co.jp/schemas/auth-authz/manifest.schema.json",
+  "title": "Course runtime manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["$schema", "schemaVersion", "courseId", "implementationStatus", "runtime", "ports", "resources", "locks", "lessons"],
+  "properties": {
+    "$schema": { "const": "./schemas/manifest.schema.json" },
+    "schemaVersion": { "const": 1 },
+    "courseId": { "$ref": "#/$defs/id" },
+    "implementationStatus": { "enum": ["candidate", "experimental"] },
+    "runtime": { "$ref": "#/$defs/runtime" },
+    "ports": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/port" }
+    },
+    "resources": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/resource" }
+    },
+    "locks": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/lock" }
+    },
+    "lessons": {
+      "type": "array",
+      "minItems": 1,
+      "items": { "$ref": "#/$defs/lesson" }
+    }
+  },
+  "$defs": {
+    "id": { "type": "string", "minLength": 1 },
+    "idArray": {
+      "type": "array",
+      "items": { "$ref": "#/$defs/id" },
+      "uniqueItems": true
+    },
+    "runtime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["node", "commands"],
+      "properties": {
+        "node": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["baselineMajor", "versionRange"],
+          "properties": {
+            "baselineMajor": { "const": 24 },
+            "versionRange": { "const": ">=24 <25" }
+          }
+        },
+        "commands": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["course", "lesson"],
+          "properties": {
+            "course": { "$ref": "#/$defs/command" },
+            "lesson": { "$ref": "#/$defs/command" }
+          }
+        },
+        "externalServices": {
+          "type": "array",
+          "items": { "$ref": "#/$defs/externalService" }
+        }
+      }
+    },
+    "externalService": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "lessonId", "resourceId", "portId", "composeFile", "composeService", "baseDn", "peopleBaseDn", "groupsBaseDn", "bindDn", "bindPasswordStatePath", "transport"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "kind": { "const": "ldap-directory" },
+        "lessonId": { "$ref": "#/$defs/id" },
+        "resourceId": { "$ref": "#/$defs/id" },
+        "portId": { "$ref": "#/$defs/id" },
+        "composeFile": { "type": "string", "pattern": "^[A-Za-z0-9._/-]+\\.ya?ml$" },
+        "composeService": { "type": "string", "pattern": "^[a-z][a-z0-9-]{0,62}$" },
+        "baseDn": { "type": "string", "pattern": "^[A-Za-z0-9=,._ -]{3,512}$" },
+        "peopleBaseDn": { "type": "string", "pattern": "^[A-Za-z0-9=,._ -]{3,512}$" },
+        "groupsBaseDn": { "type": "string", "pattern": "^[A-Za-z0-9=,._ -]{3,512}$" },
+        "bindDn": { "type": "string", "pattern": "^[A-Za-z0-9=,._ -]{3,512}$" },
+        "bindPasswordStatePath": { "type": "string", "pattern": "^\\.lab/[A-Za-z0-9._/-]+$" },
+        "transport": { "const": "loopback-cleartext-training" }
+      }
+    },
+    "command": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["executable", "arguments", "grammar", "actions"],
+      "properties": {
+        "executable": { "const": "node" },
+        "arguments": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 }
+        },
+        "grammar": { "type": "string", "minLength": 1 },
+        "actions": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    },
+    "port": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "host", "port", "protocol", "resourceId", "lessonIds"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "host": { "const": "127.0.0.1" },
+        "port": { "type": "integer", "minimum": 1, "maximum": 65535 },
+        "protocol": { "enum": ["http", "https", "tcp", "udp"] },
+        "resourceId": { "$ref": "#/$defs/id" },
+        "lessonIds": { "$ref": "#/$defs/idArray" }
+      }
+    },
+    "resource": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "type", "ownership", "locator", "resetPolicy", "purgePolicy", "lessonIds"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "type": { "enum": ["directory", "process", "data", "container", "volume"] },
+        "ownership": { "const": "course-created" },
+        "locator": { "type": "string", "minLength": 1 },
+        "resetPolicy": { "type": "string", "minLength": 1 },
+        "purgePolicy": { "type": "string", "minLength": 1 },
+        "lessonIds": { "$ref": "#/$defs/idArray" }
+      }
+    },
+    "lock": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "scope", "resourceIds"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "scope": { "enum": ["course", "resource"] },
+        "resourceIds": { "$ref": "#/$defs/idArray" }
+      }
+    },
+    "lesson": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "status", "requiredNodeMajor", "portIds", "resourceIds", "lockIds", "sourceFiles"],
+      "properties": {
+        "id": { "$ref": "#/$defs/id" },
+        "status": { "enum": ["candidate", "experimental", "planned"] },
+        "statusNote": { "type": "string", "minLength": 1 },
+        "requiredNodeMajor": { "const": 24 },
+        "portIds": { "$ref": "#/$defs/idArray" },
+        "resourceIds": { "$ref": "#/$defs/idArray" },
+        "lockIds": { "$ref": "#/$defs/idArray" },
+        "sourceFiles": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "type": "string", "minLength": 1 },
+          "uniqueItems": true
+        }
+      }
+    }
+  }
+}

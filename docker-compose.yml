@@ -12,6 +12,7 @@ name: auth-authz-sample
 services:
   ldap:
     build: ./docker/ldap
+    profiles: ["legacy-ldap"]
     ports:
       - "1389:389"
     healthcheck:
@@ -67,7 +68,7 @@ services:
         condition: service_healthy
 
   keycloak:
-    image: quay.io/keycloak/keycloak:26.7.0
+    image: quay.io/keycloak/keycloak:26.7.0@sha256:2eb3cd316835c990e69e26ade292ffa78f6fb0db7d5fc6377463c162e1979ac0
     command: ["start-dev", "--import-realm"]
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin

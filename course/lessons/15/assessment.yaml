@@ -1,0 +1,177 @@
+{
+  "$schema": "curriculum/schemas/assessment.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "15",
+  "assessment": {
+    "id": "AA15-A1",
+    "artifactStatus": "implemented",
+    "objectiveIds": [
+      "AA15-O1",
+      "AA15-O2"
+    ],
+    "type": "actual-http-jwt-api-authorization-and-rejection",
+    "evidence": "三originの実HTTPでAuthorization Code + PKCE、resource indicator、RS256署名JWT Access Token、remote JWKS検証、scope、project-core認可を実行する。runner所有fresh scenarioでmalformed、signature、issuer、audience、expiry、typ、ID Token混同、必須claim欠損、scope不足、viewer、cross-tenant、未知objectを一条件ずつ拒否し、秘密値を保存しない",
+    "passCriteria": "resourceとaudience、at+jwt、RS256/JWKS、Clientのopaque処理、Token不正401、scope不足403、Token/scope不正時のproject-core未到達、viewer 403、cross-tenant/未知object 404、owner 204がfresh scenarioと回答で一致し、AA15-C1/C2/C3をすべて満たす",
+    "labTask": {
+      "instructionsRef": "course/lessons/15/README.md",
+      "predict": "wrong typ、scope不足、cross-tenant、ownerについて401/403/404/204とproject-core到達有無を予測する",
+      "execute": "runnerだけでdoctor、setup、demo、observeを実行し、実HTTPのJWT検証、scope検証、project-core認可を分離した秘匿済みruntime.jsonからsubmission.jsonを完成する",
+      "rejectOrFail": "resource不一致、malformed、bad signature/issuer/audience/expiry/typ、ID Token混同、必須claim欠損は401、scope不足は403、viewerは403、cross-tenant/未知objectは404となり、Token不正とscope不足ではproject-coreを呼ばないことを確認する",
+      "evidence": "AA15-C1/C2/C3がpassし、Access Token、code、verifier、Cookie、credential、鍵、scenario IDを含まないevidenceIdを確認する",
+      "practicalTransfer": "管理APIについてissuer/JWKS、resource/audience、alg/typ、必須claim、scope、principal mapping、tenant/ownership policy、401/403/404、鍵rotationと失効を確認する"
+    },
+    "rubric": {
+      "scoringMethod": "all-required-checks",
+      "passRule": "fresh actual HTTPの正常系、Token負例、scope境界、project-core認可、秘匿境界と回答が一致し、AA15-C1/C2/C3が全件passすれば合格",
+      "failureRule": "runtimeまたは回答が1件でも不一致、TODO・未知field、JWT decodeだけの受理、ID Token受理、scope不足401、Token不正時のpolicy実行、cross-tenant存在漏えい、credential/Token/鍵の保存なら不合格"
+    },
+    "answerKeyRef": "course/lessons/15/answer-key.md",
+    "instructorGuideRef": "course/lessons/15/instructor-guide.md",
+    "automatedCheckRefs": [
+      "apps/oauth-lab/authorization-server.mjs",
+      "apps/oauth-lab/client-server.mjs",
+      "apps/oauth-lab/resource-server.mjs",
+      "course/lessons/15/assessment.mjs",
+      "course/lessons/15/runner.mjs",
+      "course/lessons/15/scenario.mjs",
+      "services/project-core/service.mjs",
+      "test/lesson-15/actual-http.test.js",
+      "test/lesson-15/contracts.test.js",
+      "test/lesson-15/runner-e2e.test.js"
+    ],
+    "requiredChecks": [
+      {
+        "id": "AA15-C1",
+        "mode": "lab",
+        "assessmentId": "AA15-A1",
+        "objectiveIds": [
+          "AA15-O1",
+          "AA15-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5",
+          "AA-CO7"
+        ],
+        "evidenceType": "actual-http-jwt-api-authorization-and-rejection",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA15-C2",
+        "mode": "lab",
+        "assessmentId": "AA15-A1",
+        "objectiveIds": [
+          "AA15-O1",
+          "AA15-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5",
+          "AA-CO7"
+        ],
+        "evidenceType": "actual-http-jwt-api-authorization-and-rejection",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      },
+      {
+        "id": "AA15-C3",
+        "mode": "lab",
+        "assessmentId": "AA15-A1",
+        "objectiveIds": [
+          "AA15-O1",
+          "AA15-O2"
+        ],
+        "courseOutcomeIds": [
+          "AA-CO3",
+          "AA-CO4",
+          "AA-CO5",
+          "AA-CO7"
+        ],
+        "evidenceType": "actual-http-jwt-api-authorization-and-rejection",
+        "required": true,
+        "mappingBasis": "assessment-objective-closure"
+      }
+    ],
+    "procedure": [
+      {
+        "kind": "command",
+        "step": 1,
+        "command": "node course.mjs lesson 15 doctor",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 2,
+        "command": "node course.mjs lesson 15 setup",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 3,
+        "command": "node course.mjs lesson 15 demo",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 4,
+        "command": "node course.mjs lesson 15 observe",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": false
+      },
+      {
+        "kind": "learner-action",
+        "step": 5,
+        "path": ".lab/submissions/15/submission.json",
+        "task": "runtime.jsonの検証順、status、project-core到達booleanを根拠にAA15-C1/C2/C3を手作業で入力する",
+        "completionCriterion": "TODOが残らずJSONとしてparseでき、field構造を変えず全回答が許可値で埋まっている"
+      },
+      {
+        "kind": "command",
+        "step": 6,
+        "command": "node course.mjs lesson 15 check",
+        "expectedStatus": "pass",
+        "checkIds": [
+          "AA15-C1",
+          "AA15-C2",
+          "AA15-C3"
+        ],
+        "terminal": false
+      },
+      {
+        "kind": "command",
+        "step": 7,
+        "command": "node course.mjs lesson 15 stop",
+        "expectedStatus": "pass",
+        "checkIds": [],
+        "terminal": true
+      }
+    ],
+    "optionalRecoveryScenarios": [
+      {
+        "id": "discard-and-recreate-lesson-15",
+        "trigger": "現在のLesson 15回答、runtime、OAuth lab generationを破棄して最初からやり直す場合",
+        "procedure": [
+          {
+            "kind": "command",
+            "step": 1,
+            "command": "node course.mjs lesson 15 reset",
+            "expectedStatus": "pass",
+            "checkIds": [],
+            "terminal": false
+          }
+        ]
+      }
+    ]
+  }
+}

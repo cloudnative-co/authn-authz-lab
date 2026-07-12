@@ -1,0 +1,12 @@
+{
+  "name": "@cloudnative/auth-authz-lesson07-kerberos-app",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24 <25"
+  },
+  "dependencies": {
+    "kerberos": "7.0.0"
+  }
+}

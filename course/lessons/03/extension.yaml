@@ -1,0 +1,31 @@
+{
+  "$schema": "curriculum/schemas/extension.schema.json",
+  "schemaVersion": 1,
+  "courseId": "auth-authz",
+  "lessonId": "03",
+  "status": "implemented",
+  "title": "分散session・失効・logoutの運用設計",
+  "estimatedMinutes": 45,
+  "prerequisiteCheckIds": ["AA03-C1", "AA03-C2", "AA03-C3", "AA03-C4"],
+  "tasks": [
+    {
+      "id": "AA03-X1",
+      "prompt": "自環境のCookie、Session ID、server-side recordを分け、発行、rotation、idle期限、absolute期限、削除のownerを記録する",
+      "acceptance": "Cookie属性とserver側失効を混同せず、認証前後でSession IDを更新する境界がある"
+    },
+    {
+      "id": "AA03-X2",
+      "prompt": "複数instance・複数regionでのlogout、管理者失効、権限変更後の反映を設計し、遅延と障害時の挙動を示す",
+      "acceptance": "client側Cookie削除だけを失効とせず、cache不整合、fail-open可否、最大反映時間を明記している"
+    },
+    {
+      "id": "AA03-X3",
+      "prompt": "session anomalyの監査とincident対応を設計し、追跡に必要な識別子、秘匿、保存期間、強制失効手順を記録する",
+      "acceptance": "生のSession IDやCookieをlogへ残さず、相関可能な非secret IDと全失効後の確認方法がある"
+    }
+  ],
+  "evidenceBoundary": {
+    "allowed": ["Cookie属性", "期限", "rotation契機", "失効遅延", "非secret相関ID", "担当role"],
+    "forbidden": ["Session ID", "Cookie値", "password", "token", "secret", "実user identifier"]
+  }
+}

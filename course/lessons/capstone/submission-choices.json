@@ -1,0 +1,599 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "capstone",
+  "sourceOfTruth": "assessment-validator-shared-choice-contract",
+  "instructions": [
+    "choices配列の掲載順は正答を示しません。ただし、回答として作る配列内の順序は手順や優先順位として採点される場合があります。",
+    "scalarはTODO文字列を候補1つへ置換します。exact-arrayは配列全体を候補1つへ置換します。",
+    "array-elementsは指定数の要素を候補から選び、教材本文の依存順に並べます。uniqueがtrueなら重複させません。"
+  ],
+  "entries": [
+    {
+      "path": "artifacts.developer.apiPolicy",
+      "kind": "scalar",
+      "choices": [
+        "scope-only",
+        "token-scope-tenant-object"
+      ]
+    },
+    {
+      "path": "artifacts.developer.federationAdapter",
+      "kind": "scalar",
+      "choices": [
+        "signature-only",
+        "strict-sp-initiated-acs"
+      ]
+    },
+    {
+      "path": "artifacts.developer.negativeTests.crossTenant",
+      "kind": "scalar",
+      "choices": [
+        "run",
+        "skip"
+      ]
+    },
+    {
+      "path": "artifacts.developer.negativeTests.invalidToken",
+      "kind": "scalar",
+      "choices": [
+        "run",
+        "skip"
+      ]
+    },
+    {
+      "path": "artifacts.developer.negativeTests.leaverSession",
+      "kind": "scalar",
+      "choices": [
+        "run",
+        "skip"
+      ]
+    },
+    {
+      "path": "artifacts.developer.negativeTests.samlReplay",
+      "kind": "scalar",
+      "choices": [
+        "run",
+        "skip"
+      ]
+    },
+    {
+      "path": "artifacts.developer.negativeTests.weakRecovery",
+      "kind": "scalar",
+      "choices": [
+        "run",
+        "skip"
+      ]
+    },
+    {
+      "path": "artifacts.developer.policyMode",
+      "kind": "scalar",
+      "choices": [
+        "allow-by-default",
+        "deny-by-default"
+      ]
+    },
+    {
+      "path": "artifacts.developer.sessionRevocationHook",
+      "kind": "scalar",
+      "choices": [
+        "disable-event-revokes-local-sessions",
+        "none"
+      ]
+    },
+    {
+      "path": "artifacts.iamOperations.changeControl",
+      "kind": "scalar",
+      "choices": [
+        "approved-source-event-and-two-person-review",
+        "direct-console-change-without-review"
+      ]
+    },
+    {
+      "path": "artifacts.iamOperations.emergencyRunbook",
+      "kind": "array-elements",
+      "choices": [
+        "block-federation-access",
+        "disable-account",
+        "preserve-redacted-audit",
+        "revoke-authenticators",
+        "revoke-sessions-and-tokens",
+        "verify-deny",
+        "wait-for-root-cause-before-revocation"
+      ],
+      "exactLength": 6,
+      "unique": true
+    },
+    {
+      "path": "artifacts.iamOperations.jmlRunbook",
+      "kind": "array-elements",
+      "choices": [
+        "apply-directory-change",
+        "provision-without-source-event",
+        "recalculate-access",
+        "record-redacted-evidence",
+        "retain-old-access",
+        "revoke-stale-sessions-and-tokens",
+        "validate-authoritative-event",
+        "verify-deny-or-required-access"
+      ],
+      "exactLength": 6,
+      "unique": true
+    },
+    {
+      "path": "artifacts.iamOperations.recoveryRunbook",
+      "kind": "array-elements",
+      "choices": [
+        "enroll-replacement",
+        "knowledge-question-only",
+        "notify-and-monitor",
+        "revoke-active-sessions",
+        "revoke-lost-authenticator",
+        "verify-identity-with-strong-channel"
+      ],
+      "exactLength": 5,
+      "unique": true
+    },
+    {
+      "path": "artifacts.iamOperations.simulations.crossTenant",
+      "kind": "scalar",
+      "choices": [
+        "run",
+        "skip"
+      ]
+    },
+    {
+      "path": "artifacts.iamOperations.simulations.invalidToken",
+      "kind": "scalar",
+      "choices": [
+        "run",
+        "skip"
+      ]
+    },
+    {
+      "path": "artifacts.iamOperations.simulations.leaverSession",
+      "kind": "scalar",
+      "choices": [
+        "run",
+        "skip"
+      ]
+    },
+    {
+      "path": "artifacts.iamOperations.simulations.samlReplay",
+      "kind": "scalar",
+      "choices": [
+        "run",
+        "skip"
+      ]
+    },
+    {
+      "path": "artifacts.iamOperations.simulations.weakRecovery",
+      "kind": "scalar",
+      "choices": [
+        "run",
+        "skip"
+      ]
+    },
+    {
+      "path": "artifacts.iamOperations.validationProfile",
+      "kind": "scalar",
+      "choices": [
+        "federation-api-and-session-boundaries",
+        "login-success-only"
+      ]
+    },
+    {
+      "path": "common.apiAuthorization.crossTenant",
+      "kind": "scalar",
+      "choices": [
+        "403-with-resource-detail",
+        "404-concealed"
+      ]
+    },
+    {
+      "path": "common.apiAuthorization.idToken",
+      "kind": "scalar",
+      "choices": [
+        "accept-signed-id-token",
+        "reject-id-token"
+      ]
+    },
+    {
+      "path": "common.apiAuthorization.insufficientScope",
+      "kind": "scalar",
+      "choices": [
+        "401-invalid-token",
+        "403-insufficient-scope"
+      ]
+    },
+    {
+      "path": "common.apiAuthorization.invalidToken",
+      "kind": "scalar",
+      "choices": [
+        "401-invalid-token",
+        "403-policy-result"
+      ]
+    },
+    {
+      "path": "common.apiAuthorization.order",
+      "kind": "exact-array",
+      "choices": [
+        [
+          "scope",
+          "token",
+          "object",
+          "tenant"
+        ],
+        [
+          "token",
+          "scope",
+          "tenant",
+          "object"
+        ]
+      ]
+    },
+    {
+      "path": "common.apiAuthorization.unknownObject",
+      "kind": "scalar",
+      "choices": [
+        "200-empty-object",
+        "404-concealed"
+      ]
+    },
+    {
+      "path": "common.credentialLifecycle.accountModel",
+      "kind": "scalar",
+      "choices": [
+        "shared-human-and-service-accounts",
+        "unique-human-and-workload-identities"
+      ]
+    },
+    {
+      "path": "common.credentialLifecycle.emergency",
+      "kind": "scalar",
+      "choices": [
+        "deny-first-then-investigate-with-redacted-evidence",
+        "investigate-before-revocation"
+      ]
+    },
+    {
+      "path": "common.credentialLifecycle.joiner",
+      "kind": "scalar",
+      "choices": [
+        "approved-source-before-provisioning",
+        "create-on-first-login-without-approval"
+      ]
+    },
+    {
+      "path": "common.credentialLifecycle.leaver",
+      "kind": "scalar",
+      "choices": [
+        "disable-and-revoke-sessions-tokens-authenticators",
+        "disable-directory-account-only"
+      ]
+    },
+    {
+      "path": "common.credentialLifecycle.mover",
+      "kind": "scalar",
+      "choices": [
+        "add-new-access-and-keep-old-access",
+        "recalculate-access-and-revoke-stale-sessions"
+      ]
+    },
+    {
+      "path": "common.federation.audience",
+      "kind": "scalar",
+      "choices": [
+        "any-audience",
+        "exact-sp-entity-id"
+      ]
+    },
+    {
+      "path": "common.federation.destinationRecipient",
+      "kind": "scalar",
+      "choices": [
+        "any-url-in-same-domain",
+        "exact-acs-url"
+      ]
+    },
+    {
+      "path": "common.federation.inResponseTo",
+      "kind": "scalar",
+      "choices": [
+        "relay-state-only",
+        "response-and-subject-confirmation"
+      ]
+    },
+    {
+      "path": "common.federation.issuer",
+      "kind": "scalar",
+      "choices": [
+        "exact-entity-id",
+        "issuer-text-present"
+      ]
+    },
+    {
+      "path": "common.federation.replay",
+      "kind": "scalar",
+      "choices": [
+        "accept-until-expiry",
+        "response-assertion-request-one-time"
+      ]
+    },
+    {
+      "path": "common.federation.signature",
+      "kind": "scalar",
+      "choices": [
+        "response-and-assertion",
+        "signature-present-anywhere"
+      ]
+    },
+    {
+      "path": "common.federation.time",
+      "kind": "scalar",
+      "choices": [
+        "conditions-and-subject-expiry",
+        "conditions-only"
+      ]
+    },
+    {
+      "path": "common.mfaPasskey.enrollment",
+      "kind": "scalar",
+      "choices": [
+        "identity-proofed-user-bound",
+        "self-service-without-reproof"
+      ]
+    },
+    {
+      "path": "common.mfaPasskey.factorBoundary",
+      "kind": "scalar",
+      "choices": [
+        "all-mfa-is-phishing-resistant",
+        "passkey-origin-bound-totp-not-phishing-resistant"
+      ]
+    },
+    {
+      "path": "common.mfaPasskey.lostDevice",
+      "kind": "scalar",
+      "choices": [
+        "remove-device-label-only",
+        "revoke-credential-and-active-sessions"
+      ]
+    },
+    {
+      "path": "common.mfaPasskey.recovery",
+      "kind": "scalar",
+      "choices": [
+        "helpdesk-reset-with-knowledge-question",
+        "strong-reproof-revoke-old-credential"
+      ]
+    },
+    {
+      "path": "common.mfaPasskey.syncBoundary",
+      "kind": "scalar",
+      "choices": [
+        "provider-account-not-single-device-proof",
+        "single-device-possession-proof"
+      ]
+    },
+    {
+      "path": "common.priorityOrder",
+      "kind": "array-elements",
+      "choices": [
+        "R-API-OBJECT",
+        "R-FEDERATION-SEMANTICS",
+        "R-LEAVER-ACCESS",
+        "R-RECOVERY",
+        "R-SHARED-ADMIN"
+      ],
+      "exactLength": 5,
+      "unique": true
+    },
+    {
+      "path": "common.responsibilities.apiObjectAuthorization",
+      "kind": "scalar",
+      "choices": [
+        "client",
+        "resource-server"
+      ]
+    },
+    {
+      "path": "common.responsibilities.directoryAndCredentialLifecycle",
+      "kind": "scalar",
+      "choices": [
+        "each-application",
+        "iam-operations"
+      ]
+    },
+    {
+      "path": "common.responsibilities.federationAssertionValidation",
+      "kind": "scalar",
+      "choices": [
+        "identity-provider-only",
+        "service-provider"
+      ]
+    },
+    {
+      "path": "common.responsibilities.identitySource",
+      "kind": "scalar",
+      "choices": [
+        "application-local-source",
+        "hr-source-authoritative"
+      ]
+    },
+    {
+      "path": "common.responsibilities.localSessionLifecycle",
+      "kind": "scalar",
+      "choices": [
+        "application",
+        "identity-provider"
+      ]
+    },
+    {
+      "path": "common.risks[0].disposition",
+      "kind": "scalar",
+      "choices": [
+        "accepted",
+        "mitigated",
+        "resolved",
+        "unresolved"
+      ]
+    },
+    {
+      "path": "common.risks[0].owner",
+      "kind": "scalar",
+      "choices": [
+        "application",
+        "iam-operations",
+        "unassigned",
+        "vendor"
+      ]
+    },
+    {
+      "path": "common.risks[0].severity",
+      "kind": "scalar",
+      "choices": [
+        "critical",
+        "high",
+        "low"
+      ]
+    },
+    {
+      "path": "common.risks[1].disposition",
+      "kind": "scalar",
+      "choices": [
+        "accepted",
+        "mitigated",
+        "resolved",
+        "unresolved"
+      ]
+    },
+    {
+      "path": "common.risks[1].owner",
+      "kind": "scalar",
+      "choices": [
+        "application",
+        "iam-operations",
+        "unassigned",
+        "vendor"
+      ]
+    },
+    {
+      "path": "common.risks[1].severity",
+      "kind": "scalar",
+      "choices": [
+        "critical",
+        "high",
+        "low"
+      ]
+    },
+    {
+      "path": "common.risks[2].disposition",
+      "kind": "scalar",
+      "choices": [
+        "accepted",
+        "mitigated",
+        "resolved",
+        "unresolved"
+      ]
+    },
+    {
+      "path": "common.risks[2].owner",
+      "kind": "scalar",
+      "choices": [
+        "application",
+        "iam-operations",
+        "unassigned",
+        "vendor"
+      ]
+    },
+    {
+      "path": "common.risks[2].severity",
+      "kind": "scalar",
+      "choices": [
+        "critical",
+        "high",
+        "low"
+      ]
+    },
+    {
+      "path": "common.risks[3].disposition",
+      "kind": "scalar",
+      "choices": [
+        "accepted",
+        "mitigated",
+        "resolved",
+        "unresolved"
+      ]
+    },
+    {
+      "path": "common.risks[3].owner",
+      "kind": "scalar",
+      "choices": [
+        "application",
+        "iam-operations",
+        "unassigned",
+        "vendor"
+      ]
+    },
+    {
+      "path": "common.risks[3].severity",
+      "kind": "scalar",
+      "choices": [
+        "critical",
+        "high",
+        "low"
+      ]
+    },
+    {
+      "path": "common.risks[4].disposition",
+      "kind": "scalar",
+      "choices": [
+        "accepted",
+        "mitigated",
+        "resolved",
+        "unresolved"
+      ]
+    },
+    {
+      "path": "common.risks[4].owner",
+      "kind": "scalar",
+      "choices": [
+        "application",
+        "iam-operations",
+        "unassigned",
+        "vendor"
+      ]
+    },
+    {
+      "path": "common.risks[4].severity",
+      "kind": "scalar",
+      "choices": [
+        "critical",
+        "high",
+        "low"
+      ]
+    },
+    {
+      "path": "track",
+      "kind": "scalar",
+      "choices": [
+        "developer",
+        "iam-operations"
+      ]
+    }
+  ],
+  "trackRules": [
+    {
+      "track": "developer",
+      "selectedPath": "artifacts.developer",
+      "inactivePath": "artifacts.iamOperations",
+      "inactiveValue": "not-selected"
+    },
+    {
+      "track": "iam-operations",
+      "selectedPath": "artifacts.iamOperations",
+      "inactivePath": "artifacts.developer",
+      "inactiveValue": "not-selected"
+    }
+  ]
+}

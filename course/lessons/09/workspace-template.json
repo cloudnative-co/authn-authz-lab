@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "09",
+  "answers": {
+    "AA09-C1": {
+      "flow": "TODO",
+      "bindings": "TODO",
+      "trust": "TODO",
+      "session": "TODO",
+      "userAgentScope": "TODO"
+    },
+    "AA09-C2": {
+      "signatures": "TODO",
+      "semanticChecks": "TODO",
+      "subjectConfirmation": "TODO",
+      "replay": "TODO",
+      "evidence": "TODO"
+    }
+  },
+  "diagnosis": {
+    "D1": "TODO",
+    "D2": "TODO",
+    "D3": "TODO",
+    "D4": "TODO",
+    "D5": "TODO"
+  }
+}

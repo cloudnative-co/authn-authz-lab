@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "10",
+  "answers": {
+    "AA10-C1": {
+      "flow": "TODO",
+      "client": "TODO",
+      "state": "TODO",
+      "code": "TODO",
+      "accessToken": "TODO"
+    },
+    "AA10-C2": {
+      "bearerFailure": "TODO",
+      "scopeFailure": "TODO",
+      "passwordBoundary": "TODO",
+      "transport": "TODO"
+    }
+  }
+}

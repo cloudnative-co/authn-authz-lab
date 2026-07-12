@@ -1,0 +1,19 @@
+{
+  "schemaVersion": 1,
+  "lessonId": "06",
+  "answers": {
+    "AA06-C1": {
+      "userLookup": "TODO",
+      "dnMeaning": "TODO",
+      "attributeMeaning": "TODO",
+      "groupLookup": "TODO"
+    },
+    "AA06-C2": {
+      "emptyPassword": "TODO",
+      "filterConstruction": "TODO",
+      "failureSurface": "TODO",
+      "serviceAccount": "TODO",
+      "productionTransport": "TODO"
+    }
+  }
+}
