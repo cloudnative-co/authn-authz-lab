@@ -54,14 +54,16 @@ function validateAuthorizationRequest(params, config) {
   for (const name of params.keys()) {
     if (params.getAll(name).length !== 1) return invalidAuthorize('invalid_request', errorContext);
   }
+  if (REQUIRED_AUTHORIZE_FIELDS.some((field) => !exactSingle(params, field))) {
+    return invalidAuthorize('invalid_request', errorContext);
+  }
   if (exactSingle(params, 'response_type') !== 'code') {
     return invalidAuthorize('unsupported_response_type', errorContext);
   }
   const challenge = exactSingle(params, 'code_challenge');
   const requestedScopes = scopes(exactSingle(params, 'scope'), config.supportedScopes);
   if (
-    REQUIRED_AUTHORIZE_FIELDS.some((field) => !exactSingle(params, field))
-    || exactSingle(params, 'code_challenge_method') !== 'S256'
+    exactSingle(params, 'code_challenge_method') !== 'S256'
     || !canonicalOpaque(state)
     || !/^[A-Za-z0-9_-]{43}$/u.test(challenge ?? '')
   ) return invalidAuthorize('invalid_request', errorContext);

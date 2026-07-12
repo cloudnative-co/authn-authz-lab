@@ -19,25 +19,25 @@ test('the host install excludes the native Kerberos addon', async () => {
 });
 
 test('the lesson 07 container owns the Kerberos dependency and lockfile', async () => {
-  const manifest = await readJson('docker/app/package.json');
-  const lockfile = await readJson('docker/app/package-lock.json');
+  const manifest = await readJson('docker/kerberos/app/package.json');
+  const lockfile = await readJson('docker/kerberos/app/package-lock.json');
 
   assert.equal(manifest.private, true);
   assert.equal(manifest.engines.node, '>=24 <25');
   assert.deepEqual(Object.keys(manifest.dependencies), ['kerberos']);
-  assert.equal(manifest.dependencies.kerberos, '^7.0.0');
-  assert.deepEqual(manifest.allowScripts, { 'kerberos@7.0.0': true });
-  assert.equal(lockfile.packages[''].dependencies.kerberos, '^7.0.0');
+  assert.equal(manifest.dependencies.kerberos, '7.0.0');
+  assert.equal(manifest.allowScripts, undefined);
+  assert.equal(lockfile.packages[''].dependencies.kerberos, '7.0.0');
   assert.ok(lockfile.packages['node_modules/kerberos']);
 });
 
-test('the app image installs only its dedicated locked dependencies', async () => {
-  const dockerfile = await readFile(new URL('docker/app/Dockerfile', repositoryRoot), 'utf8');
-  const copyMatch = dockerfile.match(/^COPY (docker\/app\/package\.json) (docker\/app\/package-lock\.json) \.\/$/m);
+test('the Kerberos app image installs only its dedicated locked dependencies', async () => {
+  const dockerfile = await readFile(new URL('docker/kerberos/app/Dockerfile', repositoryRoot), 'utf8');
+  const copyMatch = dockerfile.match(/^COPY (docker\/kerberos\/app\/package\.json) (docker\/kerberos\/app\/package-lock\.json) \.\/$/m);
 
   assert.ok(copyMatch, 'Dockerfile must copy the lesson 07 package files');
   assert.doesNotMatch(dockerfile, /^COPY package\.json package-lock\.json \.\/$/m);
-  assert.match(dockerfile, /^RUN npm ci --omit=dev$/m);
+  assert.match(dockerfile, /^RUN npm ci --omit=dev --ignore-scripts=false$/m);
 
   for (const source of copyMatch.slice(1)) {
     await access(new URL(source, repositoryRoot));
@@ -48,11 +48,13 @@ test('the app image installs only its dedicated locked dependencies', async () =
     'docker',
     '!docker/',
     'docker/*',
-    '!docker/app/',
-    'docker/app/*',
-    '!docker/app/Dockerfile',
-    '!docker/app/package.json',
-    '!docker/app/package-lock.json',
+    '!docker/kerberos/',
+    'docker/kerberos/*',
+    '!docker/kerberos/app/',
+    'docker/kerberos/app/*',
+    '!docker/kerberos/app/server.mjs',
+    '!docker/kerberos/app/package.json',
+    '!docker/kerberos/app/package-lock.json',
   ]) {
     assert.ok(dockerignore.includes(pattern), `.dockerignore is missing ${pattern}`);
   }

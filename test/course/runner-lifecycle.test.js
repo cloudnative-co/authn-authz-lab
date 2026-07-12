@@ -43,7 +43,7 @@ after(async () => {
 async function fixtureRepository() {
   const root = await mkdtemp(resolve(tmpdir(), 'auth-authz-lifecycle-'));
   temporaryRoots.push(root);
-  for (const path of ['apps', 'course', 'curriculum', 'packages', 'scripts', 'services', 'src']) {
+  for (const path of ['apps', 'course', 'curriculum', 'packages', 'scripts', 'services']) {
     await cp(resolve(repositoryRoot, path), resolve(root, path), { recursive: true });
   }
   for (const path of ['README.md', 'course.mjs', 'course-lock.json', 'package.json', 'package-lock.json']) {

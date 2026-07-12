@@ -127,6 +127,31 @@ test('registration transaction is single-use and the RP stores only a verified c
   assert.equal(service.observe().state.credentialCount, 1);
 });
 
+test('expired registration transaction fails before credential verification or storage', async () => {
+  const { service, protocol, setTime } = await fixture();
+  const login = await service.passwordLogin('alice@example.com', 'correct');
+  const started = await service.startRegistration(login.sessionToken, login.csrfToken);
+
+  setTime(120_001);
+  const result = await service.finishRegistration(
+    login.sessionToken,
+    login.csrfToken,
+    started.transactionId,
+    {},
+  );
+
+  assert.equal(result.status, 422);
+  assert.equal(protocol.calls.registrationVerify, 0);
+  assert.equal(service.observe().state.credentialCount, 0);
+  assert.equal(
+    service.observe().state.events.some(
+      ({ type, reason }) => type === 'registration-rejected'
+        && reason === 'TRANSACTION_OR_SESSION_INVALID',
+    ),
+    true,
+  );
+});
+
 test('expired authentication transaction and mismatched user handle fail before signature verification', async () => {
   const { service, protocol, setTime } = await fixture();
   const login = await service.passwordLogin('alice@example.com', 'correct');
@@ -155,3 +180,25 @@ test('expired authentication transaction and mismatched user handle fail before 
   );
 });
 
+test('missing user handle fails before authentication signature verification', async () => {
+  const { service, protocol } = await fixture();
+  const login = await service.passwordLogin('alice@example.com', 'correct');
+  const registration = await service.startRegistration(login.sessionToken, login.csrfToken);
+  await service.finishRegistration(login.sessionToken, login.csrfToken, registration.transactionId, {});
+
+  const authentication = await service.startAuthentication({ identifier: 'alice@example.com' });
+  const result = await service.finishAuthentication(authentication.transactionId, {
+    id: 'credential-one',
+    response: {},
+  });
+
+  assert.equal(result.status, 422);
+  assert.equal(protocol.calls.authenticationVerify, 0);
+  assert.equal(
+    service.observe().state.events.some(
+      ({ type, reason }) => type === 'authentication-rejected'
+        && reason === 'USER_HANDLE_MISMATCH',
+    ),
+    true,
+  );
+});

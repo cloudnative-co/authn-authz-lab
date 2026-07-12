@@ -30,7 +30,7 @@ CloudNative BLOGsの連載「認証認可入門」で使う、実習・自動採
 
 `candidate`と`experimental`はどちらも正式releaseではありません。自動test済みでも、人間pilot、固定revision、全support profileの実機確認は未完了です。授業や公開教材として採用する前に、`curriculum/manifest.json`と`curriculum/support-matrix.json`の状態を確認してください。
 
-`curriculum/manifest.json`で`planned`のLessonは、現時点では開始しません。旧`src/`実装や個別のintegration testが成功しても、対応lessonが完成したことにはなりません。
+`curriculum/manifest.json`で`planned`のLessonは、現時点では開始しません。個別のintegration testが成功しても、対応Lessonが完成したことにはなりません。
 
 ## 学習経路
 
@@ -300,9 +300,3 @@ Lesson 01のSAML、OpenID Connect、OAuthは分類用provided caseです。Lesso
 | 31 | timeout |
 
 schema、course contract、support matrixの正は`curriculum/`、固定hashのindexは`course-lock.json`です。
-
-## 開発者向け旧fixture
-
-`src/`、Docker Compose、Playwrightを使う旧プロトコルfixtureは、教材runnerへの段階的な統合元として残しています。受講者向けlessonとは分離しています。
-
-開発・回帰確認が必要な場合だけ、[旧プロトコルfixtureの開発者向け案内](docs/legacy-protocol-fixtures.md)を参照してください。

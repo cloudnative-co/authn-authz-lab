@@ -5,6 +5,7 @@ import { resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { test } from 'node:test';
 import { createLocalJWKSet, jwtVerify } from 'jose';
+import * as oidcClient from 'openid-client';
 import { createLabConfig } from '../../apps/oauth-lab/config.mjs';
 import { createAuthorizationServer } from '../../apps/oauth-lab/authorization-server.mjs';
 import { pkceChallenge, randomOpaque } from '../../apps/oauth-lab/crypto.mjs';
@@ -118,7 +119,7 @@ async function token(config, grant, extra = {}) {
     body: new URLSearchParams({
       grant_type: 'authorization_code',
       client_id: config.clientId,
-      redirect_uri: config.oidcRedirectUri,
+      redirect_uri: extra.redirectUri ?? config.oidcRedirectUri,
       code: grant.code,
       code_verifier: grant.verifier,
     }),
@@ -234,7 +235,7 @@ test('Lesson 11 actual HTTP scenario rejects each one-fault ID Token and is repe
   assert.equal(evaluateLesson11Submission(lesson11AnswerKey(), first).status, 'pass');
 });
 
-test('discovery declares a public client and ID Token email follows the email scope', async () => {
+test('discovery declares a public client and ID Token issuance follows the openid and email scopes', async () => {
   const lab = await createOAuthLab();
   await lab.start();
   try {
@@ -259,6 +260,77 @@ test('discovery declares a public client and ID Token email follows the email sc
     assert.equal(typeof verified.payload.sub, 'string');
     assert.ok(verified.payload.sub.length > 0);
     assert.equal(verified.payload.email, undefined);
+
+    const oauthGrant = await grantCode(lab.config, {
+      scope: 'project:read', redirectUri: lab.config.oauthRedirectUri,
+    });
+    const oauthTokens = await token(lab.config, oauthGrant, {
+      redirectUri: lab.config.oauthRedirectUri,
+    });
+    assert.equal(oauthTokens.status, 200);
+    assert.equal((await oauthTokens.json()).id_token, undefined);
+  } finally {
+    await lab.stop();
+  }
+});
+
+test('an independent openid-client validates the current Lesson 11 authorization code flow', async () => {
+  const lab = await createOAuthLab();
+  await lab.start();
+  try {
+    const configuration = await oidcClient.discovery(
+      new URL(lab.config.issuer),
+      lab.config.clientId,
+      {
+        redirect_uris: [lab.config.oidcRedirectUri],
+        response_types: ['code'],
+        token_endpoint_auth_method: 'none',
+      },
+      oidcClient.None(),
+      { execute: [oidcClient.allowInsecureRequests] },
+    );
+    const verifier = oidcClient.randomPKCECodeVerifier();
+    const challenge = await oidcClient.calculatePKCECodeChallenge(verifier);
+    const state = oidcClient.randomState();
+    const nonce = oidcClient.randomNonce();
+    const authorizationUrl = oidcClient.buildAuthorizationUrl(configuration, {
+      redirect_uri: lab.config.oidcRedirectUri,
+      scope: 'openid email profile:read',
+      code_challenge: challenge,
+      code_challenge_method: 'S256',
+      state,
+      nonce,
+    });
+
+    const userAgent = createCookieJarUserAgent();
+    const loginPage = await userAgent.request(authorizationUrl);
+    assert.equal(loginPage.status, 200);
+    const loginReference = refFrom(await loginPage.text());
+    const loggedIn = await userAgent.request(`${lab.config.issuer}/interaction/login`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ ref: loginReference, ...TRAINING_RESOURCE_OWNER }),
+    });
+    const consentPage = await userAgent.request(loggedIn.headers.get('location'));
+    const consentReference = refFrom(await consentPage.text());
+    const granted = await userAgent.request(`${lab.config.issuer}/interaction/consent`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ ref: consentReference, decision: 'allow' }),
+    });
+    assert.equal(granted.status, 302);
+
+    const tokens = await oidcClient.authorizationCodeGrant(
+      configuration,
+      new URL(granted.headers.get('location')),
+      { pkceCodeVerifier: verifier, expectedState: state, expectedNonce: nonce },
+    );
+    assert.equal(tokens.token_type.toLowerCase(), 'bearer');
+    assert.ok(tokens.access_token);
+    assert.equal(tokens.claims()?.iss, lab.config.issuer);
+    assert.equal(tokens.claims()?.aud, lab.config.clientId);
+    assert.equal(tokens.claims()?.sub, TRAINING_RESOURCE_OWNER.subject);
+    assert.equal(tokens.claims()?.nonce, nonce);
   } finally {
     await lab.stop();
   }
@@ -288,6 +360,24 @@ test('authorization errors use the trusted redirect boundary and interaction coo
     assert.equal(untrusted.headers.get('location'), null);
 
     base.searchParams.set('redirect_uri', lab.config.oauthRedirectUri);
+    const missingResponseType = new URL(base);
+    missingResponseType.searchParams.delete('response_type');
+    const missingRequired = await fetch(missingResponseType, { redirect: 'manual' });
+    assert.equal(missingRequired.status, 302);
+    assert.equal(
+      new URL(missingRequired.headers.get('location')).searchParams.get('error'),
+      'invalid_request',
+    );
+
+    const duplicateScope = new URL(base);
+    duplicateScope.searchParams.append('scope', 'project:read');
+    const ambiguousScope = await fetch(duplicateScope, { redirect: 'manual' });
+    assert.equal(ambiguousScope.status, 302);
+    assert.equal(
+      new URL(ambiguousScope.headers.get('location')).searchParams.get('error'),
+      'invalid_request',
+    );
+
     base.searchParams.append('client_id', lab.config.clientId);
     const ambiguousClient = await fetch(base, { redirect: 'manual' });
     assert.equal(ambiguousClient.status, 400);
@@ -337,6 +427,68 @@ test('authorization errors use the trusted redirect boundary and interaction coo
     assert.match(duplicateAuthorization.headers['www-authenticate'], /invalid_token/u);
   } finally {
     await lab.stop();
+  }
+});
+
+test('token form parsing and introspection authentication fail closed', async () => {
+  const blocker = createServer();
+  await new Promise((resolve) => blocker.listen(0, '127.0.0.1', resolve));
+  const asPort = blocker.address().port;
+  await new Promise((resolve) => blocker.close(resolve));
+  const config = createLabConfig({ asPort, clientPort: asPort + 1, apiPort: asPort + 2 });
+  const resourceSecret = randomOpaque();
+  const authorization = await createAuthorizationServer({
+    config,
+    authenticate: async () => null,
+    resourceSecret,
+    scenarioRegistry: createLabScenarioRegistry(),
+  });
+  await new Promise((resolve) => authorization.server.listen(asPort, '127.0.0.1', resolve));
+  try {
+    const jsonTokenRequest = await fetch(`${config.issuer}/oauth/token`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ grant_type: 'authorization_code' }),
+    });
+    assert.equal(jsonTokenRequest.status, 400);
+    assert.deepEqual(await jsonTokenRequest.json(), { error: 'invalid_request' });
+
+    const missingGrantType = await fetch(`${config.issuer}/oauth/token`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ client_id: config.clientId }),
+    });
+    assert.equal(missingGrantType.status, 400);
+    assert.deepEqual(await missingGrantType.json(), { error: 'invalid_request' });
+
+    const malformedBasic = await fetch(`${config.issuer}/oauth/introspect`, {
+      method: 'POST',
+      headers: {
+        authorization: 'Basic %%%',
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({ token: randomOpaque() }),
+    });
+    assert.equal(malformedBasic.status, 401);
+    assert.equal(
+      malformedBasic.headers.get('www-authenticate'),
+      'Basic realm="lesson-10-introspection"',
+    );
+    assert.deepEqual(await malformedBasic.json(), { error: 'invalid_client' });
+
+    const resourceBasic = Buffer.from(`${config.resourceId}:${resourceSecret}`).toString('base64');
+    const inactive = await fetch(`${config.issuer}/oauth/introspect`, {
+      method: 'POST',
+      headers: {
+        authorization: `Basic ${resourceBasic}`,
+        'content-type': 'application/x-www-form-urlencoded',
+      },
+      body: new URLSearchParams({ token: randomOpaque() }),
+    });
+    assert.equal(inactive.status, 200);
+    assert.deepEqual(await inactive.json(), { active: false });
+  } finally {
+    await new Promise((resolve) => authorization.server.close(resolve));
   }
 });
 

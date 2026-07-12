@@ -222,8 +222,6 @@ test('deviation register records protocol boundaries and credential guardrails',
     'DEV-LOOPBACK-HTTP',
     'DEV-PER-RUN-CREDENTIAL',
     'DEV-COURSE-CONTROLS',
-    'DEV-LEGACY-FIXTURE',
-    'DEV-PROJECT-CORE-PR4',
   ]) {
     assert.match(deviations, new RegExp(`id: ${id}`));
   }

@@ -21,7 +21,6 @@ test('README indexes one canonical lesson 01 guide and manifest/package expose t
   assert.deepEqual(lesson.portIds, ['project-app-http']);
   assert.ok(lesson.resourceIds.includes('project-app'));
   assert.equal(packageJson.scripts.start, 'node course.mjs lesson 01 setup');
-  assert.equal(packageJson.scripts['start:legacy'], 'node src/server.js');
   assert.match(readme, /\[Lesson 01受講者ガイド\]\(course\/lessons\/01\/README\.md\)/u);
   for (const command of [
     'node course.mjs lesson 01 doctor',

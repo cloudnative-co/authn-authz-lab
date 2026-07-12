@@ -6,13 +6,9 @@
   "scripts": {
     "course": "node course.mjs",
     "start": "node course.mjs lesson 01 setup",
-    "start:legacy": "node src/server.js",
     "test": "node --test --test-concurrency=1 'test/**/*.test.js'",
     "test:course": "node --test 'test/course/*.test.js'",
-    "test:integration": "node scripts/run-integration-tests.mjs",
-    "compose:up": "docker compose up -d --build --wait",
-    "compose:down": "docker compose down -v",
-    "test:e2e": "playwright test e2e/"
+    "test:integration": "node scripts/run-integration-tests.mjs"
   },
   "engines": {
     "node": ">=24 <25"
