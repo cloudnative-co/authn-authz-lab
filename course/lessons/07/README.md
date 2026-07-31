@@ -225,7 +225,7 @@ node course.mjs lesson 07 diagnose
 | `KINIT_REJECTED` | AS exchangeを完了できない | KDC healthと教材secret stateを確認し、passwordを画面共有しない |
 | `CHECK_LESSON07_SUBMISSION_INVALID` | TODO、未知field、未知値がある | templateと選択肢を比較する |
 
-このlessonの自動検証はmacOS arm64上のDocker Desktopで実測済みです。他support profileと複数人のhuman pilotは別途必要です。
+このlessonはmacOS arm64 / Node.js 24 / Docker Desktopで実測し、Linux x64 / Node.js 24 / Docker EngineをCI対象にしています。CI外実機と複数人のhuman pilotは別途必要です。
 
 ## 任意の60分発展課題
 

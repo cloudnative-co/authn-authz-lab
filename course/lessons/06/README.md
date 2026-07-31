@@ -181,4 +181,4 @@ AA06-C1とAA06-C2の合格後、`extension.yaml`のAA06-X1〜X3へ進めます�
 
 DNはその時点のdirectory treeでentryを指しますが、renameや別OUへのmoveで変わり得ます。実務のidentity linkでは、directory製品が提供する不変identifierとnamespaceの契約を確認し、email、uid、DNを無条件に永続keyへしません。
 
-このLessonは現在macOS arm64 / Node.js 24 / Docker Desktopだけをcandidateとして実機検証しています。固定release、human pilot、amd64、Linux、WSL2、offline bundleは未完了です。base image digestとapt version pinだけではDebian mirror上の旧packageが将来も取得できる保証にならないため、正式releaseにはsnapshot repositoryまたは事前build multi-architecture image digestが必要です。
+このLessonはmacOS arm64 / Node.js 24 / Docker Desktopで実機検証し、Linux x64 / Node.js 24 / Docker EngineをCI対象にしています。固定release、CI外のLinux実機、human pilot、WSL2、offline bundleは未完了です。base image digestとapt version pinだけではDebian mirror上の旧packageが将来も取得できる保証にならないため、正式releaseにはsnapshot repositoryまたは事前build multi-architecture image digestが必要です。

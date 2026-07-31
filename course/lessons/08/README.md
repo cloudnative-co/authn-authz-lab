@@ -207,7 +207,7 @@ node course.mjs purge --yes
 | `CONTAINER_CONFIG_DRIFT` | 同じ教材revisionへ戻す。foreign containerを削除しない |
 | `CHECK_LESSON08_SUBMISSION_INVALID` | templateと許可値を比較し、未知fieldやTODOを直す |
 
-自動E2EはmacOS arm64とDocker Desktopで検証しています。複数OSと複数人のhuman pilotは未完了です。
+自動E2EはmacOS arm64 / Node.js 24 / Docker Desktopで検証しています。Linux x64 / Node.js 24 / Docker EngineはCI対象ですが、Samba DNSを含む全E2Eの安定化は未完了です。CI外実機と複数人のhuman pilotも未完了です。
 
 ## 任意の90分発展課題
 

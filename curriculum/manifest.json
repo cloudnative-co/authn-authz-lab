@@ -866,7 +866,7 @@
     {
       "id": "06",
       "status": "experimental",
-      "statusNote": "2026-07-12にmacOS arm64 / Node.js 24 / Docker Desktopで実OpenLDAP、実HTTP fresh scenario、ACL拒否、所有container lifecycle、source drift purgeのE2Eがpass。固定revision、macOS arm64以外、human pilotは未完了",
+      "statusNote": "macOS arm64 / Node.js 24 / Docker Desktopで実OpenLDAP、実HTTP fresh scenario、ACL拒否、所有container lifecycle、source drift purgeのE2Eがpass。Linux x64 / Node.js 24 / Docker EngineもCI対象として実OpenLDAP E2Eを確認する。固定release、CI外実機、human pilotは未完了",
       "supportedNodeMajors": [
         24
       ],
@@ -937,7 +937,7 @@
     {
       "id": "07",
       "status": "experimental",
-      "statusNote": "macOS arm64 Docker Desktopの隔離networkで実MIT Kerberos V5、kinit・klist・kvno、GSSAPI HTTP Negotiate、所有container lifecycleを自動E2E済み。macOS arm64以外の実機検証とhuman pilotは未完了",
+      "statusNote": "macOS arm64 / Node.js 24 / Docker Desktopの隔離networkで実MIT Kerberos V5、kinit・klist・kvno、GSSAPI HTTP Negotiate、所有container lifecycleを自動E2E済み。Linux x64 / Node.js 24 / Docker EngineもCI対象として同じprotocol境界を確認する。CI外実機とhuman pilotは未完了",
       "supportedNodeMajors": [
         24
       ],
@@ -1003,7 +1003,7 @@
     {
       "id": "08",
       "status": "experimental",
-      "statusNote": "macOS arm64 Docker Desktopで実Samba AD互換DC、verified LDAPS、read-only service account、objectGUID由来opaque ID、Joiner/Mover/Leaver、session再検証、同一DCのkinit/klistを自動実測済み。Microsoft AD DS、FreeIPA、GPO、Windows join、複数OS、human pilotは未検証",
+      "statusNote": "macOS arm64 / Node.js 24 / Docker Desktopで実Samba AD互換DC、verified LDAPS、read-only service account、objectGUID由来opaque ID、Joiner/Mover/Leaver、session再検証、同一DCのkinit/klistを自動実測済み。Linux x64 / Node.js 24 / Docker EngineはCI対象だがSamba DNSの安定化が未完了。Microsoft AD DS、FreeIPA、GPO、Windows join、CI外実機、human pilotは未検証",
       "supportedNodeMajors": [
         24
       ],
@@ -1066,7 +1066,7 @@
     {
       "id": "09",
       "status": "experimental",
-      "statusNote": "macOS arm64 Docker Desktopで実Keycloak 26.7.0のSP-initiated SAML Web Browser SSO、strict ACS、11件の一条件拒否、所有container lifecycleを自動E2E済み。scripted HTTP User AgentでありGUI browser、複数OS、human pilotは未検証",
+      "statusNote": "macOS arm64 / Node.js 24 / Docker Desktopで実Keycloak 26.7.0のSP-initiated SAML Web Browser SSO、strict ACS、11件の一条件拒否、所有container lifecycleを自動E2E済み。Linux x64 / Node.js 24 / Docker EngineはCI対象だがsecret mount権限の安定化が未完了。scripted HTTP User AgentでありGUI browser、CI外実機、human pilotは未検証",
       "supportedNodeMajors": [
         24
       ],
@@ -1329,7 +1329,7 @@
     {
       "id": "13",
       "status": "experimental",
-      "statusNote": "Playwright 1.61.1のChromiumとCDP virtual authenticatorで実WebAuthn登録・username-bound認証・単一条件の拒否境界を自動検証する。実hardware/OS authenticator、real user gesture、複数OS、human pilot、固定revisionは未検証",
+      "statusNote": "macOS arm64とLinux x64のNode.js 24/26 CIで、Playwright 1.61.1のChromiumとCDP virtual authenticatorによる実WebAuthn登録・username-bound認証・単一条件の拒否境界を自動検証する。実hardware/OS authenticator、real user gesture、human pilot、固定releaseは未検証",
       "supportedNodeMajors": [
         24,
         26
@@ -1377,7 +1377,7 @@
     {
       "id": "14",
       "status": "experimental",
-      "statusNote": "2つのCDP virtual authenticatorでdiscoverable credentialのusernameなし認証、RP側失効、第二credential復旧、BE/BS観察、account disableとsession失効を自動検証する。実cloud同期・端末移行・human pilot・固定revisionは未検証",
+      "statusNote": "macOS arm64とLinux x64のNode.js 24/26 CIで、2つのCDP virtual authenticatorによるdiscoverable credentialのusernameなし認証、RP側失効、第二credential復旧、BE/BS観察、account disableとsession失効を自動検証する。実cloud同期・端末移行・human pilot・固定releaseは未検証",
       "supportedNodeMajors": [
         24,
         26

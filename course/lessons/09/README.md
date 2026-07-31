@@ -142,6 +142,8 @@ node course.mjs lesson 09 purge --yes --json
 
 `CONTAINER_CONFIG_DRIFT`や`CONTAINER_SPEC_DRIFT`が出た場合は、同じ教材revisionへ戻して`diagnose`します。手動の`docker rm`で所有記録と実resourceを食い違わせないでください。
 
+このLessonはmacOS arm64 / Node.js 24 / Docker Desktopで実測し、Linux x64 / Node.js 24 / Docker EngineをCI対象にしています。Linux CIではsecret mount権限を含む全E2Eの安定化が未完了です。CI外実機と複数人のhuman pilotも未完了です。
+
 ## 任意の60分発展課題
 
 AA09-C1とC2の合格後、`extension.yaml`のAA09-X1〜X3へ進めます。SAML trust、鍵更新、app sessionの運用を設計します。この時間は標準実習1240分に含めません。
