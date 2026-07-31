@@ -56,4 +56,4 @@ generic 422はユーザー列挙耐性の一要素であり、timing side-channe
 
 2026-07-12にmacOS arm64 / Docker Desktopで`docker build --no-cache`を実行し、固定base digestからDebian Bookwormの`slapd=2.5.13+dfsg-5`と`ldap-utils=2.5.13+dfsg-5`を取得してbuildできることを確認した。ただしbase image layer自体はlocal cacheから取得されており、Debian mirrorが将来もこの旧versionを配布し続ける保証にはならない。
 
-したがって、digestとapt version pinだけで無期限に再現可能とは扱わない。固定releaseではDebian snapshot repositoryを使うか、CIで事前buildしたmulti-architecture imageをdigestで配布し、SBOMとprovenanceを添える必要がある。この配布経路、amd64 build、offline bundleが未検証の間はLesson 06をsupportedへ昇格しない。
+したがって、digestとapt version pinだけで無期限に再現可能とは扱わない。固定releaseではDebian snapshot repositoryを使うか、CIで事前buildしたmulti-architecture imageをdigestで配布し、SBOMとprovenanceを添える必要がある。この配布経路、CI外のamd64実機、offline bundleが未検証の間はLesson 06をsupportedへ昇格しない。
