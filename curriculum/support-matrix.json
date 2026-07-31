@@ -57,6 +57,18 @@
       "humanPilot": false
     },
     {
+      "id": "linux-x64-node24-docker-engine",
+      "os": "linux",
+      "architecture": "x64",
+      "nodeMajor": 24,
+      "containerEngine": "docker-engine",
+      "status": "candidate",
+      "ciJob": "docker-protocols",
+      "verifiedRevision": null,
+      "lastVerifiedAt": null,
+      "humanPilot": false
+    },
+    {
       "id": "linux-arm64-node24",
       "os": "linux",
       "architecture": "arm64",
@@ -135,6 +147,18 @@
       "nodeMajor": 26,
       "containerEngine": "none",
       "status": "candidate",
+      "ciJob": null,
+      "verifiedRevision": null,
+      "lastVerifiedAt": null,
+      "humanPilot": false
+    },
+    {
+      "id": "linux-x64-node26-docker-engine",
+      "os": "linux",
+      "architecture": "x64",
+      "nodeMajor": 26,
+      "containerEngine": "docker-engine",
+      "status": "experimental",
       "ciJob": null,
       "verifiedRevision": null,
       "lastVerifiedAt": null,
@@ -278,28 +302,32 @@
       "id": "06",
       "status": "experimental",
       "profileIds": [
-        "macos-arm64-node24-docker-desktop"
+        "macos-arm64-node24-docker-desktop",
+        "linux-x64-node24-docker-engine"
       ]
     },
     {
       "id": "07",
       "status": "experimental",
       "profileIds": [
-        "macos-arm64-node24-docker-desktop"
+        "macos-arm64-node24-docker-desktop",
+        "linux-x64-node24-docker-engine"
       ]
     },
     {
       "id": "08",
       "status": "experimental",
       "profileIds": [
-        "macos-arm64-node24-docker-desktop"
+        "macos-arm64-node24-docker-desktop",
+        "linux-x64-node24-docker-engine"
       ]
     },
     {
       "id": "09",
       "status": "experimental",
       "profileIds": [
-        "macos-arm64-node24-docker-desktop"
+        "macos-arm64-node24-docker-desktop",
+        "linux-x64-node24-docker-engine"
       ]
     },
     {
@@ -355,7 +383,9 @@
       "status": "experimental",
       "profileIds": [
         "macos-arm64-node24",
-        "macos-arm64-node26"
+        "macos-arm64-node26",
+        "linux-x64-node24",
+        "linux-x64-node26"
       ]
     },
     {
@@ -363,7 +393,9 @@
       "status": "experimental",
       "profileIds": [
         "macos-arm64-node24",
-        "macos-arm64-node26"
+        "macos-arm64-node26",
+        "linux-x64-node24",
+        "linux-x64-node26"
       ]
     },
     {

@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { test } from 'node:test';
 import {
   detectSupportEnvironment,
@@ -125,6 +126,31 @@ test('lesson runtime support enforces the manifest and assigned profile majors',
   assert.equal(experimental.supported, false);
   assert.equal(experimental.reasonCode, 'UNSUPPORTED_LESSON_SUPPORT_PROFILE');
   assert.equal(experimental.diagnostic.expected.includes('macos-x64-node26'), false);
+});
+
+test('checked-in lesson assignments match Linux CI support without enabling Node 26 Docker', async () => {
+  const [manifest, checkedInMatrix] = await Promise.all([
+    readFile(new URL('../../curriculum/manifest.json', import.meta.url), 'utf8').then(JSON.parse),
+    readFile(new URL('../../curriculum/support-matrix.json', import.meta.url), 'utf8').then(JSON.parse),
+  ]);
+  assert.equal(inspectLessonRuntimeSupport({
+    manifest,
+    matrix: checkedInMatrix,
+    lessonId: '13',
+    environment: { os: 'linux', architecture: 'x64', nodeMajor: 26 },
+  }).supported, true);
+  assert.equal(inspectLessonRuntimeSupport({
+    manifest,
+    matrix: checkedInMatrix,
+    lessonId: '06',
+    environment: { os: 'linux', architecture: 'x64', nodeMajor: 24 },
+  }).supported, true);
+  assert.equal(inspectLessonRuntimeSupport({
+    manifest,
+    matrix: checkedInMatrix,
+    lessonId: '06',
+    environment: { os: 'linux', architecture: 'x64', nodeMajor: 26 },
+  }).supported, false);
 });
 
 test('WSL candidate requires the repository on the Linux filesystem', () => {
