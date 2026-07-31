@@ -44,7 +44,7 @@ Aster Labsは次を利用しています。
 
 ## 開始する
 
-必要なのはNode.js 24です。Dockerや過去Lessonの起動状態は不要です。
+必要なのはNode.js 24または26です。Dockerや過去Lessonの起動状態は不要です。
 
 ```bash
 npm ci

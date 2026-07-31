@@ -17,7 +17,7 @@
 
 ## 授業前確認
 
-- Node.js 24.xで`node course.mjs doctor`がpassする
+- Node.js 24.xまたは26.xで`node course.mjs doctor`がpassする
 - 4100、4101、4102を他processが使用していない
 - `demo`、`observe`、正答を入れた`check`を一度通す
 - runtime、evidence、logにToken、code、verifier、Cookie、dummy credentialがない

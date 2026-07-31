@@ -7,7 +7,7 @@
 ## 前提
 
 - Gitでcloneする場合はGitが使える
-- Node.js 24.xが使える
+- Node.js 24.xまたは26.xが使える
 - リポジトリのルートへ書き込める
 - 256 MiB以上の空き容量がある
 
@@ -39,13 +39,13 @@ cd auth-authz-sample-app
 node --version
 ```
 
-表示が`v24.`で始まることを確認してから依存関係を入れます。23以前または25以降では進めません。
+表示が`v24.`または`v26.`で始まることを確認してから依存関係を入れます。23以前、25、27以降では進めません。
 
 ```bash
 npm ci
 ```
 
-`node --version`が`v24.`で始まることを確認します。23以前または25以降では進めません。`npm install`ではなく、配布物と同じ依存関係を再現する`npm ci`を使います。
+`node --version`が`v24.`または`v26.`で始まることを確認します。23以前、25、27以降では進めません。`npm install`ではなく、配布物と同じ依存関係を再現する`npm ci`を使います。
 
 ## 2. stateの変化を予測する
 
@@ -142,8 +142,8 @@ node course.mjs diagnose
 
 | `reasonCode` | 意味 | 次にすること |
 | --- | --- | --- |
-| `PREREQUISITE_NODE_VERSION` | Node.jsのmajor versionが違う | Node.js 24へ切り替え、`doctor`を再実行する |
-| `PREREQUISITE_DEPENDENCIES` | `npm ci`の結果がない、またはlockと違う | Node.js 24で`npm ci`を実行する |
+| `PREREQUISITE_NODE_VERSION` | Node.jsのmajor versionが違う | Node.js 24または26へ切り替え、`doctor`を再実行する |
+| `PREREQUISITE_DEPENDENCIES` | `npm ci`の結果がない、またはlockと違う | Node.js 24または26で`npm ci`を実行する |
 | `UNSUPPORTED_WSL_WINDOWS_FILESYSTEM` | WSL2からWindows側filesystemを使用している | WSL2のhome配下へcloneし直す |
 | `STATE_UNOWNED_ROOT` | `.lab`を教材所有と確認できない | 自分のファイルなら教材外へ退避し、診断に従う |
 | `STATE_SOURCE_DRIFT` | setup時と現在のsourceが違う | 元のsourceへ戻すか、必要な成果を退避して`purge`後にsetupする |

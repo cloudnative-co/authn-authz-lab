@@ -48,6 +48,7 @@ import {
   StateDriftError,
   StateIdentityError,
   StatePathError,
+  StateRuntimeDriftError,
   StateSchemaError,
   writeStateAtomically,
 } from '../../course/runner/state.mjs';
@@ -368,10 +369,47 @@ test('state and source/schema drift fail closed while reset advances the epoch',
   );
 });
 
+test('state runtime identity accepts its recorded major and rejects another major', async () => {
+  const context = await stateContext({ nodeMajor: 26 });
+  assert.equal((await loadStateContext({
+    stateRoot: context.stateRoot,
+    repoRoot: context.repositoryRealpath,
+    nodeMajor: 26,
+  })).marker.nodeMajor, 26);
+  await assert.rejects(
+    loadStateContext({
+      stateRoot: context.stateRoot,
+      repoRoot: context.repositoryRealpath,
+      nodeMajor: 24,
+    }),
+    StateRuntimeDriftError,
+  );
+  await assert.rejects(
+    writeStateAtomically({
+      stateRoot: context.stateRoot,
+      repoRoot: context.repositoryRealpath,
+      nodeMajor: 24,
+      state: fixtureState(context),
+    }),
+    StateRuntimeDriftError,
+  );
+  await assert.rejects(
+    acquireLock({
+      stateRoot: context.stateRoot,
+      repoRoot: context.repositoryRealpath,
+      courseId: 'auth-authz',
+      nodeMajor: 24,
+      mode: 'read',
+      runId: 'runtime-drift-lock',
+    }),
+    StateRuntimeDriftError,
+  );
+});
+
 test('schema drift, insecure permissions, and state-file symlinks are rejected', async () => {
   const schemaContext = await stateContext();
   const marker = JSON.parse(await readFile(schemaContext.markerPath, 'utf8'));
-  await writeFile(schemaContext.markerPath, `${canonicalJson({ ...marker, schemaVersion: 2 })}\n`);
+  await writeFile(schemaContext.markerPath, `${canonicalJson({ ...marker, schemaVersion: 999 })}\n`);
   await assert.rejects(
     loadStateContext({ stateRoot: schemaContext.stateRoot, repoRoot: schemaContext.repositoryRealpath }),
     StateSchemaError,

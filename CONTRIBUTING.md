@@ -11,7 +11,7 @@ npx playwright install chromium
 npm test
 ```
 
-Node.jsは24.xです。依存関係はdirect dependencyもexact version、installは`package-lock.json`を使う`npm ci`を前提にします。
+Node.jsは24.xまたは26.xです。依存関係はdirect dependencyもexact version、installは`package-lock.json`を使う`npm ci`を前提にします。
 
 Docker protocol testを変更した場合はDocker DesktopまたはDocker EngineとCompose v2を準備し、次も実行します。
 

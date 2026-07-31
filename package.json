@@ -11,7 +11,7 @@
     "test:integration": "node scripts/run-integration-tests.mjs"
   },
   "engines": {
-    "node": ">=24 <25"
+    "node": ">=24 <25 || >=26 <27"
   },
   "dependencies": {
     "@node-saml/node-saml": "5.1.0",

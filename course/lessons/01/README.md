@@ -44,7 +44,7 @@ node course.mjs setup
 
 `[PASS]`または`safe-noop`を確認してから、このLessonの予測と個別`doctor`へ進みます。`[BLOCKED]`または`[FAIL]`なら、表示された`reasonCode`と`recovery`を解消し、同じ`setup`を再実行します。
 
-Node.jsは24.xを使います。`doctor`または`setup`が`blocked`になった場合は、第01回へ進まず、表示された`reasonCode`と`recovery`に従います。
+Node.jsは24.xまたは26.xを使います。`doctor`または`setup`が`blocked`になった場合は、第01回へ進まず、表示された`reasonCode`と`recovery`に従います。
 
 ## 1. 予測する
 

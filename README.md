@@ -52,13 +52,15 @@ CloudNative BLOGsの連載「認証認可入門」で使う、実習・自動採
 
 ## 1. 必要な環境を確認する
 
-共通で必要なものはGit、Node.js 24.x、約1 GiB以上の空き容量です。Lesson 01〜05、10〜12、15にDockerは不要です。Lesson 06〜09はDocker DesktopまたはDocker EngineとCompose v2、初回image build用のnetwork、Docker用に少なくとも8 GiBの空き容量を用意してください。Lesson 09はscripted HTTP User Agentをcontainer内で動かすためGUI browserは不要です。Lesson 10、11、15は手動flowを追う場合だけbrowserを使います。Lesson 13、14はPlaywright用Chromiumが必要です。
+共通で必要なものはGit、Node.js 24.xまたは26.x、約1 GiB以上の空き容量です。Lesson 01〜05、10〜12、15にDockerは不要です。Lesson 06〜09はDocker DesktopまたはDocker EngineとCompose v2、初回image build用のnetwork、Docker用に少なくとも8 GiBの空き容量を用意してください。Lesson 09はscripted HTTP User Agentをcontainer内で動かすためGUI browserは不要です。Lesson 10、11、15は手動flowを追う場合だけbrowserを使います。Lesson 13、14はPlaywright用Chromiumが必要です。
 
 対応候補は次の環境です。
 
 - macOS arm64 / x64
 - Linux arm64 / x64
 - WSL2 x64のLinux filesystem
+
+Node.js 26をcandidateとしているのは、非Docker LessonのmacOS arm64とLinux x64です。macOS x64、Linux arm64、WSL2のNode.js 26 profileと、Docker Lesson 06〜09のNode.js 26 profileはexperimentalであり、runnerはfail closedで拒否します。これらの環境ではNode.js 24を使います。
 
 Windows nativeは安全なprocess所有確認が未完成なので使いません。support matrixには検出対象として記録しますが、各lessonの`profileIds`からは除外し、runnerもfail closedで拒否します。WSL2では`/mnt/c/...`ではなく、`~/...`のようなLinux側のhome directoryへcloneします。
 
@@ -76,16 +78,42 @@ Gitのversionが表示されたことを確認してから、Node.jsを確認し
 node --version
 ```
 
-`v24.`で始まることを確認してから、同梱されたnpmを確認します。23以前または25以降では教材を実行しません。
+`v24.`または`v26.`で始まることを確認してから、同梱されたnpmを確認します。Node.js 25や27以降では教材を実行しません。
 
 ```bash
 npm --version
 ```
 
-期待する結果は、3コマンドがすべてversionを表示し、`node --version`が`v24.`から始まることです。
+期待する結果は、3コマンドがすべてversionを表示し、`node --version`が`v24.`または`v26.`から始まることです。
 
 - Gitが見つからない場合は、OSに対応するGit公式手順（[macOS](https://git-scm.com/install/mac)、[Linux](https://git-scm.com/install/linux)、[Windows](https://git-scm.com/install/windows)）で導入し、terminalを開き直して`git --version`を再実行します。Windows nativeは教材対象外ですが、WSL2でcloneするためにWindows側Gitを使う必要はありません。
-- Node.jsがない、またはmajor versionが違う場合は、[Node.js公式ダウンロードページ](https://nodejs.org/en/download)でv24.x LTSを導入し、terminalを開き直して`node --version`と`npm --version`を再実行します。npmはこのNode.js配布物に含まれるものを使い、別途導入しません。
+- Node.jsがない、またはmajor versionが違う場合は、[Node.js公式ダウンロードページ](https://nodejs.org/en/download)でv24.x LTSまたはv26.xを導入し、terminalを開き直して`node --version`と`npm --version`を再実行します。安定性を優先する場合はv24.x LTSを選びます。npmはこのNode.js配布物に含まれるものを使い、別途導入しません。
+
+Node.js 24と26を切り替えるときは、先に現在のrevisionとNode.jsで教材所有stateを削除します。その後にNode.jsを切り替え、依存関係を作り直します。
+
+```bash
+node course.mjs purge --yes --json
+```
+
+Node.jsを切り替えた後、依存関係を作り直します。
+
+```bash
+npm ci
+```
+
+新しい実行環境を診断します。
+
+```bash
+node course.mjs doctor
+```
+
+`doctor`が`pass`で成功したことを確認してから、stateを初期化します。
+
+```bash
+node course.mjs setup
+```
+
+切替先のNode.jsでrunnerが起動しない場合は、元の対応majorへ戻して`purge`を実行してから切り替えます。この変更より前のrevisionへ戻す場合も、checkout前に`purge`します。先に旧revisionへ戻してstate markerを読めなくなった場合は、Node.js 26対応を含むrevisionを一時的にcheckoutして`purge`し、その後に旧revisionへ戻します。
 
 Lesson 06〜09を行うmacOS利用者は、CPUに合う[Docker Desktop for Mac公式手順](https://docs.docker.com/desktop/setup/install/mac-install/)で導入し、Docker Desktopを起動してから次を1つずつ確認します。
 
@@ -101,7 +129,7 @@ docker compose version
 docker info
 ```
 
-3コマンドが成功するまでDocker回へ進みません。Linuxは[Docker Engine公式のOS別手順](https://docs.docker.com/engine/install/)、WSL2は[Docker Desktop WSL 2公式手順](https://docs.docker.com/desktop/features/wsl/)を入口にしますが、現時点のprofileはすべてcandidateで人間pilot未完了です。授業では講師が対象profileを事前検証し、受講者へ導入済み環境を渡します。
+3コマンドが成功するまでDocker回へ進みません。Linuxは[Docker Engine公式のOS別手順](https://docs.docker.com/engine/install/)、WSL2は[Docker Desktop WSL 2公式手順](https://docs.docker.com/desktop/features/wsl/)を入口にします。candidateとexperimentalの区分は`curriculum/support-matrix.json`で確認し、授業では講師が対象profileを事前検証して受講者へ導入済み環境を渡します。
 
 ## 2. 教材を取得する
 

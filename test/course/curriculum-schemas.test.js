@@ -42,11 +42,11 @@ test('runtime schemas are separate strict Draft 2020-12 documents', () => {
   }
 });
 
-test('manifest has a Node 24 baseline and recognizes every curriculum lesson', () => {
+test('manifest keeps the Node 24 baseline and supports Node 24 and 26', () => {
   const manifest = readJson('curriculum/manifest.json');
   const contract = readJson('curriculum/course-contract.json');
   assert.equal(manifest.runtime.node.baselineMajor, 24);
-  assert.equal(manifest.runtime.node.versionRange, '>=24 <25');
+  assert.equal(manifest.runtime.node.versionRange, '>=24 <25 || >=26 <27');
   assert.equal(manifest.runtime.commands.course.grammar, 'node course.mjs doctor|setup|diagnose|stop|reset|purge');
   assert.equal(
     manifest.runtime.commands.lesson.grammar,
@@ -61,6 +61,11 @@ test('manifest has a Node 24 baseline and recognizes every curriculum lesson', (
   assert.equal(manifest.lessons.find(({ id }) => id === '01').status, 'candidate');
   const contractByLesson = new Map(contract.lessons.map((lesson) => [lesson.id, lesson]));
   for (const lesson of manifest.lessons) {
+    assert.deepEqual(
+      lesson.supportedNodeMajors,
+      ['06', '07', '08', '09'].includes(lesson.id) ? [24] : [24, 26],
+      lesson.id,
+    );
     const artifactStatuses = contractByLesson.get(lesson.id).assessments
       .map(({ artifactStatus }) => artifactStatus);
     if (artifactStatuses.every((status) => status === 'planned')) {
@@ -228,4 +233,34 @@ test('deviation register records protocol boundaries and credential guardrails',
   for (const guardrail of ['256-bit', 'resetごと', 'cross-purpose', '定時間比較']) {
     assert.match(deviations, new RegExp(guardrail));
   }
+});
+
+test('every Node 24 support profile and lesson assignment has a Node 26 counterpart', () => {
+  const matrix = readJson('curriculum/support-matrix.json');
+  const profiles = new Map(matrix.profiles.map((profile) => [profile.id, profile]));
+  for (const profile of matrix.profiles.filter(({ nodeMajor: major }) => major === 24)) {
+    const counterpart = profiles.get(profile.id.replace('node24', 'node26'));
+    assert.ok(counterpart, profile.id);
+    assert.equal(counterpart.nodeMajor, 26);
+    assert.equal(counterpart.os, profile.os);
+    assert.equal(counterpart.architecture, profile.architecture);
+    assert.equal(counterpart.containerEngine, profile.containerEngine);
+  }
+  for (const lesson of matrix.lessons) {
+    const assignments = new Set(lesson.profileIds);
+    for (const profileId of lesson.profileIds.filter((id) => id.includes('node24'))) {
+      if (['06', '07', '08', '09'].includes(lesson.id)) {
+        assert.equal(assignments.has(profileId.replace('node24', 'node26')), false, `${lesson.id}:${profileId}`);
+      } else {
+        assert.ok(assignments.has(profileId.replace('node24', 'node26')), `${lesson.id}:${profileId}`);
+      }
+    }
+  }
+});
+
+test('README documents safe Node major switching and rollback before old runners see v2 state', () => {
+  const readme = readFileSync(resolve(repositoryRoot, 'README.md'), 'utf8');
+  assert.match(readme, /checkout前に`purge`/u);
+  assert.match(readme, /Node\.js 26対応を含むrevisionを一時的にcheckoutして`purge`/u);
+  assert.match(readme, /元の対応majorへ戻して`purge`/u);
 });

@@ -86,7 +86,7 @@ node course.mjs lesson 14 doctor
 
 `[PASS]`を確認してから次へ進みます。`[BLOCKED]`または`[FAIL]`なら`reasonCode`と`recovery`を解消し、同じ`doctor`を再実行します。
 
-Node.jsは24.xです。`npm ci`とChromium installationは別の手順です。教材はbrowserを暗黙downloadしません。
+Node.jsは24.xまたは26.xです。`npm ci`とChromium installationは別の手順です。教材はbrowserを暗黙downloadしません。
 
 学習上は第03回のsessionと第13回のWebAuthnが前提ですが、それらのruntime stateは不要です。固定の教材accountだけを使い、実credentialや実利用者情報を入力しません。
 

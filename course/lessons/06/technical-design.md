@@ -50,7 +50,7 @@ generic 422はユーザー列挙耐性の一要素であり、timing side-channe
 - pure/unit: input bound、空password、EqualityFilter、generic failure、trace redaction、assessment。
 - fake Docker: CLI/daemon/Compose/port失敗、timeout、output上限、abort、orphan adoption、config drift、foreign container非制御。
 - actual Docker: runner doctor→setup→demo→observe→check→stop→setup→reset→purgeをtemp repositoryで実行し、Alice groupsと拒否経路、container所有権、秘密非永続化を確認する。
-- regression: Node 24で既存full testを実行し、Lesson 01〜05のnon-Docker flowを確認する。
+- regression: Node 24と26で既存full testを実行し、Lesson 01〜05のnon-Docker flowを確認する。
 
 ## release blocker: 長期再現性
 

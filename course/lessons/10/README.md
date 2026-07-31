@@ -36,7 +36,7 @@ node course.mjs setup
 
 `[PASS]`または`safe-noop`を確認してから、このLessonの予測と個別`doctor`へ進みます。`[BLOCKED]`または`[FAIL]`なら、表示された`reasonCode`と`recovery`を解消し、同じ`setup`を再実行します。
 
-Node.jsは24.xです。学習上は第01回の責任境界を前提にします。`course.mjs setup`まで成功していれば、過去Lessonのruntimeや回答は不要です。必須の自動実習と`check`はNode.jsだけで完了し、ブラウザ操作は任意の追加観察です。
+Node.jsは24.xまたは26.xです。学習上は第01回の責任境界を前提にします。`course.mjs setup`まで成功していれば、過去Lessonのruntimeや回答は不要です。必須の自動実習と`check`はNode.jsだけで完了し、ブラウザ操作は任意の追加観察です。
 
 ## 先に予測する
 

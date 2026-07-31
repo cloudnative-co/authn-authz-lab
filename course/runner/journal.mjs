@@ -51,6 +51,7 @@ function stateOptions(options) {
     ...(options.courseId !== undefined ? { courseId: options.courseId } : {}),
     ...(hasOwn(options, 'sourceRevision') ? { sourceRevision: options.sourceRevision } : {}),
     ...(options.sourceDigest !== undefined ? { sourceDigest: options.sourceDigest } : {}),
+    ...(options.nodeMajor !== undefined ? { nodeMajor: options.nodeMajor } : {}),
   };
 }
 

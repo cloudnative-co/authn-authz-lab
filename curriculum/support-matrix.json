@@ -91,25 +91,312 @@
       "verifiedRevision": null,
       "lastVerifiedAt": null,
       "humanPilot": false
+    },
+    {
+      "id": "macos-arm64-node26",
+      "os": "macos",
+      "architecture": "arm64",
+      "nodeMajor": 26,
+      "containerEngine": "none",
+      "status": "candidate",
+      "ciJob": null,
+      "verifiedRevision": null,
+      "lastVerifiedAt": null,
+      "humanPilot": false
+    },
+    {
+      "id": "macos-x64-node26",
+      "os": "macos",
+      "architecture": "x64",
+      "nodeMajor": 26,
+      "containerEngine": "none",
+      "status": "experimental",
+      "ciJob": null,
+      "verifiedRevision": null,
+      "lastVerifiedAt": null,
+      "humanPilot": false
+    },
+    {
+      "id": "macos-arm64-node26-docker-desktop",
+      "os": "macos",
+      "architecture": "arm64",
+      "nodeMajor": 26,
+      "containerEngine": "docker-desktop",
+      "status": "experimental",
+      "ciJob": null,
+      "verifiedRevision": null,
+      "lastVerifiedAt": null,
+      "humanPilot": false
+    },
+    {
+      "id": "linux-x64-node26",
+      "os": "linux",
+      "architecture": "x64",
+      "nodeMajor": 26,
+      "containerEngine": "none",
+      "status": "candidate",
+      "ciJob": null,
+      "verifiedRevision": null,
+      "lastVerifiedAt": null,
+      "humanPilot": false
+    },
+    {
+      "id": "linux-arm64-node26",
+      "os": "linux",
+      "architecture": "arm64",
+      "nodeMajor": 26,
+      "containerEngine": "none",
+      "status": "experimental",
+      "ciJob": null,
+      "verifiedRevision": null,
+      "lastVerifiedAt": null,
+      "humanPilot": false
+    },
+    {
+      "id": "wsl2-x64-node26",
+      "os": "wsl2-linux-filesystem",
+      "architecture": "x64",
+      "nodeMajor": 26,
+      "containerEngine": "docker-desktop-wsl-integration",
+      "status": "experimental",
+      "ciJob": null,
+      "verifiedRevision": null,
+      "lastVerifiedAt": null,
+      "humanPilot": false
+    },
+    {
+      "id": "windows-x64-node26",
+      "os": "windows",
+      "architecture": "x64",
+      "nodeMajor": 26,
+      "containerEngine": "none",
+      "status": "experimental",
+      "ciJob": null,
+      "verifiedRevision": null,
+      "lastVerifiedAt": null,
+      "humanPilot": false
     }
   ],
   "lessons": [
-    { "id": "setup", "status": "candidate", "profileIds": ["macos-arm64-node24", "macos-x64-node24", "linux-x64-node24", "linux-arm64-node24", "wsl2-x64-node24"] },
-    { "id": "01", "status": "candidate", "profileIds": ["macos-arm64-node24", "macos-x64-node24", "linux-x64-node24", "linux-arm64-node24", "wsl2-x64-node24"] },
-    { "id": "02", "status": "experimental", "profileIds": ["macos-arm64-node24", "macos-x64-node24", "linux-x64-node24", "linux-arm64-node24", "wsl2-x64-node24"] },
-    { "id": "03", "status": "experimental", "profileIds": ["macos-arm64-node24", "macos-x64-node24", "linux-x64-node24", "linux-arm64-node24", "wsl2-x64-node24"] },
-    { "id": "04", "status": "experimental", "profileIds": ["macos-arm64-node24", "macos-x64-node24", "linux-x64-node24", "linux-arm64-node24", "wsl2-x64-node24"] },
-    { "id": "05", "status": "experimental", "profileIds": ["macos-arm64-node24", "macos-x64-node24", "linux-x64-node24", "linux-arm64-node24", "wsl2-x64-node24"] },
-    { "id": "06", "status": "experimental", "profileIds": ["macos-arm64-node24-docker-desktop"] },
-    { "id": "07", "status": "experimental", "profileIds": ["macos-arm64-node24-docker-desktop"] },
-    { "id": "08", "status": "experimental", "profileIds": ["macos-arm64-node24-docker-desktop"] },
-    { "id": "09", "status": "experimental", "profileIds": ["macos-arm64-node24-docker-desktop"] },
-    { "id": "10", "status": "experimental", "profileIds": ["macos-arm64-node24", "macos-x64-node24", "linux-x64-node24", "linux-arm64-node24", "wsl2-x64-node24"] },
-    { "id": "11", "status": "experimental", "profileIds": ["macos-arm64-node24", "macos-x64-node24", "linux-x64-node24", "linux-arm64-node24", "wsl2-x64-node24"] },
-    { "id": "12", "status": "experimental", "profileIds": ["macos-arm64-node24", "macos-x64-node24", "linux-x64-node24", "linux-arm64-node24", "wsl2-x64-node24"] },
-    { "id": "13", "status": "experimental", "profileIds": ["macos-arm64-node24"] },
-    { "id": "14", "status": "experimental", "profileIds": ["macos-arm64-node24"] },
-    { "id": "15", "status": "experimental", "profileIds": ["macos-arm64-node24", "macos-x64-node24", "linux-x64-node24", "linux-arm64-node24", "wsl2-x64-node24"] },
-    { "id": "capstone", "status": "experimental", "profileIds": ["macos-arm64-node24", "macos-x64-node24", "linux-x64-node24", "linux-arm64-node24", "wsl2-x64-node24"] }
+    {
+      "id": "setup",
+      "status": "candidate",
+      "profileIds": [
+        "macos-arm64-node24",
+        "macos-arm64-node26",
+        "macos-x64-node24",
+        "macos-x64-node26",
+        "linux-x64-node24",
+        "linux-x64-node26",
+        "linux-arm64-node24",
+        "linux-arm64-node26",
+        "wsl2-x64-node24",
+        "wsl2-x64-node26"
+      ]
+    },
+    {
+      "id": "01",
+      "status": "candidate",
+      "profileIds": [
+        "macos-arm64-node24",
+        "macos-arm64-node26",
+        "macos-x64-node24",
+        "macos-x64-node26",
+        "linux-x64-node24",
+        "linux-x64-node26",
+        "linux-arm64-node24",
+        "linux-arm64-node26",
+        "wsl2-x64-node24",
+        "wsl2-x64-node26"
+      ]
+    },
+    {
+      "id": "02",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24",
+        "macos-arm64-node26",
+        "macos-x64-node24",
+        "macos-x64-node26",
+        "linux-x64-node24",
+        "linux-x64-node26",
+        "linux-arm64-node24",
+        "linux-arm64-node26",
+        "wsl2-x64-node24",
+        "wsl2-x64-node26"
+      ]
+    },
+    {
+      "id": "03",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24",
+        "macos-arm64-node26",
+        "macos-x64-node24",
+        "macos-x64-node26",
+        "linux-x64-node24",
+        "linux-x64-node26",
+        "linux-arm64-node24",
+        "linux-arm64-node26",
+        "wsl2-x64-node24",
+        "wsl2-x64-node26"
+      ]
+    },
+    {
+      "id": "04",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24",
+        "macos-arm64-node26",
+        "macos-x64-node24",
+        "macos-x64-node26",
+        "linux-x64-node24",
+        "linux-x64-node26",
+        "linux-arm64-node24",
+        "linux-arm64-node26",
+        "wsl2-x64-node24",
+        "wsl2-x64-node26"
+      ]
+    },
+    {
+      "id": "05",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24",
+        "macos-arm64-node26",
+        "macos-x64-node24",
+        "macos-x64-node26",
+        "linux-x64-node24",
+        "linux-x64-node26",
+        "linux-arm64-node24",
+        "linux-arm64-node26",
+        "wsl2-x64-node24",
+        "wsl2-x64-node26"
+      ]
+    },
+    {
+      "id": "06",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24-docker-desktop"
+      ]
+    },
+    {
+      "id": "07",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24-docker-desktop"
+      ]
+    },
+    {
+      "id": "08",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24-docker-desktop"
+      ]
+    },
+    {
+      "id": "09",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24-docker-desktop"
+      ]
+    },
+    {
+      "id": "10",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24",
+        "macos-arm64-node26",
+        "macos-x64-node24",
+        "macos-x64-node26",
+        "linux-x64-node24",
+        "linux-x64-node26",
+        "linux-arm64-node24",
+        "linux-arm64-node26",
+        "wsl2-x64-node24",
+        "wsl2-x64-node26"
+      ]
+    },
+    {
+      "id": "11",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24",
+        "macos-arm64-node26",
+        "macos-x64-node24",
+        "macos-x64-node26",
+        "linux-x64-node24",
+        "linux-x64-node26",
+        "linux-arm64-node24",
+        "linux-arm64-node26",
+        "wsl2-x64-node24",
+        "wsl2-x64-node26"
+      ]
+    },
+    {
+      "id": "12",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24",
+        "macos-arm64-node26",
+        "macos-x64-node24",
+        "macos-x64-node26",
+        "linux-x64-node24",
+        "linux-x64-node26",
+        "linux-arm64-node24",
+        "linux-arm64-node26",
+        "wsl2-x64-node24",
+        "wsl2-x64-node26"
+      ]
+    },
+    {
+      "id": "13",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24",
+        "macos-arm64-node26"
+      ]
+    },
+    {
+      "id": "14",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24",
+        "macos-arm64-node26"
+      ]
+    },
+    {
+      "id": "15",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24",
+        "macos-arm64-node26",
+        "macos-x64-node24",
+        "macos-x64-node26",
+        "linux-x64-node24",
+        "linux-x64-node26",
+        "linux-arm64-node24",
+        "linux-arm64-node26",
+        "wsl2-x64-node24",
+        "wsl2-x64-node26"
+      ]
+    },
+    {
+      "id": "capstone",
+      "status": "experimental",
+      "profileIds": [
+        "macos-arm64-node24",
+        "macos-arm64-node26",
+        "macos-x64-node24",
+        "macos-x64-node26",
+        "linux-x64-node24",
+        "linux-x64-node26",
+        "linux-arm64-node24",
+        "linux-arm64-node26",
+        "wsl2-x64-node24",
+        "wsl2-x64-node26"
+      ]
+    }
   ]
 }

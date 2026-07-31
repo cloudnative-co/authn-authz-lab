@@ -21,7 +21,7 @@ import {
   StateSchemaError,
   writeStateAtomically,
 } from './state.mjs';
-import { inspectSupport, inspectWslRepositoryPlacement } from './support.mjs';
+import { inspectSupport, inspectWslRepositoryPlacement, nodeMajor } from './support.mjs';
 import {
   beginMutation,
   commitTransaction,
@@ -114,11 +114,12 @@ export async function loadCourseFoundation({ repoRoot } = {}) {
   };
 }
 
-function identity(foundation) {
+function identity(foundation, runtimeNodeMajor) {
   return {
     courseId: foundation.manifest.courseId,
     sourceRevision: foundation.courseLock.sourceRevision,
     sourceDigest: foundation.sourceDigest,
+    ...(runtimeNodeMajor !== undefined ? { nodeMajor: runtimeNodeMajor } : {}),
   };
 }
 
@@ -182,13 +183,18 @@ async function withCourseLock({
   operationJournal = null,
   signal,
   timestamp,
+  runtimeNodeMajor,
+  strictRuntimeIdentity = strictIdentity,
 }, callback) {
   throwIfAborted(signal);
   const lockOptions = {
     stateRoot,
     repoRoot: foundation.repositoryRealpath,
     courseId: foundation.manifest.courseId,
-    ...(strictIdentity ? identity(foundation) : {}),
+    ...(strictIdentity ? identity(foundation, runtimeNodeMajor) : {}),
+    ...(!strictIdentity && strictRuntimeIdentity && runtimeNodeMajor !== undefined
+      ? { nodeMajor: runtimeNodeMajor }
+      : {}),
     mode,
     runId,
   };
@@ -222,6 +228,7 @@ async function withCourseLock({
         ...(strictIdentity ? {
           sourceRevision: foundation.courseLock.sourceRevision,
           sourceDigest: foundation.sourceDigest,
+          nodeMajor: runtimeNodeMajor,
         } : {}),
         signal,
         entry: {
@@ -313,7 +320,7 @@ async function inspectLocalPrerequisites(foundation) {
     expected: 'package-lock.jsonと一致するnpm ci結果',
     message: installProblems.length === 0
       ? 'direct依存のversionとinstall lockはpackage-lock.jsonに一致しています'
-      : 'Node.js 24でnpm ciを実行してください',
+      : 'Node.js 24または26でnpm ciを実行してください',
   });
   if (installProblems.length > 0) reasonCode ??= 'PREREQUISITE_DEPENDENCIES';
 
@@ -365,12 +372,12 @@ async function inspectDoctor(foundation, environment) {
 
 function blockedSupport(support) {
   const recoveryByReason = {
-    PREREQUISITE_NODE_VERSION: 'Node.js 24で node course.mjs doctor を再実行してください',
+    PREREQUISITE_NODE_VERSION: 'Node.js 24または26で node course.mjs doctor を再実行してください',
     PREREQUISITE_PACKAGE_LOCK: 'package.jsonとpackage-lock.jsonを同じ教材revisionへ戻してください',
-    PREREQUISITE_DEPENDENCIES: 'Node.js 24で npm ci を実行してください',
+    PREREQUISITE_DEPENDENCIES: 'Node.js 24または26で npm ci を実行してください',
     PREREQUISITE_WRITE_PERMISSION: 'repositoryの所有者と書込権限を確認してください',
     PREREQUISITE_DISK_SPACE: '256 MiB以上の空き容量を確保してください',
-    UNSUPPORTED_WINDOWS_PROCESS_CONTROL: 'WSL2のLinux filesystemへcloneし、Node.js 24で再実行してください',
+    UNSUPPORTED_WINDOWS_PROCESS_CONTROL: 'WSL2のLinux filesystemへcloneし、Node.js 24または26で再実行してください',
     UNSUPPORTED_WSL_WINDOWS_FILESYSTEM: 'repositoryを/mnt/c等からWSL2のhome配下へcloneし直してください',
     UNSUPPORTED_SUPPORT_PROFILE: 'curriculum/support-matrix.jsonでcandidate環境を確認してください',
   };
@@ -393,6 +400,7 @@ export async function runCourseLifecycle({
   signal,
 } = {}) {
   throwIfAborted(signal);
+  const currentNodeMajor = environment?.nodeMajor ?? nodeMajor();
   const repositoryRealpath = await realpath(repoRoot);
   const recoveryStateRoot = resolve(repositoryRealpath, DEFAULT_STATE_ROOT);
   if (action === 'purge') {
@@ -534,7 +542,7 @@ export async function runCourseLifecycle({
       context = await createStateRoot({
         repoRoot: foundation.repositoryRealpath,
         stateRoot,
-        ...identity(foundation),
+        ...identity(foundation, support.detected.nodeMajor),
       });
     } finally {
       await bootstrapLease.release();
@@ -552,11 +560,12 @@ export async function runCourseLifecycle({
       }),
       signal,
       timestamp: now,
+      runtimeNodeMajor: currentNodeMajor,
     }, async () => {
       const current = await loadStateContext({
         stateRoot,
         repoRoot: foundation.repositoryRealpath,
-        ...identity(foundation),
+        ...identity(foundation, support.detected.nodeMajor),
       });
       if (current.state) {
         assertStateMatchesManifest(current.state, foundation.manifest);
@@ -565,7 +574,7 @@ export async function runCourseLifecycle({
       await writeStateAtomically({
         stateRoot,
         repoRoot: foundation.repositoryRealpath,
-        ...identity(foundation),
+        ...identity(foundation, support.detected.nodeMajor),
         state: initialState(context, foundation.manifest, now),
       });
       return true;
@@ -598,6 +607,15 @@ export async function runCourseLifecycle({
     };
   }
 
+  if (action === 'stop') {
+    await loadStateMarkerContext({
+      stateRoot,
+      repoRoot: foundation.repositoryRealpath,
+      courseId: foundation.manifest.courseId,
+      nodeMajor: currentNodeMajor,
+    });
+  }
+
   if (action === 'diagnose') {
     return withCourseLock({
       stateRoot,
@@ -605,6 +623,7 @@ export async function runCourseLifecycle({
       mode: 'read',
       runId,
       strictIdentity: false,
+      strictRuntimeIdentity: false,
       operationJournal: (result) => ({
         command: 'diagnose',
         status: result.status,
@@ -612,6 +631,7 @@ export async function runCourseLifecycle({
       }),
       signal,
       timestamp: now,
+      runtimeNodeMajor: currentNodeMajor,
     }, async () => {
       const markerContext = await loadStateMarkerContext({
         stateRoot,
@@ -638,7 +658,9 @@ export async function runCourseLifecycle({
       }
       const sourceDrift = markerContext.marker.sourceRevision !== foundation.courseLock.sourceRevision
         || markerContext.marker.sourceDigest !== foundation.sourceDigest;
-      const drifted = sourceDrift || stateSchemaDrift || stateMissing || Boolean(pendingTransaction);
+      const runtimeDrift = markerContext.marker.schemaVersion !== 2
+        || markerContext.marker.nodeMajor !== currentNodeMajor;
+      const drifted = sourceDrift || runtimeDrift || stateSchemaDrift || stateMissing || Boolean(pendingTransaction);
       return {
         status: drifted ? 'blocked' : 'pass',
         checkIds: [],
@@ -651,8 +673,12 @@ export async function runCourseLifecycle({
             ? 'state-missing'
             : stateSchemaDrift
             ? (stateDriftReasonCode === 'STATE_MANIFEST_DRIFT' ? 'state-manifest-drift' : 'state-schema-drift')
+            : runtimeDrift
+            ? `node-major:${markerContext.marker.nodeMajor ?? 'legacy'}`
             : `${markerContext.marker.sourceRevision ?? 'unreleased'}:${markerContext.marker.sourceDigest}`,
-          expected: `${foundation.courseLock.sourceRevision ?? 'unreleased'}:${foundation.sourceDigest}`,
+          expected: runtimeDrift
+            ? `node-major:${currentNodeMajor}`
+            : `${foundation.courseLock.sourceRevision ?? 'unreleased'}:${foundation.sourceDigest}`,
           message: pendingTransaction
             ? `${pendingTransaction.command}がcommit前に中断されています`
             : stateMissing
@@ -661,6 +687,8 @@ export async function runCourseLifecycle({
             ? (stateDriftReasonCode === 'STATE_MANIFEST_DRIFT'
               ? 'state.jsonのlessonまたはresourceがmanifestと一致しません'
               : 'state.jsonは現在のschemaと一致しません')
+            : runtimeDrift
+              ? 'setup時と現在のNode.js majorが異なります'
             : sourceDrift
               ? 'setup時と現在の教材sourceが異なります'
               : '教材sourceと実行状態は一致しています',
@@ -671,6 +699,8 @@ export async function runCourseLifecycle({
             ? 'STATE_INCOMPLETE_SETUP'
           : stateSchemaDrift
             ? stateDriftReasonCode
+            : runtimeDrift
+              ? 'STATE_RUNTIME_DRIFT'
             : (sourceDrift ? 'STATE_SOURCE_DRIFT' : null),
         recovery: drifted
           ? recovery(stateMissing && !pendingTransaction
@@ -689,6 +719,7 @@ export async function runCourseLifecycle({
       mode: 'write',
       runId,
       strictIdentity: false,
+      strictRuntimeIdentity: true,
       transactionCommand: 'stop',
       operationJournal: (outcome) => ({
         command: 'stop',
@@ -698,6 +729,7 @@ export async function runCourseLifecycle({
       }),
       signal,
       timestamp: now,
+      runtimeNodeMajor: currentNodeMajor,
     }, async () => {
       const managedProcesses = await stopManagedProcesses({
         stateRoot,
@@ -739,6 +771,7 @@ export async function runCourseLifecycle({
             await writeStateAtomically({
               stateRoot,
               repoRoot: foundation.repositoryRealpath,
+              nodeMajor: currentNodeMajor,
               state: { ...context.state, lifecycle: 'stopped', resources, updatedAt: now },
             });
             stateChanged = true;
@@ -794,8 +827,9 @@ export async function runCourseLifecycle({
       }),
       signal,
       timestamp: now,
+      runtimeNodeMajor: support.detected.nodeMajor,
     }, async () => {
-      const context = await loadStateContext({ stateRoot, repoRoot: foundation.repositoryRealpath, ...identity(foundation) });
+      const context = await loadStateContext({ stateRoot, repoRoot: foundation.repositoryRealpath, ...identity(foundation, support.detected.nodeMajor) });
       if (!context.state) throw new Error('state.jsonがありません');
       assertStateMatchesManifest(context.state, foundation.manifest);
       const managedProcesses = await stopManagedProcesses({
@@ -813,7 +847,7 @@ export async function runCourseLifecycle({
       await writeStateAtomically({
         stateRoot,
         repoRoot: foundation.repositoryRealpath,
-        ...identity(foundation),
+        ...identity(foundation, support.detected.nodeMajor),
         state: resetState(context.state, foundation.manifest, now),
         incrementEpoch: true,
       });

@@ -7,7 +7,7 @@
   "required": ["$schema", "schemaVersion", "courseId", "implementationStatus", "runtime", "ports", "resources", "locks", "lessons"],
   "properties": {
     "$schema": { "const": "./schemas/manifest.schema.json" },
-    "schemaVersion": { "const": 1 },
+    "schemaVersion": { "const": 2 },
     "courseId": { "$ref": "#/$defs/id" },
     "implementationStatus": { "enum": ["candidate", "experimental"] },
     "runtime": { "$ref": "#/$defs/runtime" },
@@ -47,7 +47,7 @@
           "required": ["baselineMajor", "versionRange"],
           "properties": {
             "baselineMajor": { "const": 24 },
-            "versionRange": { "const": ">=24 <25" }
+            "versionRange": { "const": ">=24 <25 || >=26 <27" }
           }
         },
         "commands": {
@@ -145,12 +145,17 @@
     "lesson": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "status", "requiredNodeMajor", "portIds", "resourceIds", "lockIds", "sourceFiles"],
+      "required": ["id", "status", "supportedNodeMajors", "portIds", "resourceIds", "lockIds", "sourceFiles"],
       "properties": {
         "id": { "$ref": "#/$defs/id" },
         "status": { "enum": ["candidate", "experimental", "planned"] },
         "statusNote": { "type": "string", "minLength": 1 },
-        "requiredNodeMajor": { "const": 24 },
+        "supportedNodeMajors": {
+          "type": "array",
+          "minItems": 1,
+          "items": { "enum": [24, 26] },
+          "uniqueItems": true
+        },
         "portIds": { "$ref": "#/$defs/idArray" },
         "resourceIds": { "$ref": "#/$defs/idArray" },
         "lockIds": { "$ref": "#/$defs/idArray" },

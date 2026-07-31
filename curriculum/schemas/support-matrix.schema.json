@@ -40,7 +40,7 @@
         "id": { "$ref": "#/$defs/id" },
         "os": { "enum": ["macos", "linux", "wsl2-linux-filesystem", "windows"] },
         "architecture": { "enum": ["arm64", "x64"] },
-        "nodeMajor": { "const": 24 },
+        "nodeMajor": { "enum": [24, 26] },
         "containerEngine": { "type": "string", "minLength": 1 },
         "status": { "enum": ["candidate", "experimental"] },
         "ciJob": { "type": ["string", "null"] },

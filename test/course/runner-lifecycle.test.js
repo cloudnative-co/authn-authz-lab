@@ -7,6 +7,7 @@ import { tmpdir } from 'node:os';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { after, test } from 'node:test';
+import { canonicalJson, digestCanonical } from '../../course/runner/canonical.mjs';
 import {
   copyPortableCourseReferences,
   linkFixtureRuntimeDependencies,
@@ -32,8 +33,8 @@ const temporaryRoots = [];
 const candidateEnvironment = {
   os: 'macos',
   architecture: 'arm64',
-  nodeMajor: 24,
-  nodeVersion: '24.16.0',
+  nodeMajor: Number.parseInt(process.versions.node.split('.')[0], 10),
+  nodeVersion: process.versions.node,
 };
 
 after(async () => {
@@ -169,7 +170,7 @@ async function interruptedTransactionFixture(root, {
   return { stateRoot, lock, transaction };
 }
 
-test('doctor is stateless and reports exact Node 24 candidate support', async () => {
+test('doctor is stateless and reports exact Node 24 and 26 candidate support', async () => {
   const root = await fixtureRepository();
   const passing = await command(root, ['doctor']);
   assert.equal(passing.exitCode, 0);
@@ -178,10 +179,18 @@ test('doctor is stateless and reports exact Node 24 candidate support', async ()
   assert.equal(passing.result.diagnostics.every(({ status }) => status === 'pass'), true);
   await assert.rejects(lstat(resolve(root, '.lab')), /ENOENT/);
 
-  const blocked = await command(root, ['doctor'], {
+  const node26 = await command(root, ['doctor'], {
     ...candidateEnvironment,
     nodeMajor: 26,
     nodeVersion: '26.5.0',
+  });
+  assert.equal(node26.exitCode, 0);
+  assert.equal(node26.result.status, 'pass');
+
+  const blocked = await command(root, ['doctor'], {
+    ...candidateEnvironment,
+    nodeMajor: 25,
+    nodeVersion: '25.1.0',
   });
   assert.equal(blocked.exitCode, 20);
   assert.equal(blocked.result.reasonCode, 'PREREQUISITE_NODE_VERSION');
@@ -201,6 +210,93 @@ test('doctor is stateless and reports exact Node 24 candidate support', async ()
   assert.equal(driftedDependency.exitCode, 20);
   assert.equal(driftedDependency.result.reasonCode, 'PREREQUISITE_DEPENDENCIES');
   assert.match(driftedDependency.result.diagnostics.find(({ id }) => id === 'dependencies.install').actual, /ldapts:lock-drift/);
+});
+
+test('runtime drift blocks lesson and stop before side effects while diagnose and purge recover', async () => {
+  const root = await fixtureRepository();
+  assert.equal((await command(root, ['setup'])).exitCode, 0);
+  const statePath = resolve(root, '.lab/state.json');
+  const stateBefore = await readFile(statePath, 'utf8');
+  const journalBefore = await readJournal({ stateRoot: resolve(root, '.lab') });
+  const transactionsBefore = await readTransactions({ stateRoot: resolve(root, '.lab') });
+  const alternateMajor = candidateEnvironment.nodeMajor === 24 ? 26 : 24;
+  const alternateEnvironment = {
+    ...candidateEnvironment,
+    nodeMajor: alternateMajor,
+    nodeVersion: `${alternateMajor}.0.0`,
+  };
+
+  const lesson = await command(root, ['lesson', '04', 'demo'], alternateEnvironment);
+  assert.equal(lesson.exitCode, 30);
+  assert.equal(lesson.result.reasonCode, 'STATE_RUNTIME_DRIFT');
+
+  const stop = await command(root, ['stop'], alternateEnvironment);
+  assert.equal(stop.exitCode, 30);
+  assert.equal(stop.result.reasonCode, 'STATE_RUNTIME_DRIFT');
+  assert.equal(await readFile(statePath, 'utf8'), stateBefore);
+  assert.deepEqual(await readJournal({ stateRoot: resolve(root, '.lab') }), journalBefore);
+  assert.deepEqual(await readTransactions({ stateRoot: resolve(root, '.lab') }), transactionsBefore);
+
+  const diagnosis = await command(root, ['diagnose'], alternateEnvironment);
+  assert.equal(diagnosis.exitCode, 30);
+  assert.equal(diagnosis.result.reasonCode, 'STATE_RUNTIME_DRIFT');
+  assert.equal((await command(root, ['purge', '--yes'], alternateEnvironment)).exitCode, 0);
+  await assert.rejects(lstat(resolve(root, '.lab')), /ENOENT/);
+});
+
+test('Node 26 rejects Node 24-only Docker lessons before runner side effects', async () => {
+  const root = await fixtureRepository();
+  const node26Environment = {
+    ...candidateEnvironment,
+    nodeMajor: 26,
+    nodeVersion: '26.5.0',
+  };
+  assert.equal((await command(root, ['setup'], node26Environment)).exitCode, 0);
+  const statePath = resolve(root, '.lab/state.json');
+  const stateBefore = await readFile(statePath, 'utf8');
+  const journalBefore = await readJournal({ stateRoot: resolve(root, '.lab') });
+
+  const blocked = await command(root, ['lesson', '06', 'doctor'], node26Environment);
+  assert.equal(blocked.exitCode, 20);
+  assert.equal(blocked.result.status, 'blocked');
+  assert.equal(blocked.result.reasonCode, 'UNSUPPORTED_LESSON_NODE_VERSION');
+  assert.equal(blocked.result.diagnostics[0].id, 'lesson06.node-version');
+  assert.equal(await readFile(statePath, 'utf8'), stateBefore);
+  assert.deepEqual(await readJournal({ stateRoot: resolve(root, '.lab') }), journalBefore);
+});
+
+test('legacy v1 state with stale source remains diagnosable and purgeable', async () => {
+  const root = await fixtureRepository();
+  assert.equal((await command(root, ['setup'])).exitCode, 0);
+  const markerPath = resolve(root, '.lab/marker.json');
+  const statePath = resolve(root, '.lab/state.json');
+  const currentMarker = JSON.parse(await readFile(markerPath, 'utf8'));
+  const { nodeMajor: ignoredNodeMajor, ...withoutNodeMajor } = currentMarker;
+  const legacyMarker = {
+    ...withoutNodeMajor,
+    schemaVersion: 1,
+    sourceDigest: 'b'.repeat(64),
+  };
+  const legacyDigest = digestCanonical(legacyMarker);
+  const currentState = JSON.parse(await readFile(statePath, 'utf8'));
+  const legacyState = {
+    ...currentState,
+    markerDigest: legacyDigest,
+    resources: currentState.resources.map((resource) => ({
+      ...resource,
+      ownershipDigest: resource.ownershipDigest === currentState.markerDigest
+        ? legacyDigest
+        : resource.ownershipDigest,
+    })),
+  };
+  await writeFile(markerPath, `${canonicalJson(legacyMarker)}\n`);
+  await writeFile(statePath, `${canonicalJson(legacyState)}\n`);
+
+  const diagnosis = await command(root, ['diagnose']);
+  assert.equal(diagnosis.exitCode, 30);
+  assert.equal(diagnosis.result.reasonCode, 'STATE_RUNTIME_DRIFT');
+  assert.equal((await command(root, ['purge', '--yes'])).exitCode, 0);
+  await assert.rejects(lstat(resolve(root, '.lab')), /ENOENT/);
 });
 
 test('help is discoverable and JSON usage errors use a stable envelope', async () => {

@@ -331,11 +331,11 @@ function fixtureManifest(sourceFiles = ['src/example.js']) {
   };
   return {
     $schema: './schemas/manifest.schema.json',
-    schemaVersion: 1,
+    schemaVersion: 2,
     courseId: 'fixture',
     implementationStatus: 'candidate',
     runtime: {
-      node: { baselineMajor: 24, versionRange: '>=24 <25' },
+      node: { baselineMajor: 24, versionRange: '>=24 <25 || >=26 <27' },
       commands: {
         course,
         lesson: {
@@ -352,7 +352,7 @@ function fixtureManifest(sourceFiles = ['src/example.js']) {
     lessons: [{
       id: '01',
       status: 'candidate',
-      requiredNodeMajor: 24,
+      supportedNodeMajors: [24, 26],
       portIds: [],
       resourceIds: [],
       lockIds: [],

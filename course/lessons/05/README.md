@@ -96,7 +96,7 @@ node course.mjs setup
 
 `[PASS]`または`safe-noop`を確認してから、このLessonの予測と個別`doctor`へ進みます。`[BLOCKED]`または`[FAIL]`なら、表示された`reasonCode`と`recovery`を解消し、同じ`setup`を再実行します。
 
-Node.jsは24.xです。第01回の責任境界を理解していることを学習上の前提にしますが、第01〜04回のruntime stateは不要です。
+Node.jsは24.xまたは26.xです。第01回の責任境界を理解していることを学習上の前提にしますが、第01〜04回のruntime stateは不要です。
 
 この演習へ実在する組織、個人、ほかのserviceで使うpasswordを入力しないでください。demoは教材内の固定accountだけを使います。
 

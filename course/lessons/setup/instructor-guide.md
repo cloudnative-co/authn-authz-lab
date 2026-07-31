@@ -6,7 +6,7 @@
 
 | 時間 | 内容 |
 | ---: | --- |
-| 0〜10分 | Node.js 24、取得方法、作業ディレクトリの確認 |
+| 0〜10分 | Node.js 24または26、取得方法、作業ディレクトリの確認 |
 | 10〜20分 | `npm ci`と`doctor` |
 | 20〜30分 | `setup`とstate所有権の説明 |
 | 30〜40分 | `diagnose`、`reset`、再診断 |
@@ -18,7 +18,7 @@
 - 受講者へ配るrevisionを固定する
 - 匿名取得経路が利用できることを、未ログイン環境で確認する
 - 授業で使うOSとCPU architectureの組み合わせがsupport matrixにあることを確認する
-- Node.js 24の導入経路とproxy制約を事前案内する
+- Node.js 24または26の導入経路とproxy制約を事前案内する
 - clone先がWSL2のLinux filesystem、またはmacOS/Linuxのnative filesystemであることを確認する
 - 教室でportやfilesystemを監視するsecurity製品がある場合、教材のloopback processと`.lab/`作成が妨げられないか確認する
 

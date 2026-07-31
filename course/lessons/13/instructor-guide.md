@@ -19,7 +19,7 @@ node course.mjs setup
 node course.mjs lesson 13 doctor
 ```
 
-- Node.js 24.x
+- Node.js 24.xまたは26.x
 - Playwright 1.61.1と対応Chromiumを起動できる
 - repositoryと`.lab`がnative filesystem上にある
 - portを占有する未管理processがない

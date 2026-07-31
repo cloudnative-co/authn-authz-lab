@@ -5,9 +5,20 @@
   "type": "object",
   "additionalProperties": false,
   "required": ["$schema", "schemaVersion", "courseId", "repositoryRealpath", "installId", "sourceRevision", "sourceDigest", "createdAt"],
+  "oneOf": [
+    {
+      "properties": { "schemaVersion": { "const": 1 } },
+      "not": { "required": ["nodeMajor"] }
+    },
+    {
+      "required": ["nodeMajor"],
+      "properties": { "schemaVersion": { "const": 2 } }
+    }
+  ],
   "properties": {
     "$schema": { "const": "curriculum/schemas/state-marker.schema.json" },
-    "schemaVersion": { "const": 1 },
+    "schemaVersion": { "enum": [1, 2] },
+    "nodeMajor": { "enum": [24, 26] },
     "courseId": { "type": "string", "minLength": 1 },
     "repositoryRealpath": { "type": "string", "minLength": 1 },
     "installId": { "type": "string", "pattern": "^[a-f0-9]{32}$" },

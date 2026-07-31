@@ -42,10 +42,12 @@ export async function detectSupportEnvironment({
 export async function inspectSupport({ matrix, environment } = {}) {
   if (!matrix || !Array.isArray(matrix.profiles)) throw new TypeError('support matrix is required');
   const detected = environment ?? await detectSupportEnvironment();
+  const supportedNodeMajors = new Set(matrix.profiles.map(({ nodeMajor: major }) => major));
   const matchesContainer = (candidate) => detected.containerEngine === undefined
     || candidate.containerEngine === detected.containerEngine;
   const platformProfile = matrix.profiles.find((candidate) => candidate.os === detected.os
     && candidate.architecture === detected.architecture
+    && candidate.nodeMajor === detected.nodeMajor
     && matchesContainer(candidate)) ?? null;
   const profile = matrix.profiles.find((candidate) => candidate.os === detected.os
     && candidate.architecture === detected.architecture
@@ -54,12 +56,12 @@ export async function inspectSupport({ matrix, environment } = {}) {
   const diagnostics = [
     {
       id: 'node.version',
-      status: detected.nodeMajor === 24 ? 'pass' : 'fail',
+      status: supportedNodeMajors.has(detected.nodeMajor) ? 'pass' : 'fail',
       actual: `v${detected.nodeVersion}`,
-      expected: '24.x',
-      message: detected.nodeMajor === 24
-        ? '教材の固定Node.jsメジャーバージョンです'
-        : 'Node.js 24で実行してください',
+      expected: '24.x または 26.x',
+      message: supportedNodeMajors.has(detected.nodeMajor)
+        ? '教材が許可するNode.jsメジャーバージョンです'
+        : 'Node.js 24または26で実行してください',
     },
     {
       id: 'runtime.platform',
@@ -73,12 +75,55 @@ export async function inspectSupport({ matrix, environment } = {}) {
   ];
 
   let reasonCode = null;
-  if (detected.nodeMajor !== 24) reasonCode = 'PREREQUISITE_NODE_VERSION';
+  if (!supportedNodeMajors.has(detected.nodeMajor)) reasonCode = 'PREREQUISITE_NODE_VERSION';
   else if (!platformProfile) reasonCode = 'UNSUPPORTED_SUPPORT_PROFILE';
   else if (platformProfile.os === 'windows') reasonCode = 'UNSUPPORTED_WINDOWS_PROCESS_CONTROL';
   else if (!profile) reasonCode = 'UNSUPPORTED_SUPPORT_PROFILE';
   else if (profile.status !== 'candidate') reasonCode = 'UNSUPPORTED_SUPPORT_PROFILE';
   return { detected, profile, diagnostics, supported: reasonCode === null, reasonCode };
+}
+
+export function inspectLessonRuntimeSupport({ manifest, matrix, lessonId, environment } = {}) {
+  const lesson = manifest?.lessons?.find(({ id }) => id === lessonId);
+  const assignment = matrix?.lessons?.find(({ id }) => id === lessonId);
+  if (!lesson || !assignment || !Array.isArray(matrix?.profiles)) {
+    throw new TypeError(`lesson ${lessonId} support contract is required`);
+  }
+  const profilesById = new Map(matrix.profiles.map((profile) => [profile.id, profile]));
+  const assignedProfiles = assignment.profileIds.map((profileId) => {
+    const profile = profilesById.get(profileId);
+    if (!profile) throw new TypeError(`unknown support profile: ${profileId}`);
+    return profile;
+  });
+  if (!environment || typeof environment.os !== 'string'
+      || typeof environment.architecture !== 'string'
+      || !Number.isInteger(environment.nodeMajor)) {
+    throw new TypeError('detected lesson support environment is required');
+  }
+  const majorSupported = lesson.supportedNodeMajors.includes(environment.nodeMajor);
+  const profileSupported = assignedProfiles.some((profile) => profile.os === environment.os
+    && profile.architecture === environment.architecture
+    && profile.nodeMajor === environment.nodeMajor
+    && profile.status === 'candidate');
+  const supported = majorSupported && profileSupported;
+  const reasonCode = supported
+    ? null
+    : (majorSupported ? 'UNSUPPORTED_LESSON_SUPPORT_PROFILE' : 'UNSUPPORTED_LESSON_NODE_VERSION');
+  return {
+    supported,
+    reasonCode,
+    diagnostic: {
+      id: majorSupported ? `lesson${lessonId}.support-profile` : `lesson${lessonId}.node-version`,
+      status: supported ? 'pass' : 'fail',
+      actual: `${environment.os}/${environment.architecture}/Node.js ${environment.nodeMajor}`,
+      expected: majorSupported
+        ? assignedProfiles.filter(({ status }) => status === 'candidate').map(({ id }) => id).join(', ')
+        : lesson.supportedNodeMajors.map((major) => `Node.js ${major}`).join(' または '),
+      message: supported
+        ? `Lesson ${lessonId}が許可する実行環境です`
+        : `Lesson ${lessonId}はこの実行環境では実行できません`,
+    },
+  };
 }
 
 export function inspectWslRepositoryPlacement({ environment, repositoryRealpath } = {}) {

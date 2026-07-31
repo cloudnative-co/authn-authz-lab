@@ -54,6 +54,7 @@ async function updateLessonRuntimeState({
   resourceStatus,
   submissionStatus = null,
   incrementEpoch = false,
+  runtimeNodeMajor,
 }) {
   return updateProjectAppLessonState({
     foundation,
@@ -66,6 +67,7 @@ async function updateLessonRuntimeState({
     workspaceResourceId: LESSON_01_SUBMISSION_RESOURCE_ID,
     workspaceStatus: submissionStatus,
     incrementEpoch,
+    runtimeNodeMajor,
   });
 }
 
@@ -138,7 +140,7 @@ async function runDoctor({ foundation, repoRoot, runId, signal, environment, tim
   });
 }
 
-async function runSetup({ foundation, stateRoot, runId, signal, timestamp }) {
+async function runSetup({ foundation, stateRoot, runId, signal, timestamp, environment }) {
   const managed = await ensureProjectApp({ foundation, stateRoot, runId, signal });
   if (managed.blocked) return processBlockedDraft(managed.blocked, 'setup');
   const prepared = await prepareWorkspace({ foundation, stateRoot, signal });
@@ -150,6 +152,7 @@ async function runSetup({ foundation, stateRoot, runId, signal, timestamp }) {
     lessonLifecycle: 'ready',
     resourceStatus: 'running',
     submissionStatus: 'present',
+    runtimeNodeMajor: environment?.nodeMajor,
   });
   const changed = managed.started || prepared.workspace.submissionCreated;
   return resultDraft({
@@ -381,7 +384,7 @@ async function runCheck({ foundation, stateRoot, environment, signal, timestamp 
   });
 }
 
-async function runReset({ foundation, stateRoot, runId, signal, timestamp }) {
+async function runReset({ foundation, stateRoot, runId, signal, timestamp, environment }) {
   const restarted = await restartProjectApp({ foundation, stateRoot, runId, signal });
   if (restarted.blocked) return processBlockedDraft(restarted.blocked, 'setup');
   const prepared = await prepareWorkspace({ foundation, stateRoot, reset: true, signal });
@@ -394,6 +397,7 @@ async function runReset({ foundation, stateRoot, runId, signal, timestamp }) {
     resourceStatus: 'running',
     submissionStatus: 'present',
     incrementEpoch: true,
+    runtimeNodeMajor: environment?.nodeMajor,
   });
   return resultDraft({
     status: 'pass',
@@ -417,7 +421,7 @@ async function runReset({ foundation, stateRoot, runId, signal, timestamp }) {
   });
 }
 
-async function runStop({ foundation, stateRoot, runId, signal, timestamp }) {
+async function runStop({ foundation, stateRoot, runId, signal, timestamp, environment }) {
   const stopped = await stopProjectApp({ foundation, stateRoot, signal });
   if (stopped.status === 'blocked') return processBlockedDraft(stopped, 'stop');
   const noRecord = stopped.reasonCode === 'PROCESS_NOT_RECORDED';
@@ -428,6 +432,7 @@ async function runStop({ foundation, stateRoot, runId, signal, timestamp }) {
     timestamp,
     lessonLifecycle: 'stopped',
     resourceStatus: noRecord ? 'absent' : 'stopped',
+    runtimeNodeMajor: environment?.nodeMajor,
   });
   return resultDraft({
     status: stopped.status === 'stopped' ? 'pass' : 'safe-noop',

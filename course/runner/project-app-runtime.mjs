@@ -27,11 +27,12 @@ const RECOVERABLE_PROCESS_REASONS = new Set([
   'PROCESS_STALE_GENERATION',
 ]);
 
-function identity(foundation) {
+function identity(foundation, runtimeNodeMajor) {
   return {
     courseId: foundation.manifest.courseId,
     sourceRevision: foundation.courseLock.sourceRevision,
     sourceDigest: foundation.sourceDigest,
+    ...(runtimeNodeMajor !== undefined ? { nodeMajor: runtimeNodeMajor } : {}),
   };
 }
 
@@ -96,12 +97,23 @@ export async function updateProjectAppLessonState({
   additionalResourceStatuses = {},
   incrementEpoch = false,
   manageProjectApp = true,
+  runtimeNodeMajor = Number.parseInt(process.versions.node.split('.')[0], 10),
 }) {
   if (typeof manageProjectApp !== 'boolean') throw new TypeError('manageProjectApp must be boolean');
   if (manageProjectApp && !['absent', 'stopped', 'running', 'unknown'].includes(processStatus)) {
     throw new TypeError('processStatus is invalid');
   }
-  const context = await loadProjectAppLessonState({ foundation, stateRoot });
+  const context = await loadStateContext({
+    stateRoot,
+    repoRoot: foundation.repositoryRealpath,
+    ...identity(foundation, runtimeNodeMajor),
+  });
+  if (!context.state) {
+    const error = new Error('course setupが完了していません');
+    error.reasonCode = 'PREREQUISITE_SETUP';
+    throw error;
+  }
+  assertStateMatchesManifest(context.state, foundation.manifest);
   const resources = context.state.resources.map((resource) => {
     if (manageProjectApp && resource.id === PROJECT_APP_RESOURCE_ID) {
       return {
@@ -153,7 +165,7 @@ export async function updateProjectAppLessonState({
   return writeStateAtomically({
     stateRoot,
     repoRoot: foundation.repositoryRealpath,
-    ...identity(foundation),
+    ...identity(foundation, runtimeNodeMajor),
     state,
     incrementEpoch,
   });

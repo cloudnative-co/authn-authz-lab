@@ -72,6 +72,13 @@ export class StateDriftError extends StateIdentityError {
   }
 }
 
+export class StateRuntimeDriftError extends StateIdentityError {
+  constructor(message, options = {}) {
+    super(message, { reasonCode: 'STATE_RUNTIME_DRIFT', ...options });
+    this.name = 'StateRuntimeDriftError';
+  }
+}
+
 export class StateSchemaError extends StateError {
   constructor(message, options = {}) {
     super(message, { reasonCode: 'STATE_SCHEMA_DRIFT', ...options });
@@ -324,7 +331,7 @@ export function assertStateIdentity(markerOrOptions, expected) {
   if (!marker || typeof marker !== 'object' || Array.isArray(marker)) {
     throw new StateIdentityError('state marker is missing or invalid');
   }
-  if (marker.$schema !== STATE_MARKER_SCHEMA || marker.schemaVersion !== 1) {
+  if (marker.$schema !== STATE_MARKER_SCHEMA || ![1, 2].includes(marker.schemaVersion)) {
     throw new StateSchemaError('state marker schema version has drifted');
   }
   if (identity.courseId !== undefined && marker.courseId !== identity.courseId) {
@@ -336,6 +343,10 @@ export function assertStateIdentity(markerOrOptions, expected) {
   }
   if (identity.installId !== undefined && marker.installId !== identity.installId) {
     throw new StateIdentityError('state marker installId does not match', { reasonCode: 'STATE_INSTALL_MISMATCH' });
+  }
+  if (identity.nodeMajor !== undefined
+      && (marker.schemaVersion !== 2 || marker.nodeMajor !== identity.nodeMajor)) {
+    throw new StateRuntimeDriftError('state Node.js major version has drifted');
   }
   if (hasOwn(identity, 'sourceRevision') && marker.sourceRevision !== identity.sourceRevision) {
     throw new StateDriftError('state source revision has drifted');
@@ -435,6 +446,7 @@ export async function loadStateMarkerContext(options = {}) {
     ...(hasOwn(options, 'sourceRevision') ? { sourceRevision: options.sourceRevision } : {}),
     ...(options.sourceDigest !== undefined ? { sourceDigest: options.sourceDigest } : {}),
     ...(options.installId !== undefined ? { installId: options.installId } : {}),
+    ...(options.nodeMajor !== undefined ? { nodeMajor: options.nodeMajor } : {}),
   });
   if (marker.repositoryRealpath !== base.repositoryRealpath) {
     throw new StateIdentityError('state marker repository identity does not match stateRoot');
@@ -505,6 +517,7 @@ export async function createStateRoot({
   sourceDigest,
   installId = randomBytes(16).toString('hex'),
   createdAt = new Date().toISOString(),
+  nodeMajor = Number.parseInt(process.versions.node.split('.')[0], 10),
 } = {}) {
   if (!repoRoot) throw new TypeError('repoRoot is required');
   assertNonEmptyString(courseId, 'courseId');
@@ -513,6 +526,7 @@ export async function createStateRoot({
     throw new TypeError('sourceRevision must be null or a full lowercase revision');
   }
   if (!/^[a-f0-9]{32}$/.test(installId)) throw new TypeError('installId must contain 32 lowercase hex characters');
+  if (![24, 26].includes(nodeMajor)) throw new TypeError('nodeMajor must be 24 or 26');
 
   const repositoryRealpath = await realpath(repoRoot);
   const requestedRoot = isAbsolute(stateRoot) ? resolve(stateRoot) : resolve(repositoryRealpath, stateRoot);
@@ -532,7 +546,7 @@ export async function createStateRoot({
     label: 'state marker',
   });
   if (markerStats) {
-    return loadStateContext({ repoRoot: repositoryRealpath, stateRoot: canonicalStateRoot, courseId, sourceRevision, sourceDigest });
+    return loadStateContext({ repoRoot: repositoryRealpath, stateRoot: canonicalStateRoot, courseId, sourceRevision, sourceDigest, nodeMajor });
   }
   const entries = await readdir(canonicalStateRoot);
   if (entries.length > 0) {
@@ -543,7 +557,8 @@ export async function createStateRoot({
   await setPrivateDirectoryMode(canonicalStateRoot, 'stateRoot');
   const marker = {
     $schema: STATE_MARKER_SCHEMA,
-    schemaVersion: 1,
+    schemaVersion: 2,
+    nodeMajor,
     courseId,
     repositoryRealpath,
     installId,
@@ -559,7 +574,7 @@ export async function createStateRoot({
     exclusive: true,
     label: 'state marker',
   });
-  return loadStateContext({ repoRoot: repositoryRealpath, stateRoot: canonicalStateRoot, courseId, sourceRevision, sourceDigest });
+  return loadStateContext({ repoRoot: repositoryRealpath, stateRoot: canonicalStateRoot, courseId, sourceRevision, sourceDigest, nodeMajor });
 }
 
 export async function writeStateAtomically({
@@ -568,6 +583,7 @@ export async function writeStateAtomically({
   state,
   sourceRevision,
   sourceDigest,
+  nodeMajor,
   incrementEpoch = false,
 } = {}) {
   if (!state || typeof state !== 'object' || Array.isArray(state)) throw new TypeError('state is required');
@@ -576,6 +592,7 @@ export async function writeStateAtomically({
     repoRoot,
     ...(hasOwn(arguments[0] ?? {}, 'sourceRevision') ? { sourceRevision } : {}),
     ...(sourceDigest !== undefined ? { sourceDigest } : {}),
+    ...(nodeMajor !== undefined ? { nodeMajor } : {}),
   });
   const currentEpoch = context.state?.epoch ?? 0;
   const next = { ...state };

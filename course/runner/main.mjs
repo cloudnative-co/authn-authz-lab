@@ -25,8 +25,18 @@ import {
   formatRunnerResult,
 } from './result.mjs';
 import { assertValidSchema, loadJsonSchema } from './schema.mjs';
-import { assertStateMatchesManifest, loadStateContext, writeStateAtomically } from './state.mjs';
-import { inspectSupport } from './support.mjs';
+import {
+  assertStateMatchesManifest,
+  loadStateContext,
+  loadStateMarkerContext,
+  writeStateAtomically,
+} from './state.mjs';
+import {
+  detectSupportEnvironment,
+  inspectLessonRuntimeSupport,
+  inspectSupport,
+  nodeMajor,
+} from './support.mjs';
 import {
   attachTransactionToLock,
   beginMutation,
@@ -144,6 +154,9 @@ async function errorRecovery(reasonCode, context) {
   if (reasonCode === 'STATE_SOURCE_DRIFT') {
     return ['以前のsourceへ戻すか、node course.mjs purge --yes の後にsetupし直してください'];
   }
+  if (reasonCode === 'STATE_RUNTIME_DRIFT') {
+    return ['node course.mjs diagnoseを確認し、node course.mjs purge --yesの後に対応するNode.jsでnpm ciとsetupを実行してください'];
+  }
   if (reasonCode?.startsWith('STATE_')) return ['node course.mjs diagnose を実行してください'];
   if (reasonCode?.startsWith('TIMEOUT_')) return ['node course.mjs diagnose を実行して残存resourceを確認してください'];
   return ['node course.mjs diagnose を実行し、解決しない場合は実行結果のreasonCodeを報告してください'];
@@ -194,13 +207,14 @@ async function pathExists(path) {
   }
 }
 
-async function attachEvidenceToLesson({ foundation, stateRoot, result, timestamp }) {
+async function attachEvidenceToLesson({ foundation, stateRoot, result, timestamp, runtimeNodeMajor }) {
   const context = await loadStateContext({
     stateRoot,
     repoRoot: foundation.repositoryRealpath,
     courseId: foundation.manifest.courseId,
     sourceRevision: foundation.courseLock.sourceRevision,
     sourceDigest: foundation.sourceDigest,
+    nodeMajor: runtimeNodeMajor,
   });
   const lesson = context.state?.lessons.find(({ id }) => id === result.lessonId);
   assertStateMatchesManifest(context.state, foundation.manifest);
@@ -226,6 +240,7 @@ async function attachEvidenceToLesson({ foundation, stateRoot, result, timestamp
     courseId: foundation.manifest.courseId,
     sourceRevision: foundation.courseLock.sourceRevision,
     sourceDigest: foundation.sourceDigest,
+    nodeMajor: runtimeNodeMajor,
     state,
   });
   return written.state.epoch;
@@ -445,6 +460,20 @@ function missingLessonStateDraft({ lessonId, checkIds = [] }) {
   };
 }
 
+function unsupportedLessonRuntimeDraft({ lessonId, checkIds = [], support }) {
+  return {
+    status: 'blocked',
+    checkIds,
+    diagnostics: [support.diagnostic],
+    reasonCode: support.reasonCode,
+    recovery: [support.reasonCode === 'UNSUPPORTED_LESSON_NODE_VERSION'
+      ? `Node.js 24でnpm ciとcourse setupをやり直してからLesson ${lessonId}を実行してください`
+      : `curriculum/support-matrix.jsonでLesson ${lessonId}の対応環境を確認してください`],
+    journal: null,
+    evidence: null,
+  };
+}
+
 function fallbackLessonJournal({ foundation, stateRoot, policy, lessonId }) {
   const lesson = foundation.indexes.lessons.get(lessonId);
   return {
@@ -527,6 +556,7 @@ export async function runCli(argv = process.argv.slice(2), {
 
   const runId = randomUUID();
   const startedAt = now();
+  const runtimeNodeMajor = environment?.nodeMajor ?? nodeMajor();
   const controller = new AbortController();
   const signals = installSignalForwarding(controller);
   const defaultLessonPolicy = parsed.scope === 'lesson'
@@ -564,12 +594,19 @@ export async function runCli(argv = process.argv.slice(2), {
         if (!await pathExists(operationStateRoot)) {
           draft = missingSetupStateDraft(setupCheckIds);
         } else {
+          await loadStateMarkerContext({
+            stateRoot: operationStateRoot,
+            repoRoot: operationFoundation.repositoryRealpath,
+            courseId: operationFoundation.manifest.courseId,
+            nodeMajor: runtimeNodeMajor,
+          });
           commandLock = await acquireLock({
             stateRoot: operationStateRoot,
             repoRoot: operationFoundation.repositoryRealpath,
             courseId: operationFoundation.manifest.courseId,
             sourceRevision: operationFoundation.courseLock.sourceRevision,
             sourceDigest: operationFoundation.sourceDigest,
+            nodeMajor: runtimeNodeMajor,
             mode: 'write',
             runId,
           });
@@ -594,15 +631,34 @@ export async function runCli(argv = process.argv.slice(2), {
             implementedCheckIds: lessonImplementation.implementedCheckIds,
           })
           : [];
-        if (!await pathExists(operationStateRoot)) {
+        const lessonRuntimeSupport = inspectLessonRuntimeSupport({
+          manifest: operationFoundation.manifest,
+          matrix: operationFoundation.supportMatrix,
+          lessonId: lessonImplementation.id,
+          environment: environment ?? await detectSupportEnvironment(),
+        });
+        if (!lessonRuntimeSupport.supported) {
+          draft = unsupportedLessonRuntimeDraft({
+            lessonId: lessonImplementation.id,
+            checkIds,
+            support: lessonRuntimeSupport,
+          });
+        } else if (!await pathExists(operationStateRoot)) {
           draft = missingLessonStateDraft({ lessonId: lessonImplementation.id, checkIds });
         } else {
+          await loadStateMarkerContext({
+            stateRoot: operationStateRoot,
+            repoRoot: operationFoundation.repositoryRealpath,
+            courseId: operationFoundation.manifest.courseId,
+            nodeMajor: runtimeNodeMajor,
+          });
           const lockOptions = {
             stateRoot: operationStateRoot,
             repoRoot: operationFoundation.repositoryRealpath,
             courseId: operationFoundation.manifest.courseId,
             sourceRevision: operationFoundation.courseLock.sourceRevision,
             sourceDigest: operationFoundation.sourceDigest,
+            nodeMajor: runtimeNodeMajor,
             mode: operationPolicy.lockMode,
             runId,
           };
@@ -706,6 +762,7 @@ export async function runCli(argv = process.argv.slice(2), {
           stateRoot: operationStateRoot,
           result,
           timestamp: startedAt.toISOString(),
+          runtimeNodeMajor,
         }));
         await validateResult(result, repoRoot);
       }

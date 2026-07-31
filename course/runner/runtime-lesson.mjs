@@ -197,7 +197,7 @@ export function createRuntimeLessonRunner(adapterInput) {
   }
 
   async function runSetup(options) {
-    const { foundation, stateRoot, runId, signal, timestamp } = options;
+    const { foundation, stateRoot, runId, signal, timestamp, environment } = options;
     const external = adapter.ensureExternal ? await adapter.ensureExternal(options) : null;
     if (external?.blocked) return external.blocked;
     const managed = adapter.requiresProjectApp
@@ -221,6 +221,7 @@ export function createRuntimeLessonRunner(adapterInput) {
       additionalResourceStatuses: Object.fromEntries(
         (adapter.externalResourceIds ?? []).map((resourceId) => [resourceId, 'running']),
       ),
+      runtimeNodeMajor: environment?.nodeMajor,
     });
     const changed = managed.started || workspace.submissionCreated || external?.changed === true;
     return resultDraft({
@@ -395,7 +396,7 @@ export function createRuntimeLessonRunner(adapterInput) {
   }
 
   async function runReset(options) {
-    const { foundation, stateRoot, runId, signal, timestamp } = options;
+    const { foundation, stateRoot, runId, signal, timestamp, environment } = options;
     await adapter.preflightWorkspace({ stateRoot, repoRoot: foundation.repositoryRealpath });
     let restarted;
     let external = null;
@@ -434,6 +435,7 @@ export function createRuntimeLessonRunner(adapterInput) {
         (adapter.externalResourceIds ?? []).map((resourceId) => [resourceId, 'running']),
       ),
       incrementEpoch: true,
+      runtimeNodeMajor: environment?.nodeMajor,
     });
     return resultDraft({
       status: 'pass',
@@ -454,7 +456,7 @@ export function createRuntimeLessonRunner(adapterInput) {
   }
 
   async function runStop(options) {
-    const { foundation, stateRoot, runId, signal, timestamp } = options;
+    const { foundation, stateRoot, runId, signal, timestamp, environment } = options;
     const stopped = adapter.requiresProjectApp
       ? await stopProjectApp({ foundation, stateRoot, signal })
       : { status: 'safe-noop', reasonCode: 'PROJECT_APP_NOT_REQUIRED' };
@@ -477,6 +479,7 @@ export function createRuntimeLessonRunner(adapterInput) {
           external?.status === 'absent' ? 'absent' : 'stopped',
         ]),
       ),
+      runtimeNodeMajor: environment?.nodeMajor,
     });
     const changed = adapter.requiresProjectApp
       ? stopped.status === 'stopped'

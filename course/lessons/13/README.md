@@ -66,7 +66,7 @@ virtual authenticatorはCTAP2、internal transport、resident key、UVを模擬�
 
 ## 前提を準備する
 
-repository rootで実行します。Node.jsは24.xです。
+repository rootで実行します。Node.jsは24.xまたは26.xです。
 
 ```bash
 node --version

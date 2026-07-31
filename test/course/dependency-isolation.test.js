@@ -12,7 +12,7 @@ test('the host install excludes the native Kerberos addon', async () => {
   const manifest = await readJson('package.json');
   const lockfile = await readJson('package-lock.json');
 
-  assert.equal(manifest.engines.node, '>=24 <25');
+  assert.equal(manifest.engines.node, '>=24 <25 || >=26 <27');
   assert.equal(manifest.dependencies?.kerberos, undefined);
   assert.equal(lockfile.packages[''].dependencies?.kerberos, undefined);
   assert.equal(lockfile.packages['node_modules/kerberos'], undefined);

@@ -11,7 +11,7 @@
 
 講師環境と受講者用clean copyで次を確認します。
 
-1. Node 24とcourse doctorがpassする
+1. Node 24または26とcourse doctorがpassする
 2. lesson setup、demo、observe、check、stopが手作業のstate削除なしで完了する
 3. RFC 6238 Appendix BのSHA-1、SHA-256、SHA-512 test vectorが全件passする
 4. password成功後にapplication sessionが発行されない

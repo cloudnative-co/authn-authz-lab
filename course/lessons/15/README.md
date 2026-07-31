@@ -37,7 +37,7 @@ node course.mjs setup
 
 `[PASS]`または`safe-noop`を確認してから、このLessonの予測と個別`doctor`へ進みます。`[BLOCKED]`または`[FAIL]`なら、表示された`reasonCode`と`recovery`を解消し、同じ`setup`を再実行します。
 
-Node.jsは24.xです。第04回、第10回、第11回を先に完了することが必須前提です。project認可、OAuth、ID TokenとAccess Tokenの違いを説明でき、各回のrequired checkに合格してから第15回へ進みます。過去Lessonのruntimeや回答を引き継ぐ必要はありません。
+Node.jsは24.xまたは26.xです。第04回、第10回、第11回を先に完了することが必須前提です。project認可、OAuth、ID TokenとAccess Tokenの違いを説明でき、各回のrequired checkに合格してから第15回へ進みます。過去Lessonのruntimeや回答を引き継ぐ必要はありません。
 
 ## 先に予測する
 

@@ -4,7 +4,7 @@
 
 | Check | 確認対象 | 合格条件 |
 | --- | --- | --- |
-| `AA-SETUP-C1` | 実行環境 | Node.js 24、候補OS/CPU、依存lock、書込権限、空き容量、repository配置が診断を通る |
+| `AA-SETUP-C1` | 実行環境 | Node.js 24または26、候補OS/CPU、依存lock、書込権限、空き容量、repository配置が診断を通る |
 | `AA-SETUP-C2` | 初期化 | 教材所有markerとstateが同じsourceへ結びつき、setup履歴がある |
 | `AA-SETUP-C3` | resetと削除 | reset前後に診断が成功し、実行世代が進み、terminal purgeで所有resourceが0件になる |
 

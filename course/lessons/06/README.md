@@ -16,6 +16,8 @@
 
 ## 前提確認
 
+このLessonはNode.js 24.xで実行します。Node.js 26対応はexperimentalのため、runnerはfail closedで拒否します。
+
 repository rootで次を実行します。
 
 ```bash

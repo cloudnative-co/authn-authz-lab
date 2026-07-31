@@ -1,12 +1,12 @@
 {
   "$schema": "./schemas/manifest.schema.json",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "courseId": "auth-authz",
   "implementationStatus": "experimental",
   "runtime": {
     "node": {
       "baselineMajor": 24,
-      "versionRange": ">=24 <25"
+      "versionRange": ">=24 <25 || >=26 <27"
     },
     "commands": {
       "course": {
@@ -445,7 +445,10 @@
     {
       "id": "setup",
       "status": "candidate",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24,
+        26
+      ],
       "portIds": [],
       "resourceIds": [
         "directory:lab-state"
@@ -517,7 +520,10 @@
       "id": "01",
       "status": "candidate",
       "statusNote": "分類課題、回答workspace、fresh check、runner lifecycleを自動検証済み。provided caseであり、SAML、OpenID Connect、OAuthのruntime evidenceではない。human pilotは未完了",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24,
+        26
+      ],
       "portIds": [
         "project-app-http"
       ],
@@ -568,7 +574,10 @@
       "id": "02",
       "status": "experimental",
       "statusNote": "loopback上の実HTTP demo、observe、fresh-scenario checkを自動検証済み。human pilotと全support profileの実機検証は未完了",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24,
+        26
+      ],
       "portIds": [
         "project-app-http"
       ],
@@ -634,7 +643,10 @@
       "id": "03",
       "status": "experimental",
       "statusNote": "loopback上の実Set-Cookie/Cookie traceとfresh-scenario checkを自動検証済み。Node.js clientによるheader観察でありbrowserのHttpOnlyとSameSite強制動作、human pilot、全support profileの実機検証は未完了",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24,
+        26
+      ],
       "portIds": [
         "project-app-http"
       ],
@@ -704,7 +716,10 @@
       "id": "04",
       "status": "experimental",
       "statusNote": "loopback上の実Cookie/HTTPとproject-core policyを使うfresh-scenario checkを自動検証済み。human pilotと全support profileの実機検証は未完了",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24,
+        26
+      ],
       "portIds": [
         "project-app-http"
       ],
@@ -782,7 +797,10 @@
       "id": "05",
       "status": "experimental",
       "statusNote": "loopback上の実HTTP Basic challenge-responseとfresh-scenario checkを自動検証済み。TLSはtraining deviationとして未実装で、human pilotと全support profileの実機検証は未完了",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24,
+        26
+      ],
       "portIds": [
         "project-app-http"
       ],
@@ -849,7 +867,9 @@
       "id": "06",
       "status": "experimental",
       "statusNote": "2026-07-12にmacOS arm64 / Node.js 24 / Docker Desktopで実OpenLDAP、実HTTP fresh scenario、ACL拒否、所有container lifecycle、source drift purgeのE2Eがpass。固定revision、macOS arm64以外、human pilotは未完了",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24
+      ],
       "portIds": [
         "project-app-http",
         "lesson-06-ldap-tcp"
@@ -918,7 +938,9 @@
       "id": "07",
       "status": "experimental",
       "statusNote": "macOS arm64 Docker Desktopの隔離networkで実MIT Kerberos V5、kinit・klist・kvno、GSSAPI HTTP Negotiate、所有container lifecycleを自動E2E済み。macOS arm64以外の実機検証とhuman pilotは未完了",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24
+      ],
       "portIds": [],
       "resourceIds": [
         "directory:lab-state",
@@ -982,7 +1004,9 @@
       "id": "08",
       "status": "experimental",
       "statusNote": "macOS arm64 Docker Desktopで実Samba AD互換DC、verified LDAPS、read-only service account、objectGUID由来opaque ID、Joiner/Mover/Leaver、session再検証、同一DCのkinit/klistを自動実測済み。Microsoft AD DS、FreeIPA、GPO、Windows join、複数OS、human pilotは未検証",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24
+      ],
       "portIds": [],
       "resourceIds": [
         "directory:lab-state",
@@ -1043,7 +1067,9 @@
       "id": "09",
       "status": "experimental",
       "statusNote": "macOS arm64 Docker Desktopで実Keycloak 26.7.0のSP-initiated SAML Web Browser SSO、strict ACS、11件の一条件拒否、所有container lifecycleを自動E2E済み。scripted HTTP User AgentでありGUI browser、複数OS、human pilotは未検証",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24
+      ],
       "portIds": [],
       "resourceIds": [
         "directory:lab-state",
@@ -1107,7 +1133,10 @@
       "id": "10",
       "status": "experimental",
       "statusNote": "一つの所有processが分離した三originで実OAuth 2.0 Authorization Code + PKCE、opaque Access Token、RFC 7662 introspection、拒否scenarioを提供する。自動E2E済みだがhuman pilotと複数OS実機検証は未完了",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24,
+        26
+      ],
       "portIds": [
         "oauth-authorization-server-http",
         "oauth-client-http",
@@ -1166,7 +1195,10 @@
       "id": "11",
       "status": "experimental",
       "statusNote": "実Discovery、JWKS、RS256 ID Tokenをjoseで検証し、iss・aud・exp/iat・nonce・subの全条件後だけapp sessionを発行する。六つの一条件拒否を自動E2E済みだがhuman pilotと複数OS実機検証は未完了",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24,
+        26
+      ],
       "portIds": [
         "oauth-authorization-server-http",
         "oauth-client-http",
@@ -1225,7 +1257,10 @@
       "id": "12",
       "status": "experimental",
       "statusNote": "loopback上の実HTTPでRFC 6238 TOTP登録、pre-auth、第二要素後のsession、counter replay拒否、rate limit、single-use recovery codeを自動検証済み。実authenticator UI、production secret保管、human pilot、複数OS実機検証は未完了",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24,
+        26
+      ],
       "portIds": [
         "project-app-http"
       ],
@@ -1295,7 +1330,10 @@
       "id": "13",
       "status": "experimental",
       "statusNote": "Playwright 1.61.1のChromiumとCDP virtual authenticatorで実WebAuthn登録・username-bound認証・単一条件の拒否境界を自動検証する。実hardware/OS authenticator、real user gesture、複数OS、human pilot、固定revisionは未検証",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24,
+        26
+      ],
       "portIds": [
         "project-app-http"
       ],
@@ -1340,7 +1378,10 @@
       "id": "14",
       "status": "experimental",
       "statusNote": "2つのCDP virtual authenticatorでdiscoverable credentialのusernameなし認証、RP側失効、第二credential復旧、BE/BS観察、account disableとsession失効を自動検証する。実cloud同期・端末移行・human pilot・固定revisionは未検証",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24,
+        26
+      ],
       "portIds": [
         "project-app-http"
       ],
@@ -1385,7 +1426,10 @@
       "id": "15",
       "status": "experimental",
       "statusNote": "分離した三originの実HTTPでRFC 8707 resource indicator、RFC 9068準拠JWT Access Token、remote JWKS検証、scope判定、project-coreのオブジェクト認可を自動E2Eする。固定revision、複数OS実機検証、human pilotは未完了",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24,
+        26
+      ],
       "portIds": [
         "oauth-authorization-server-http",
         "oauth-client-http",
@@ -1449,7 +1493,10 @@
       "id": "capstone",
       "status": "experimental",
       "statusNote": "固定した架空ケースを用いるローカル演習、2トラックの自動評価、隔離E2Eを実装済み。複数OS実機検証とhuman pilotは未完了",
-      "requiredNodeMajor": 24,
+      "supportedNodeMajors": [
+        24,
+        26
+      ],
       "portIds": [],
       "resourceIds": [
         "directory:lab-state",

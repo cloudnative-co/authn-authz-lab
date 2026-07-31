@@ -9,17 +9,17 @@
       "id": "01",
       "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-01-login-basics/",
       "sourceAssessmentRef": "episodes/01-auth-authz-01-login-basics/assessment.yaml#AA01-A1",
-      "sourceAssessmentSha256": "ad9ca194db55c8d63829d0a77905c6b68552e561f1dea4c3c9dfaa6e40014394",
-      "sourceAnswerKeySha256": "cc6e1ec48dae71c72314f51cd2306307fb9772013d9acbd186122545dbfe9038",
+      "sourceAssessmentSha256": "e0823ee5c1dc681bdb9cf8a1b7eb718b4de15b076af8b4fc51c89b8ecfcbc8f1",
+      "sourceAnswerKeySha256": "ef289b6d52c704accd3d3a33ebe7fbf3dd425be3a7f8a3b254bd11c925e228a0",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/01/README.md",
-        "sha256": "29cb3e0893e4b4d2de57b57cba1c720bf566847cf2901aeda917e58606b5a66c"
+        "sha256": "7dcd510012a875b3388274529c6d346f4be0ea754ba64a012b2943ee5ede56a7"
       },
       "answerKey": {
         "path": "course/reading/lessons/01/answer-key.md",
-        "sha256": "c154bf8f4b64418a7c19e0fb932cadeb21d243938cc751ee204fcac70aee4376"
+        "sha256": "fb7d1dc794b81db071b19cb26239f300ea4b8b9c8fbb155c99292d6d5ff887b7"
       }
     },
     {
