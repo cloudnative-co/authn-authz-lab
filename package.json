@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@node-saml/node-saml": "5.1.0",
-    "@simplewebauthn/server": "13.3.2",
+    "@simplewebauthn/server": "14.0.3",
     "@xmldom/xmldom": "0.8.15",
     "jose": "6.2.3",
     "ldapts": "8.1.8",
