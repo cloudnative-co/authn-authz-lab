@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@playwright/test": "1.61.1",
-    "openid-client": "6.8.4",
+    "openid-client": "6.8.8",
     "otpauth": "9.5.1"
   }
 }
