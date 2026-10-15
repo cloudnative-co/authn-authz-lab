@@ -19,7 +19,7 @@
     "@simplewebauthn/server": "13.3.2",
     "@xmldom/xmldom": "0.8.15",
     "jose": "6.2.3",
-    "ldapts": "8.1.8",
+    "ldapts": "9.2.0",
     "xml-crypto": "6.1.2"
   },
   "devDependencies": {
