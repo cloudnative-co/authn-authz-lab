@@ -20,7 +20,7 @@ async function synchronize(root) {
   const child = spawn(process.execPath, [
     'scripts/sync-course-contract.mjs',
     '--source', 'curriculum/course-source.snapshot.json',
-    '--source-label', 'articles/series/auth-authz/curriculum.json',
+    '--source-label', 'articles/series/authn-authz/curriculum.json',
     '--output-root', root,
   ], { cwd: root, stdio: ['ignore', 'ignore', 'pipe'] });
   const errors = [];

@@ -7,8 +7,8 @@ import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
-const seriesRoot = resolve(repositoryRoot, '../ghost-writer-okash1n/articles/series/auth-authz');
-const generator = resolve(repositoryRoot, '../ghost-writer-okash1n/scripts/generate-auth-authz-reading-assessments.mjs');
+const seriesRoot = resolve(repositoryRoot, '../ghost-writer-okash1n/articles/series/authn-authz');
+const generator = resolve(repositoryRoot, '../ghost-writer-okash1n/scripts/generate-authn-authz-reading-assessments.mjs');
 
 function read(relativePath) {
   return readFileSync(resolve(repositoryRoot, relativePath), 'utf8');

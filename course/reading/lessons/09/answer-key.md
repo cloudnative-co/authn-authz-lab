@@ -15,28 +15,28 @@
 
 正解は **B** です。IdPはbrowserを介してSAMLResponseをSPのACSへPOSTします。
 
-読み直す見出し: [実KeycloakのSSOを最後まで通す](https://blog.cloudnative.co.jp/articles/auth-authz-09-saml-sso/)
+読み直す見出し: [実KeycloakのSSOを最後まで通す](https://blog.cloudnative.co.jp/articles/authn-authz-09-saml-sso/)
 
 ## AA09-Q2
 
 正解は **C** です。SAMLResponseは一回のfederation結果であり、SPは検証後に自分のapplication sessionを発行します。
 
-読み直す見出し: [SAMLResponseとapp sessionは別物](https://blog.cloudnative.co.jp/articles/auth-authz-09-saml-sso/)
+読み直す見出し: [SAMLResponseとapp sessionは別物](https://blog.cloudnative.co.jp/articles/authn-authz-09-saml-sso/)
 
 ## AA09-Q3
 
 正解は **A** です。何を実プロトコルで得て何をfixtureで変えたかを分けないと、証拠範囲を誤認します。
 
-読み直す見出し: [actual正常系と拒否fixtureを混ぜない](https://blog.cloudnative.co.jp/articles/auth-authz-09-saml-sso/)
+読み直す見出し: [actual正常系と拒否fixtureを混ぜない](https://blog.cloudnative.co.jp/articles/authn-authz-09-saml-sso/)
 
 ## AA09-Q4
 
 正解は **B** です。署名は改ざん検知の一部で、誰が誰向けにいつ発行した応答かを別に検証します。
 
-読み直す見出し: [署名だけでは足りない](https://blog.cloudnative.co.jp/articles/auth-authz-09-saml-sso/)
+読み直す見出し: [署名だけでは足りない](https://blog.cloudnative.co.jp/articles/authn-authz-09-saml-sso/)
 
 ## AA09-Q5
 
 正解は **C** です。応答・Assertionの一回性を記録し、同じ内容の再利用を拒否します。
 
-読み直す見出し: [署名だけでは足りない](https://blog.cloudnative.co.jp/articles/auth-authz-09-saml-sso/)
+読み直す見出し: [署名だけでは足りない](https://blog.cloudnative.co.jp/articles/authn-authz-09-saml-sso/)

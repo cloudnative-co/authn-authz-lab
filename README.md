@@ -1,8 +1,60 @@
-# 認証認可入門 サンプルアプリ
+# authn-authz-lab
 
-CloudNative BLOGsの連載「認証認可入門」で使う、実習・自動採点付きの教材です。ひとつのMini Project Appを題材に、認証、セッション、認可、フェデレーション、委任認可を順番に学びます。
+CloudNative BLOGsの連載「認証認可入門」で使う実習教材です。まずは、ログインできたBobが削除を拒否され、所有者のAliceが削除できる場面を、ローカルの実HTTP通信で確かめます。
 
-このREADMEは、初めてcloneする受講者の開始地点です。上から順に実行してください。
+## 第1回のデモを動かす
+
+Git、Node.js 24.xまたは26.x、npm、約1 GiB以上の空き容量が必要です。このデモにDockerやブラウザは不要です。
+
+- Node.js 24: macOS arm64 / x64、Linux arm64 / x64、WSL2 x64のLinux filesystemが対応候補です。
+- Node.js 26: このデモで利用できる候補はmacOS arm64とLinux x64です。それ以外はNode.js 24を使います。
+- Windows nativeは対象外です。WSL2では`/mnt/c/`配下を避け、Linux側のhome directoryへcloneします。
+
+これらは教材のsupport matrix上の候補であり、全環境での実機検証完了を意味しません。バージョンや導入方法の詳細は後半の[必要な環境](#1-必要な環境を確認する)を参照してください。
+
+教材を取得し、固定した依存関係を入れてからデモを実行します。
+
+```bash
+git clone https://github.com/cloudnative-co/authn-authz-lab.git
+cd authn-authz-lab
+npm ci
+npm run demo:01
+```
+
+各コマンドが正常終了してから次へ進みます。`npm ci`が失敗したらデモを実行せず、表示されたエラーを確認してください。デモは共通の診断・準備、Lesson 04の起動、HTTPシナリオの実行、結果の照合、停止を順に行います。
+
+成功すると、処理のログに続いて次の結果が表示されます。
+
+```text
+Bob: HTTP 403（ログイン済みでも削除権限がないため拒否）
+Alice: HTTP 204（所有者として削除に成功）
+観察結果: .lab/submissions/04/runtime.json
+初回デモが完了しました。project-app は停止済みです。回答と観察結果は保存しています。
+```
+
+BobもAliceもログインできています。それでも同じプロジェクトを削除できるかは、アプリケーションが持つ権限によって変わります。**認証の成功だけでは、操作が許可されたことにはなりません。**
+
+この入口では、Cookieセッションとプロジェクト認可が実装済みのLesson 04を使います。第1回から認証と認可の違いを実行して見るためであり、Lesson 01〜03の履修やLesson 04の採点を完了した扱いにはしません。完全コースを進める場合は後半の[学習経路](#学習経路)へ進みます。
+
+この教材はローカル実習用です。実装や固定された練習用認証情報を本番へ転用せず、実際に使っているパスワード、Cookie、トークンを入力しないでください。
+
+### 再実行と中断
+
+`npm run demo:01`は再実行できます。各回で新しいHTTPシナリオを動かし、`.lab/submissions/04/runtime.json`を更新します。既存の回答は保持し、`reset`や`purge`は実行しません。同じcloneで別の実習コマンドを並行実行しないでください。
+
+すでにproject-appが動いている場合、デモはそのプロセスを再利用せず中断します。別の実習で使っていないことを確認してから、次のコマンドで停止します。回答と観察結果は残ります。
+
+```bash
+node course.mjs lesson 04 stop
+```
+
+`Ctrl+C`で中断した場合も、デモが起動したプロセスだけを所有確認して停止します。強制終了した場合や停止に失敗した場合は、`node course.mjs lesson 04 diagnose`で状態を確認します。表示された`reasonCode`と`recovery`を読み、[共通トラブルシュート](docs/troubleshooting.md)に沿って復旧してください。`.lab/`の手動削除や、別のアプリケーションが使用しているポートの強制解放は行いません。
+
+## コースとして学ぶ
+
+以下は全15回を使う学習経路と詳しい環境設定です。ひとつのMini Project Appを題材に、認証、セッション、認可、フェデレーション、委任認可を順番に学びます。
+
+連載記事は順次公開します。読解教材にある未公開回の記事URLは、公開されるまで利用できません。記事の公開状況と、研修用教材としての検証状況は別に管理しています。
 
 講師として授業を準備する場合は[講師ガイド](docs/instructor-guide.md)、初学者検証には[無支援pilot観察票](docs/pilot-observation-template.md)、エラーから安全に復旧する場合は[共通トラブルシュート](docs/troubleshooting.md)も参照してください。
 
@@ -134,13 +186,13 @@ docker info
 ## 2. 教材を取得する
 
 ```bash
-git clone https://github.com/cloudnative-co/auth-authz-sample-app.git
+git clone https://github.com/cloudnative-co/authn-authz-lab.git
 ```
 
 cloneが終了code 0で完了したことを確認してから、取得したrepositoryへ移動します。失敗した場合は、同名directoryの有無、network、Gitのerrorを解消してから再実行します。
 
 ```bash
-cd auth-authz-sample-app
+cd authn-authz-lab
 ```
 
 `package-lock.json`と`course.mjs`が見えるrepository rootへ移動できたことを確認してから、依存関係を入れます。

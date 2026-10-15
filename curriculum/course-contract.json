@@ -4,9 +4,9 @@
   "courseId": "auth-authz",
   "title": "情シスのための認証認可入門",
   "source": {
-    "path": "articles/series/auth-authz/curriculum.json",
+    "path": "articles/series/authn-authz/curriculum.json",
     "schemaVersion": 2,
-    "sha256": "68e1e83cd1704ac1f971bce9b1add3a570fbbc3cbbb06057345b172ddc6851bb",
+    "sha256": "b7ef415fd102f8c3f7327899cb09e27f7ced8fba2fae76ff25f73c1ed06f61a2",
     "revision": null
   },
   "courseOutcomes": [
@@ -128,13 +128,13 @@
       "id": "01",
       "kind": "article-lesson",
       "module": "web-foundations",
-      "articleSlug": "auth-authz-01-login-basics",
+      "articleSlug": "authn-authz-01-login-basics",
       "environmentRef": "curriculum/support-matrix.json#lessons.01",
       "learningPrerequisites": [],
       "estimatedMinutes": 75,
       "extensionMinutes": 0,
       "extensionTaskRef": null,
-      "readingAssessmentRef": "episodes/01-auth-authz-01-login-basics/assessment.yaml#AA01-A1",
+      "readingAssessmentRef": "episodes/01-authn-authz-01-login-basics/assessment.yaml#AA01-A1",
       "objectives": [
         {
           "id": "AA01-O1",
@@ -212,7 +212,7 @@
       "id": "02",
       "kind": "article-lesson",
       "module": "web-foundations",
-      "articleSlug": "auth-authz-02-password-authentication",
+      "articleSlug": "authn-authz-02-password-authentication",
       "environmentRef": "curriculum/support-matrix.json#lessons.02",
       "learningPrerequisites": [
         "01"
@@ -220,7 +220,7 @@
       "estimatedMinutes": 90,
       "extensionMinutes": 45,
       "extensionTaskRef": "course/lessons/02/extension.yaml",
-      "readingAssessmentRef": "episodes/02-auth-authz-02-password-authentication/assessment.yaml#AA02-A1",
+      "readingAssessmentRef": "episodes/02-authn-authz-02-password-authentication/assessment.yaml#AA02-A1",
       "objectives": [
         {
           "id": "AA02-O1",
@@ -316,7 +316,7 @@
       "id": "03",
       "kind": "article-lesson",
       "module": "web-foundations",
-      "articleSlug": "auth-authz-03-session-management",
+      "articleSlug": "authn-authz-03-session-management",
       "environmentRef": "curriculum/support-matrix.json#lessons.03",
       "learningPrerequisites": [
         "02"
@@ -324,7 +324,7 @@
       "estimatedMinutes": 105,
       "extensionMinutes": 45,
       "extensionTaskRef": "course/lessons/03/extension.yaml",
-      "readingAssessmentRef": "episodes/03-auth-authz-03-session-management/assessment.yaml#AA03-A1",
+      "readingAssessmentRef": "episodes/03-authn-authz-03-session-management/assessment.yaml#AA03-A1",
       "objectives": [
         {
           "id": "AA03-O1",
@@ -437,7 +437,7 @@
       "id": "04",
       "kind": "article-lesson",
       "module": "web-foundations",
-      "articleSlug": "auth-authz-04-application-authorization",
+      "articleSlug": "authn-authz-04-application-authorization",
       "environmentRef": "curriculum/support-matrix.json#lessons.04",
       "learningPrerequisites": [
         "03"
@@ -445,7 +445,7 @@
       "estimatedMinutes": 105,
       "extensionMinutes": 45,
       "extensionTaskRef": "course/lessons/04/extension.yaml",
-      "readingAssessmentRef": "episodes/04-auth-authz-04-application-authorization/assessment.yaml#AA04-A1",
+      "readingAssessmentRef": "episodes/04-authn-authz-04-application-authorization/assessment.yaml#AA04-A1",
       "objectives": [
         {
           "id": "AA04-O1",
@@ -563,7 +563,7 @@
       "id": "05",
       "kind": "article-lesson",
       "module": "web-foundations",
-      "articleSlug": "auth-authz-05-basic-authentication",
+      "articleSlug": "authn-authz-05-basic-authentication",
       "environmentRef": "curriculum/support-matrix.json#lessons.05",
       "learningPrerequisites": [
         "01"
@@ -571,7 +571,7 @@
       "estimatedMinutes": 70,
       "extensionMinutes": 30,
       "extensionTaskRef": "course/lessons/05/extension.yaml",
-      "readingAssessmentRef": "episodes/05-auth-authz-05-basic-authentication/assessment.yaml#AA05-A1",
+      "readingAssessmentRef": "episodes/05-authn-authz-05-basic-authentication/assessment.yaml#AA05-A1",
       "objectives": [
         {
           "id": "AA05-O1",
@@ -654,7 +654,7 @@
       "id": "06",
       "kind": "article-lesson",
       "module": "enterprise-identity",
-      "articleSlug": "auth-authz-06-ldap-directory",
+      "articleSlug": "authn-authz-06-ldap-directory",
       "environmentRef": "curriculum/support-matrix.json#lessons.06",
       "learningPrerequisites": [
         "01"
@@ -662,7 +662,7 @@
       "estimatedMinutes": 105,
       "extensionMinutes": 60,
       "extensionTaskRef": "course/lessons/06/extension.yaml",
-      "readingAssessmentRef": "episodes/06-auth-authz-06-ldap-directory/assessment.yaml#AA06-A1",
+      "readingAssessmentRef": "episodes/06-authn-authz-06-ldap-directory/assessment.yaml#AA06-A1",
       "objectives": [
         {
           "id": "AA06-O1",
@@ -742,7 +742,7 @@
       "id": "07",
       "kind": "article-lesson",
       "module": "enterprise-identity",
-      "articleSlug": "auth-authz-07-kerberos-authentication",
+      "articleSlug": "authn-authz-07-kerberos-authentication",
       "environmentRef": "curriculum/support-matrix.json#lessons.07",
       "learningPrerequisites": [
         "01"
@@ -750,7 +750,7 @@
       "estimatedMinutes": 105,
       "extensionMinutes": 60,
       "extensionTaskRef": "course/lessons/07/extension.yaml",
-      "readingAssessmentRef": "episodes/07-auth-authz-07-kerberos-authentication/assessment.yaml#AA07-A1",
+      "readingAssessmentRef": "episodes/07-authn-authz-07-kerberos-authentication/assessment.yaml#AA07-A1",
       "objectives": [
         {
           "id": "AA07-O1",
@@ -830,7 +830,7 @@
       "id": "08",
       "kind": "article-lesson",
       "module": "enterprise-identity",
-      "articleSlug": "auth-authz-08-ad-freeipa-identity-platform",
+      "articleSlug": "authn-authz-08-ad-freeipa-identity-platform",
       "environmentRef": "curriculum/support-matrix.json#lessons.08",
       "learningPrerequisites": [
         "06",
@@ -839,7 +839,7 @@
       "estimatedMinutes": 110,
       "extensionMinutes": 90,
       "extensionTaskRef": "course/lessons/08/extension.yaml",
-      "readingAssessmentRef": "episodes/08-auth-authz-08-ad-freeipa-identity-platform/assessment.yaml#AA08-A1",
+      "readingAssessmentRef": "episodes/08-authn-authz-08-ad-freeipa-identity-platform/assessment.yaml#AA08-A1",
       "objectives": [
         {
           "id": "AA08-O1",
@@ -914,7 +914,7 @@
       "id": "09",
       "kind": "article-lesson",
       "module": "enterprise-identity",
-      "articleSlug": "auth-authz-09-saml-sso",
+      "articleSlug": "authn-authz-09-saml-sso",
       "environmentRef": "curriculum/support-matrix.json#lessons.09",
       "learningPrerequisites": [
         "01",
@@ -923,7 +923,7 @@
       "estimatedMinutes": 120,
       "extensionMinutes": 60,
       "extensionTaskRef": "course/lessons/09/extension.yaml",
-      "readingAssessmentRef": "episodes/09-auth-authz-09-saml-sso/assessment.yaml#AA09-A1",
+      "readingAssessmentRef": "episodes/09-authn-authz-09-saml-sso/assessment.yaml#AA09-A1",
       "objectives": [
         {
           "id": "AA09-O1",
@@ -1003,7 +1003,7 @@
       "id": "10",
       "kind": "article-lesson",
       "module": "modern-federation-api",
-      "articleSlug": "auth-authz-10-oauth-basics-for-oidc",
+      "articleSlug": "authn-authz-10-oauth-basics-for-oidc",
       "environmentRef": "curriculum/support-matrix.json#lessons.10",
       "learningPrerequisites": [
         "01"
@@ -1011,7 +1011,7 @@
       "estimatedMinutes": 140,
       "extensionMinutes": 60,
       "extensionTaskRef": "course/lessons/10/extension.yaml",
-      "readingAssessmentRef": "episodes/10-auth-authz-10-oauth-basics-for-oidc/assessment.yaml#AA10-A1",
+      "readingAssessmentRef": "episodes/10-authn-authz-10-oauth-basics-for-oidc/assessment.yaml#AA10-A1",
       "objectives": [
         {
           "id": "AA10-O1",
@@ -1091,7 +1091,7 @@
       "id": "11",
       "kind": "article-lesson",
       "module": "modern-federation-api",
-      "articleSlug": "auth-authz-11-openid-connect",
+      "articleSlug": "authn-authz-11-openid-connect",
       "environmentRef": "curriculum/support-matrix.json#lessons.11",
       "learningPrerequisites": [
         "03",
@@ -1100,7 +1100,7 @@
       "estimatedMinutes": 120,
       "extensionMinutes": 60,
       "extensionTaskRef": "course/lessons/11/extension.yaml",
-      "readingAssessmentRef": "episodes/11-auth-authz-11-openid-connect/assessment.yaml#AA11-A1",
+      "readingAssessmentRef": "episodes/11-authn-authz-11-openid-connect/assessment.yaml#AA11-A1",
       "objectives": [
         {
           "id": "AA11-O1",
@@ -1181,7 +1181,7 @@
       "id": "12",
       "kind": "article-lesson",
       "module": "strong-authentication",
-      "articleSlug": "auth-authz-12-multi-factor-authentication",
+      "articleSlug": "authn-authz-12-multi-factor-authentication",
       "environmentRef": "curriculum/support-matrix.json#lessons.12",
       "learningPrerequisites": [
         "02"
@@ -1189,7 +1189,7 @@
       "estimatedMinutes": 105,
       "extensionMinutes": 45,
       "extensionTaskRef": "course/lessons/12/extension.yaml",
-      "readingAssessmentRef": "episodes/12-auth-authz-12-multi-factor-authentication/assessment.yaml#AA12-A1",
+      "readingAssessmentRef": "episodes/12-authn-authz-12-multi-factor-authentication/assessment.yaml#AA12-A1",
       "objectives": [
         {
           "id": "AA12-O1",
@@ -1285,7 +1285,7 @@
       "id": "13",
       "kind": "article-lesson",
       "module": "strong-authentication",
-      "articleSlug": "auth-authz-13-fido-webauthn",
+      "articleSlug": "authn-authz-13-fido-webauthn",
       "environmentRef": "curriculum/support-matrix.json#lessons.13",
       "learningPrerequisites": [
         "12"
@@ -1293,7 +1293,7 @@
       "estimatedMinutes": 140,
       "extensionMinutes": 60,
       "extensionTaskRef": "course/lessons/13/extension.yaml",
-      "readingAssessmentRef": "episodes/13-auth-authz-13-fido-webauthn/assessment.yaml#AA13-A1",
+      "readingAssessmentRef": "episodes/13-authn-authz-13-fido-webauthn/assessment.yaml#AA13-A1",
       "objectives": [
         {
           "id": "AA13-O1",
@@ -1396,7 +1396,7 @@
       "id": "14",
       "kind": "article-lesson",
       "module": "strong-authentication",
-      "articleSlug": "auth-authz-14-passkey-login",
+      "articleSlug": "authn-authz-14-passkey-login",
       "environmentRef": "curriculum/support-matrix.json#lessons.14",
       "learningPrerequisites": [
         "03",
@@ -1405,7 +1405,7 @@
       "estimatedMinutes": 105,
       "extensionMinutes": 45,
       "extensionTaskRef": "course/lessons/14/extension.yaml",
-      "readingAssessmentRef": "episodes/14-auth-authz-14-passkey-login/assessment.yaml#AA14-A1",
+      "readingAssessmentRef": "episodes/14-authn-authz-14-passkey-login/assessment.yaml#AA14-A1",
       "objectives": [
         {
           "id": "AA14-O1",
@@ -1483,7 +1483,7 @@
       "id": "15",
       "kind": "article-lesson",
       "module": "modern-federation-api",
-      "articleSlug": "auth-authz-15-oauth-api-authorization",
+      "articleSlug": "authn-authz-15-oauth-api-authorization",
       "environmentRef": "curriculum/support-matrix.json#lessons.15",
       "learningPrerequisites": [
         "04",
@@ -1493,7 +1493,7 @@
       "estimatedMinutes": 140,
       "extensionMinutes": 60,
       "extensionTaskRef": "course/lessons/15/extension.yaml",
-      "readingAssessmentRef": "episodes/15-auth-authz-15-oauth-api-authorization/assessment.yaml#AA15-A1",
+      "readingAssessmentRef": "episodes/15-authn-authz-15-oauth-api-authorization/assessment.yaml#AA15-A1",
       "objectives": [
         {
           "id": "AA15-O1",

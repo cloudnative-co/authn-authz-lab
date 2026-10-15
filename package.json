@@ -1,9 +1,10 @@
 {
-  "name": "@cloudnative/auth-authz-sample-app",
+  "name": "@cloudnative/authn-authz-lab",
   "version": "0.1.0",
   "private": true,
   "type": "module",
   "scripts": {
+    "demo:01": "node scripts/demo-intro.mjs",
     "course": "node course.mjs",
     "start": "node course.mjs lesson 01 setup",
     "test": "node --test --test-concurrency=1 'test/**/*.test.js'",
@@ -16,7 +17,7 @@
   "dependencies": {
     "@node-saml/node-saml": "5.1.0",
     "@simplewebauthn/server": "13.3.2",
-    "@xmldom/xmldom": "0.8.13",
+    "@xmldom/xmldom": "0.8.15",
     "jose": "6.2.3",
     "ldapts": "8.1.8",
     "xml-crypto": "6.1.2"

@@ -5,17 +5,17 @@
   "releaseStatus": "unreleased",
   "sourceRevision": null,
   "sourceFile": {
-    "path": "articles/series/auth-authz/curriculum.json",
-    "sha256": "68e1e83cd1704ac1f971bce9b1add3a570fbbc3cbbb06057345b172ddc6851bb"
+    "path": "articles/series/authn-authz/curriculum.json",
+    "sha256": "b7ef415fd102f8c3f7327899cb09e27f7ced8fba2fae76ff25f73c1ed06f61a2"
   },
   "generatedFiles": [
     {
       "path": "curriculum/course-contract.json",
-      "sha256": "084aab7420b576b2449157fb2cde8856bc893bf7f25e806763238c3637e60790"
+      "sha256": "dd3b83d609dc51999f0f1936fb263959ee532358c5efbfb47b638fd2bad1db3a"
     },
     {
       "path": "curriculum/course-source.snapshot.json",
-      "sha256": "68e1e83cd1704ac1f971bce9b1add3a570fbbc3cbbb06057345b172ddc6851bb"
+      "sha256": "b7ef415fd102f8c3f7327899cb09e27f7ced8fba2fae76ff25f73c1ed06f61a2"
     },
     {
       "path": "course/lessons/setup/assessment.yaml",

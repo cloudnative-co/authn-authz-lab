@@ -15,7 +15,7 @@ Dockerとブラウザは準備ラボでは使いません。後続回で必要�
 
 ## 1. 配布物を準備する
 
-sample root READMEから来た場合、repository取得と`npm ci`は完了しています。同じrepositoryの内側へcloneし直さず、リポジトリのルートにいることだけ確認して「2. stateの変化を予測する」へ進みます。
+リポジトリのREADMEから来た場合、repository取得と`npm ci`は完了しています。同じrepositoryの内側へcloneし直さず、リポジトリのルートにいることだけ確認して「2. stateの変化を予測する」へ進みます。
 
 ```bash
 test -f course.mjs && test -f package-lock.json
@@ -24,13 +24,13 @@ test -f course.mjs && test -f package-lock.json
 終了codeが0なら現在地は正しいです。まだ教材を取得していない場合だけ、教材を置きたい親directoryで次を実行します。
 
 ```bash
-git clone https://github.com/cloudnative-co/auth-authz-sample-app.git
+git clone https://github.com/cloudnative-co/authn-authz-lab.git
 ```
 
 cloneが終了code 0で完了したことを確認してから、取得したrepositoryへ移動します。失敗した場合は、同名directoryの有無、network、Gitのerrorを解消して再実行します。
 
 ```bash
-cd auth-authz-sample-app
+cd authn-authz-lab
 ```
 
 `course.mjs`と`package-lock.json`が見えるrepository rootへ移動できたことを確認してから、Node.jsのversionを確認します。

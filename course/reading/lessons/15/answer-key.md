@@ -15,7 +15,7 @@
 
 正解は **B** です。token形式がJWTでも、ClientはAuthorization ServerとResource Server間のcontractを独自解釈しません。
 
-読み直す見出し: [JWT Access TokenでもClientにはopaque](https://blog.cloudnative.co.jp/articles/auth-authz-15-oauth-api-authorization/)
+読み直す見出し: [JWT Access TokenでもClientにはopaque](https://blog.cloudnative.co.jp/articles/authn-authz-15-oauth-api-authorization/)
 
 ## AA15-Q2
 
@@ -27,16 +27,16 @@
 
 正解は **A** です。署名だけでなくtoken種別、issuer、audience、expiryなどcontract全体を検証します。
 
-読み直す見出し: [Resource Serverは何を検証するか](https://blog.cloudnative.co.jp/articles/auth-authz-15-oauth-api-authorization/)
+読み直す見出し: [Resource Serverは何を検証するか](https://blog.cloudnative.co.jp/articles/authn-authz-15-oauth-api-authorization/)
 
 ## AA15-Q4
 
 正解は **B** です。scopeはAPI capabilityの粗い境界で、対象object・tenant・ownershipの認可は別に残ります。
 
-読み直す見出し: [scopeを通過してもobject認可が残る](https://blog.cloudnative.co.jp/articles/auth-authz-15-oauth-api-authorization/)
+読み直す見出し: [scopeを通過してもobject認可が残る](https://blog.cloudnative.co.jp/articles/authn-authz-15-oauth-api-authorization/)
 
 ## AA15-Q5
 
 正解は **C** です。tokenとscopeのGateは通ってもobject認可で拒否し、存在秘匿contractなら404へ畳みます。
 
-読み直す見出し: [3つのGateに分ける](https://blog.cloudnative.co.jp/articles/auth-authz-15-oauth-api-authorization/)
+読み直す見出し: [3つのGateに分ける](https://blog.cloudnative.co.jp/articles/authn-authz-15-oauth-api-authorization/)

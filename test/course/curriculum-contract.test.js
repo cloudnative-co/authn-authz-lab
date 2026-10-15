@@ -12,7 +12,7 @@ import { validateSchema } from '../../course/runner/schema.mjs';
 const repositoryRoot = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const upstreamSource = resolve(
   repositoryRoot,
-  '../ghost-writer-okash1n/articles/series/auth-authz/curriculum.json',
+  '../ghost-writer-okash1n/articles/series/authn-authz/curriculum.json',
 );
 const authoritativeSource = existsSync(upstreamSource)
   ? upstreamSource
@@ -401,7 +401,7 @@ test('source digest and unreleased lock describe bytes without inventing a revis
   assert.equal(lock.releaseStatus, 'unreleased');
   assert.equal(lock.sourceRevision, null);
   assert.equal(lock.sourceFile.sha256, expectedDigest);
-  assert.equal(digestFile, `${expectedDigest}  articles/series/auth-authz/curriculum.json\n`);
+  assert.equal(digestFile, `${expectedDigest}  articles/series/authn-authz/curriculum.json\n`);
   assert.deepEqual(sourceSnapshot, sourceBytes);
   assert.equal(lock.generatedFiles[0].sha256, sha256(readFileSync(resolve(repositoryRoot, lock.generatedFiles[0].path))));
 });

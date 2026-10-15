@@ -31,7 +31,7 @@ npm run test:integration
 - `runner.mjs`: 共通lifecycleと所有resource管理
 - unit / integration / isolated runner E2E
 
-`artifactStatus=implemented`へ変える前に、教材、採点、解答、講師資料、自動検証、手順の参照先がすべて存在することを確認します。正本は`articles/series/auth-authz/curriculum.json`、sample側の生成物は次で同期します。
+`artifactStatus=implemented`へ変える前に、教材、採点、解答、講師資料、自動検証、手順の参照先がすべて存在することを確認します。正本は`articles/series/authn-authz/curriculum.json`、このリポジトリの生成物は次で同期します。
 
 ```bash
 node scripts/sync-course-contract.mjs

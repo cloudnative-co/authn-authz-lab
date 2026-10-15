@@ -15,28 +15,28 @@
 
 正解は **B** です。検索権限を持つservice accountでentryを見つけ、そのDNを使う別のsimple bindでpasswordを検証します。
 
-読み直す見出し: [LDAP認証を4つの操作へ分ける](https://blog.cloudnative.co.jp/articles/auth-authz-06-ldap-directory/)
+読み直す見出し: [LDAP認証を4つの操作へ分ける](https://blog.cloudnative.co.jp/articles/authn-authz-06-ldap-directory/)
 
 ## AA06-Q2
 
 正解は **C** です。DNはtree内のentryを指しますが、renameやmoveで変わり得るため長期不変IDとは限りません。
 
-読み直す見出し: [DN、attribute、groupを同じものにしない](https://blog.cloudnative.co.jp/articles/auth-authz-06-ldap-directory/)
+読み直す見出し: [DN、attribute、groupを同じものにしない](https://blog.cloudnative.co.jp/articles/authn-authz-06-ldap-directory/)
 
 ## AA06-Q3
 
 正解は **A** です。group entryのmember attributeがuser DNを含むかを検索します。
 
-読み直す見出し: [DN、attribute、groupを同じものにしない](https://blog.cloudnative.co.jp/articles/auth-authz-06-ldap-directory/)
+読み直す見出し: [DN、attribute、groupを同じものにしない](https://blog.cloudnative.co.jp/articles/authn-authz-06-ldap-directory/)
 
 ## AA06-Q4
 
 正解は **B** です。構造化filter APIへ値として渡し、特殊文字の扱いを実装へ委ねます。
 
-読み直す見出し: [filterは文字列連結で作らない](https://blog.cloudnative.co.jp/articles/auth-authz-06-ldap-directory/)
+読み直す見出し: [filterは文字列連結で作らない](https://blog.cloudnative.co.jp/articles/authn-authz-06-ldap-directory/)
 
 ## AA06-Q5
 
 正解は **C** です。unauthenticated・anonymous bindとの混同を避けるため、client生成やnetwork送信より前に拒否します。
 
-読み直す見出し: [空passwordはLDAPへ送らない](https://blog.cloudnative.co.jp/articles/auth-authz-06-ldap-directory/)
+読み直す見出し: [空passwordはLDAPへ送らない](https://blog.cloudnative.co.jp/articles/authn-authz-06-ldap-directory/)

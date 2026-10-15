@@ -40,7 +40,7 @@ test('Lesson 09 adapter executes only the owned user-agent with bounded output a
 test('Lesson 09 keeps node-saml and direct XML dependencies exact-pinned', async () => {
   const packageJson = (await import('../../package.json', { with: { type: 'json' } })).default;
   assert.equal(packageJson.dependencies['@node-saml/node-saml'], '5.1.0');
-  assert.equal(packageJson.dependencies['@xmldom/xmldom'], '0.8.13');
+  assert.equal(packageJson.dependencies['@xmldom/xmldom'], '0.8.15');
   assert.equal(packageJson.dependencies['xml-crypto'], '6.1.2');
 });
 

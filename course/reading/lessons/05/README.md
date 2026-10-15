@@ -1,6 +1,6 @@
 # 第05回 読解評価
 
-対象記事: [第05回](https://blog.cloudnative.co.jp/articles/auth-authz-05-basic-authentication/)
+対象記事: [第05回](https://blog.cloudnative.co.jp/articles/authn-authz-05-basic-authentication/)
 
 記事を読んでから、答えを見ずに5問へ回答します。4問以上で合格です。不正解だった問題は指定された見出しへ戻り、根拠を説明できてから再回答します。
 

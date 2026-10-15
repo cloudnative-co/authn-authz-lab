@@ -1,268 +1,268 @@
 {
   "schemaVersion": 1,
   "courseId": "auth-authz",
-  "generatedFrom": "articles/series/auth-authz/curriculum.json and episode assessment artifacts",
+  "generatedFrom": "articles/series/authn-authz/curriculum.json and episode assessment artifacts",
   "sourceRevision": null,
   "releaseStatus": "unreleased",
   "lessons": [
     {
       "id": "01",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-01-login-basics/",
-      "sourceAssessmentRef": "episodes/01-auth-authz-01-login-basics/assessment.yaml#AA01-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-01-login-basics/",
+      "sourceAssessmentRef": "episodes/01-authn-authz-01-login-basics/assessment.yaml#AA01-A1",
       "sourceAssessmentSha256": "e0823ee5c1dc681bdb9cf8a1b7eb718b4de15b076af8b4fc51c89b8ecfcbc8f1",
       "sourceAnswerKeySha256": "ef289b6d52c704accd3d3a33ebe7fbf3dd425be3a7f8a3b254bd11c925e228a0",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/01/README.md",
-        "sha256": "7dcd510012a875b3388274529c6d346f4be0ea754ba64a012b2943ee5ede56a7"
+        "sha256": "148f75ad535d627d3812dceafc7934a55193d77a3861e0757d4b8d96ab88d771"
       },
       "answerKey": {
         "path": "course/reading/lessons/01/answer-key.md",
-        "sha256": "fb7d1dc794b81db071b19cb26239f300ea4b8b9c8fbb155c99292d6d5ff887b7"
+        "sha256": "1509b53cd81e4f721f89db07b32b323b714b8c0c45e7fff511c3452eae17e2e7"
       }
     },
     {
       "id": "02",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-02-password-authentication/",
-      "sourceAssessmentRef": "episodes/02-auth-authz-02-password-authentication/assessment.yaml#AA02-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-02-password-authentication/",
+      "sourceAssessmentRef": "episodes/02-authn-authz-02-password-authentication/assessment.yaml#AA02-A1",
       "sourceAssessmentSha256": "e2dbe5f01899a4ea9d455aed406efca3a4089908bd072d313b96ae681757b745",
       "sourceAnswerKeySha256": "9356fdac48a84564df47b478d892c793580bd7598b6bc5d335594cbed4db0452",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/02/README.md",
-        "sha256": "bbc4b69f4d22dc35e017190692954cc78358ba8cba9f2989060aeb97f3b843f5"
+        "sha256": "399cde195fce796ff3f6eb935dd7c162e3eeed585ffe3a93aa9283a925b2d789"
       },
       "answerKey": {
         "path": "course/reading/lessons/02/answer-key.md",
-        "sha256": "12b39224a442045ffcbb1916e30c3cdb6b4e40954498ae1892e97fe741cda4c6"
+        "sha256": "2cbf563906e0446b43db97551900705610791d11c8620551ca3629fe6f39f601"
       }
     },
     {
       "id": "03",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-03-session-management/",
-      "sourceAssessmentRef": "episodes/03-auth-authz-03-session-management/assessment.yaml#AA03-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-03-session-management/",
+      "sourceAssessmentRef": "episodes/03-authn-authz-03-session-management/assessment.yaml#AA03-A1",
       "sourceAssessmentSha256": "ce3efe6da1e3945ce43ab5dcd4cc5b3d0ba4b65c8d88b8a045aaae6c248dde64",
       "sourceAnswerKeySha256": "f5418b889b8d030749d2873b6be179b1f218c3985006558a23a008e81a6c7138",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/03/README.md",
-        "sha256": "b8c0fa47a5129a4891e134c6c38f86bd175e2c7d31e4213e656161167b4e7508"
+        "sha256": "67756938dbb4e2b708adb8036feff65b436cabd06da3ca87d45b00fb741e824f"
       },
       "answerKey": {
         "path": "course/reading/lessons/03/answer-key.md",
-        "sha256": "aa8d7824f706a164489b3a0e3be493fa5aeb8a1b16e1746fdb513ffc9c2edba1"
+        "sha256": "4c9693deeac1129366d5d03c0c9dfe991edaadbcf2b375e03244d16fdfccf20b"
       }
     },
     {
       "id": "04",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-04-application-authorization/",
-      "sourceAssessmentRef": "episodes/04-auth-authz-04-application-authorization/assessment.yaml#AA04-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-04-application-authorization/",
+      "sourceAssessmentRef": "episodes/04-authn-authz-04-application-authorization/assessment.yaml#AA04-A1",
       "sourceAssessmentSha256": "5c7077ab6f4d956ca8cd758d161025546ee9bcaba89651a3407a088fd1c443fc",
       "sourceAnswerKeySha256": "09eb0ecd0037fb035a5c4ec3a374c6f98d3def79c1fa31fdf6fda6c4375995c8",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/04/README.md",
-        "sha256": "8d60dc8132f239c37cff6881aaa20d85760a3b550fff177a1f95e60a23530b1b"
+        "sha256": "bb698351bcf475e0902cf2eddeba899c0bed284fd04301285e557fca2d077491"
       },
       "answerKey": {
         "path": "course/reading/lessons/04/answer-key.md",
-        "sha256": "00efbf93318c1b9960a7b246a19858e139a2c3b4dcb677a71d71d63ab0312758"
+        "sha256": "495526d79f7a5ed49eb13c60849c961134edc8f39b09c30d0bfd101ffad9a2cc"
       }
     },
     {
       "id": "05",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-05-basic-authentication/",
-      "sourceAssessmentRef": "episodes/05-auth-authz-05-basic-authentication/assessment.yaml#AA05-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-05-basic-authentication/",
+      "sourceAssessmentRef": "episodes/05-authn-authz-05-basic-authentication/assessment.yaml#AA05-A1",
       "sourceAssessmentSha256": "574b6930b9980f1358b120dcde0912571593d969cf8aadb60c476ac61b77f1cc",
       "sourceAnswerKeySha256": "eff8f9f73b8766a20ee4c2e6d19691d6429d3fa6e8856cd1720f553faf7b8a76",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/05/README.md",
-        "sha256": "e3bef8fbf55b7039ac2664ef21df4eb9c2e3d571a4400f69e0b0e2a5d8ed58e0"
+        "sha256": "48940b17452b090a752a07f81e5411947ec0d67e80c2b1841069e65372b25eb8"
       },
       "answerKey": {
         "path": "course/reading/lessons/05/answer-key.md",
-        "sha256": "331752863ec460cb1700c92298153ebcebb71415013bb7e712df5e4c6f520b56"
+        "sha256": "0db06a7b8501d73bc4b523e34fc2f5f8fc626c550bae2d768d759c42cd25f25c"
       }
     },
     {
       "id": "06",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-06-ldap-directory/",
-      "sourceAssessmentRef": "episodes/06-auth-authz-06-ldap-directory/assessment.yaml#AA06-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-06-ldap-directory/",
+      "sourceAssessmentRef": "episodes/06-authn-authz-06-ldap-directory/assessment.yaml#AA06-A1",
       "sourceAssessmentSha256": "39f7f45f54c805e9e92334e1403e35c7ce98cdf7007cf05afa71285ff5de09e1",
       "sourceAnswerKeySha256": "674bdc8528de5236070653c5091be94955b85d238ab45ea07d0ed52880614496",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/06/README.md",
-        "sha256": "cfd29ac541b1448528e7402a5da088888b2746043757c037a85d1b31fd81f06e"
+        "sha256": "a12caa90f9ee2dc0b125d90a7f6ff377a62750e2074ac62d66b2a9733fbc0b2a"
       },
       "answerKey": {
         "path": "course/reading/lessons/06/answer-key.md",
-        "sha256": "f340af3e40b30eb64751c90f3189fc711efc2177c0859f408868d54b247b7a26"
+        "sha256": "e12717e6ef6969408c1c659cb72a26a2f97fa6850799b42233eae31d87218548"
       }
     },
     {
       "id": "07",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-07-kerberos-authentication/",
-      "sourceAssessmentRef": "episodes/07-auth-authz-07-kerberos-authentication/assessment.yaml#AA07-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-07-kerberos-authentication/",
+      "sourceAssessmentRef": "episodes/07-authn-authz-07-kerberos-authentication/assessment.yaml#AA07-A1",
       "sourceAssessmentSha256": "0e29c510e29220e44f5fc1d0f467f85ac5c8115044d4e824123523584efd0aaa",
       "sourceAnswerKeySha256": "57e91c031f026d9eec4674c0b74e14439c3c1e788d6c26c4ea0e0afd4b807696",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/07/README.md",
-        "sha256": "c4500012a8cca1676928222103054966c2e49cdc9248868194d755554ff93055"
+        "sha256": "587c561a1fa66947e216da7f59d31e97377e493f7c9ca20fb6d47767f4899573"
       },
       "answerKey": {
         "path": "course/reading/lessons/07/answer-key.md",
-        "sha256": "6b9373cd4dcd76c1a513167be17786f423d3c05d906c12620364399c94c2e7f7"
+        "sha256": "73f7d0017bd8dbce2bc4d7abbf09423b523d0950e7d9018037597749afd2319b"
       }
     },
     {
       "id": "08",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-08-ad-freeipa-identity-platform/",
-      "sourceAssessmentRef": "episodes/08-auth-authz-08-ad-freeipa-identity-platform/assessment.yaml#AA08-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-08-ad-freeipa-identity-platform/",
+      "sourceAssessmentRef": "episodes/08-authn-authz-08-ad-freeipa-identity-platform/assessment.yaml#AA08-A1",
       "sourceAssessmentSha256": "80b6db5fd0511984df124c01369480484a4ee813207756bfbee9ffe478d8d58f",
       "sourceAnswerKeySha256": "a183f571824dc80e13db1a5cbff7e43b93df24b2b5e47539252fa6f5fa75208a",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/08/README.md",
-        "sha256": "929e6ab57c85515e4515e957a3fbf71beb9100b9625576b7e794596fa9f1f47e"
+        "sha256": "6f0d85876648e7b31e477dea3ac91ef119b8627b2391d1e4690c9bb016edbca6"
       },
       "answerKey": {
         "path": "course/reading/lessons/08/answer-key.md",
-        "sha256": "5773386ed6c16319b73ee45d011fc84fa2eb8a9f69837fd35c21665617fd3e1a"
+        "sha256": "770497a33652a070e85d6843cb229af723e4bc2f5e073841d0d2c6390920d167"
       }
     },
     {
       "id": "09",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-09-saml-sso/",
-      "sourceAssessmentRef": "episodes/09-auth-authz-09-saml-sso/assessment.yaml#AA09-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-09-saml-sso/",
+      "sourceAssessmentRef": "episodes/09-authn-authz-09-saml-sso/assessment.yaml#AA09-A1",
       "sourceAssessmentSha256": "9821a5b02dacf0b5d7b3de005c8615756181f2ba463f22176f591196b8a07612",
       "sourceAnswerKeySha256": "a84cc22636fda6b158c2ac458f3b1096b42fecf1d2e68cf7749759ac2e0e2091",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/09/README.md",
-        "sha256": "6e179c2b595a6c507b86fa212c114046b5b8cee9cff3a70e561f542e50477f74"
+        "sha256": "01f34a28e7e06d39a09103a975f3df557bee087bddcfae87d7fc96986222e633"
       },
       "answerKey": {
         "path": "course/reading/lessons/09/answer-key.md",
-        "sha256": "b25c6a75784481fb82dcdb8ca102efe888de84b62b943ad5e412c6704096ed62"
+        "sha256": "f2e4bf99f43896d7c1ee7abf6c2b6620b8a8164079c52161f3ac5583f26ab6d2"
       }
     },
     {
       "id": "10",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-10-oauth-basics-for-oidc/",
-      "sourceAssessmentRef": "episodes/10-auth-authz-10-oauth-basics-for-oidc/assessment.yaml#AA10-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-10-oauth-basics-for-oidc/",
+      "sourceAssessmentRef": "episodes/10-authn-authz-10-oauth-basics-for-oidc/assessment.yaml#AA10-A1",
       "sourceAssessmentSha256": "c7241972c63bf0821f50bb18e1ef5f00f34e8393347042846d02c38b6422f8a1",
       "sourceAnswerKeySha256": "4c1c19a911f9e7a6445aea12ffeb4534f63c59c79070dd632b2e3edb8f9f093a",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/10/README.md",
-        "sha256": "bf9429b6351a4513f0b05b6605393d8312bb0e8faf13a196eee29b7ddb2c7a9e"
+        "sha256": "d1fbecfd8320a6a133374cc12d743ccb82de69f374eaecf2b8bf96c81a231150"
       },
       "answerKey": {
         "path": "course/reading/lessons/10/answer-key.md",
-        "sha256": "9c54af340c47a0dcd62f98391a84ca7842797a5b511582e1529ad0422fa8d96a"
+        "sha256": "43bad076a9c34143f8bc4070d95b31847e79112cc39c3c08403001a6b791762f"
       }
     },
     {
       "id": "11",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-11-openid-connect/",
-      "sourceAssessmentRef": "episodes/11-auth-authz-11-openid-connect/assessment.yaml#AA11-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-11-openid-connect/",
+      "sourceAssessmentRef": "episodes/11-authn-authz-11-openid-connect/assessment.yaml#AA11-A1",
       "sourceAssessmentSha256": "8acdd3cfbc0b7a6368909ed3d45eb37a4131a72cb43b2b10de9d1dcceeaa4fd8",
       "sourceAnswerKeySha256": "36d88f7f376c12043c7d113591b4834356a644d6b2cc9750b9a7a8707978de8f",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/11/README.md",
-        "sha256": "a7628c6af3449f6d7924edce475e416867d9fd598a8d4ef39e00404d71a29206"
+        "sha256": "844af7cccfa98ecea5fe87d71639de5be0adad79d3fa034bbec55af63e7ed20a"
       },
       "answerKey": {
         "path": "course/reading/lessons/11/answer-key.md",
-        "sha256": "9669a91bcf6bd75a297c17f2e3cd4dad1e0abfa7da1207c291a28769d3c88edf"
+        "sha256": "793294722171c2a663f53892ba0a9b8c3358bc6a1cc21f0447d44b809a93f3a8"
       }
     },
     {
       "id": "12",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-12-multi-factor-authentication/",
-      "sourceAssessmentRef": "episodes/12-auth-authz-12-multi-factor-authentication/assessment.yaml#AA12-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-12-multi-factor-authentication/",
+      "sourceAssessmentRef": "episodes/12-authn-authz-12-multi-factor-authentication/assessment.yaml#AA12-A1",
       "sourceAssessmentSha256": "5e5380123e4f91030c1d3bb2f29444cfe97be8178c3de2ae4cbcfb19504bbaca",
       "sourceAnswerKeySha256": "ead93151eaa6651763404a4e982bc1978fa8fe08cdc0c0f724af632c93cb100f",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/12/README.md",
-        "sha256": "0a757cbd60b60555788da384c45835a848fd3a8e55d462185fb423277a492935"
+        "sha256": "fde131c3cfce96ad3d2f7634282b8961f0774cb99fb6594e860dc86a06a8b51d"
       },
       "answerKey": {
         "path": "course/reading/lessons/12/answer-key.md",
-        "sha256": "83326d12b65e1f047f021331ba7976c5cbd25af5c9672a36dcb2df94dd06956e"
+        "sha256": "0b818c9a729ef48f0af937a994a710e323f4659b6e6e4ed3d7c1ecbfed1a8390"
       }
     },
     {
       "id": "13",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-13-fido-webauthn/",
-      "sourceAssessmentRef": "episodes/13-auth-authz-13-fido-webauthn/assessment.yaml#AA13-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-13-fido-webauthn/",
+      "sourceAssessmentRef": "episodes/13-authn-authz-13-fido-webauthn/assessment.yaml#AA13-A1",
       "sourceAssessmentSha256": "6b54a9c270e7eb1801cf76afe26a04abcc09db65268844ad71afa79b4761e988",
       "sourceAnswerKeySha256": "7519ff60fdfe6f94efade5359319b1830842bed99c1bdb43e6d8b5b3d9486fd8",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/13/README.md",
-        "sha256": "96c7123be9573daab11b7149d6a78728c124acd440ac3386eff00e3e41f3ccbc"
+        "sha256": "375d2929f691574af02cad53958c39d549562c8c9a5450196e371bec5ece53f7"
       },
       "answerKey": {
         "path": "course/reading/lessons/13/answer-key.md",
-        "sha256": "4ffe220be5a4cc3cd11b1ddc7d3491de7236de23ac19c8f082b38f498c97a77f"
+        "sha256": "0dd2dffd4fdf02f6442c9e3399cbfecd81a4b409682ba93bd6c42b8e26bbf0b5"
       }
     },
     {
       "id": "14",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-14-passkey-login/",
-      "sourceAssessmentRef": "episodes/14-auth-authz-14-passkey-login/assessment.yaml#AA14-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-14-passkey-login/",
+      "sourceAssessmentRef": "episodes/14-authn-authz-14-passkey-login/assessment.yaml#AA14-A1",
       "sourceAssessmentSha256": "452dae2df768a80713cb6fdf84d8df5dfce81b4da5ebffb3f498d3f84c0a65df",
       "sourceAnswerKeySha256": "39f366f22d1edcb646339c61798fd8699747518e0b086a3ddb48e22bce98f1ff",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/14/README.md",
-        "sha256": "8861af93c6ef30fe2546d45c31411268a5a12a7b25ddbfb66aa7d5564091cb3e"
+        "sha256": "94266b69fda885cc65e977cbf113c8f2b7c77bf7e5dbd2b05b1657f28e353fa0"
       },
       "answerKey": {
         "path": "course/reading/lessons/14/answer-key.md",
-        "sha256": "8ee19919db264812cc2f976ad7f789c1decf2ef14bb81805a7e1903292d003fd"
+        "sha256": "e8a2a1b1fa1aa85722cd6ef2e7d46eaa42c546dfd907eba99f99bfe0d81f44af"
       }
     },
     {
       "id": "15",
-      "articleUrl": "https://blog.cloudnative.co.jp/articles/auth-authz-15-oauth-api-authorization/",
-      "sourceAssessmentRef": "episodes/15-auth-authz-15-oauth-api-authorization/assessment.yaml#AA15-A1",
+      "articleUrl": "https://blog.cloudnative.co.jp/articles/authn-authz-15-oauth-api-authorization/",
+      "sourceAssessmentRef": "episodes/15-authn-authz-15-oauth-api-authorization/assessment.yaml#AA15-A1",
       "sourceAssessmentSha256": "8b91611c2803f0205da8cfe74969c8e1cce4a5e62b267028d4e2fb3122108116",
       "sourceAnswerKeySha256": "6642a9ee051093d805579b0a040ee96111cce5c25c66edb469502b6761623065",
       "questionCount": 5,
       "passingScore": 4,
       "readme": {
         "path": "course/reading/lessons/15/README.md",
-        "sha256": "b51dc11e4021b1ec847061c4ea47e5abe73a91b02e81fd8ff7dd04823a162db0"
+        "sha256": "02c670de281be5e128462ec7b5ecfb55c8d104e4e70ad490673b909807a7395d"
       },
       "answerKey": {
         "path": "course/reading/lessons/15/answer-key.md",
-        "sha256": "f274ce944e741d9268432c1bd6ac835a5984f7717b2d59b2ac1370bc83ef5d35"
+        "sha256": "05c86d54ddd96b64d86d6d39d3185951068911726d93d59a113134750683213e"
       }
     }
   ],
   "index": {
     "path": "course/reading/README.md",
-    "sha256": "7b1a828ed9ac30e966cfa183952cbd81d1a8568286236f0d8a53952d30fd0158"
+    "sha256": "cb3976067861ead6a256d8f846264788b6bc518db62bdda8a8ec217ae1695311"
   }
 }

@@ -10,10 +10,10 @@ const scriptDirectory = dirname(fileURLToPath(import.meta.url));
 const defaultOutputRoot = resolve(scriptDirectory, '..');
 const defaultSource = resolve(
   defaultOutputRoot,
-  '../ghost-writer-okash1n/articles/series/auth-authz/curriculum.json',
+  '../ghost-writer-okash1n/articles/series/authn-authz/curriculum.json',
 );
 const localSourceSnapshot = resolve(defaultOutputRoot, 'curriculum/course-source.snapshot.json');
-const defaultSourceLabel = 'articles/series/auth-authz/curriculum.json';
+const defaultSourceLabel = 'articles/series/authn-authz/curriculum.json';
 
 function fail(message) {
   throw new Error(message);

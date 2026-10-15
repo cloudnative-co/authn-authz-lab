@@ -6,20 +6,20 @@
 
 | 回 | 記事 | 読解評価 |
 | --- | --- | --- |
-| 01 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-01-login-basics/) | [5問を解く](lessons/01/README.md) |
-| 02 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-02-password-authentication/) | [5問を解く](lessons/02/README.md) |
-| 03 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-03-session-management/) | [5問を解く](lessons/03/README.md) |
-| 04 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-04-application-authorization/) | [5問を解く](lessons/04/README.md) |
-| 05 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-05-basic-authentication/) | [5問を解く](lessons/05/README.md) |
-| 06 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-06-ldap-directory/) | [5問を解く](lessons/06/README.md) |
-| 07 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-07-kerberos-authentication/) | [5問を解く](lessons/07/README.md) |
-| 08 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-08-ad-freeipa-identity-platform/) | [5問を解く](lessons/08/README.md) |
-| 09 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-09-saml-sso/) | [5問を解く](lessons/09/README.md) |
-| 10 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-10-oauth-basics-for-oidc/) | [5問を解く](lessons/10/README.md) |
-| 11 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-11-openid-connect/) | [5問を解く](lessons/11/README.md) |
-| 12 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-12-multi-factor-authentication/) | [5問を解く](lessons/12/README.md) |
-| 13 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-13-fido-webauthn/) | [5問を解く](lessons/13/README.md) |
-| 14 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-14-passkey-login/) | [5問を解く](lessons/14/README.md) |
-| 15 | [記事](https://blog.cloudnative.co.jp/articles/auth-authz-15-oauth-api-authorization/) | [5問を解く](lessons/15/README.md) |
+| 01 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-01-login-basics/) | [5問を解く](lessons/01/README.md) |
+| 02 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-02-password-authentication/) | [5問を解く](lessons/02/README.md) |
+| 03 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-03-session-management/) | [5問を解く](lessons/03/README.md) |
+| 04 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-04-application-authorization/) | [5問を解く](lessons/04/README.md) |
+| 05 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-05-basic-authentication/) | [5問を解く](lessons/05/README.md) |
+| 06 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-06-ldap-directory/) | [5問を解く](lessons/06/README.md) |
+| 07 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-07-kerberos-authentication/) | [5問を解く](lessons/07/README.md) |
+| 08 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-08-ad-freeipa-identity-platform/) | [5問を解く](lessons/08/README.md) |
+| 09 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-09-saml-sso/) | [5問を解く](lessons/09/README.md) |
+| 10 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-10-oauth-basics-for-oidc/) | [5問を解く](lessons/10/README.md) |
+| 11 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-11-openid-connect/) | [5問を解く](lessons/11/README.md) |
+| 12 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-12-multi-factor-authentication/) | [5問を解く](lessons/12/README.md) |
+| 13 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-13-fido-webauthn/) | [5問を解く](lessons/13/README.md) |
+| 14 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-14-passkey-login/) | [5問を解く](lessons/14/README.md) |
+| 15 | [記事](https://blog.cloudnative.co.jp/articles/authn-authz-15-oauth-api-authorization/) | [5問を解く](lessons/15/README.md) |
 
 [教材READMEへ戻る](../../README.md)

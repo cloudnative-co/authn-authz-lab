@@ -1,6 +1,6 @@
 # 第04回 読解評価
 
-対象記事: [第04回](https://blog.cloudnative.co.jp/articles/auth-authz-04-application-authorization/)
+対象記事: [第04回](https://blog.cloudnative.co.jp/articles/authn-authz-04-application-authorization/)
 
 記事を読んでから、答えを見ずに5問へ回答します。4問以上で合格です。不正解だった問題は指定された見出しへ戻り、根拠を説明できてから再回答します。
 
