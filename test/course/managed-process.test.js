@@ -278,7 +278,7 @@ test('a hard crash after pointer commit remains fully recoverable', async () => 
     resourceId: RESOURCE_ID,
     allowedResourceIds: ALLOWLIST,
   });
-  assert.equal(recovered.status, 'stopped');
+  assert.equal(recovered.status, 'stopped', JSON.stringify(recovered));
   await waitUntilGone(pair.record.pid);
   liveProcesses.delete(pair.record.pid);
   const stopped = await readCurrentPair(fixture);

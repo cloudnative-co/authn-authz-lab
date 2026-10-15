@@ -476,6 +476,7 @@
         "course/runner/managed-process-operation.mjs",
         "course/runner/managed-process-state.mjs",
         "course/runner/managed-process.mjs",
+        "course/runner/managed-startup-recovery.mjs",
         "course/runner/main.mjs",
         "course/runner/manifest.mjs",
         "course/runner/port.mjs",
@@ -555,6 +556,7 @@
         "course/runner/managed-process-operation.mjs",
         "course/runner/managed-process-state.mjs",
         "course/runner/managed-process.mjs",
+        "course/runner/managed-startup-recovery.mjs",
         "course/runner/port.mjs",
         "course/runner/process.mjs",
         "curriculum/schemas/managed-process-launch.schema.json",
@@ -622,6 +624,7 @@
         "course/runner/managed-process-operation.mjs",
         "course/runner/managed-process-state.mjs",
         "course/runner/managed-process.mjs",
+        "course/runner/managed-startup-recovery.mjs",
         "course/runner/port.mjs",
         "course/runner/process.mjs",
         "course/runner/project-app-runtime.mjs",
@@ -691,6 +694,7 @@
         "course/runner/managed-process-operation.mjs",
         "course/runner/managed-process-state.mjs",
         "course/runner/managed-process.mjs",
+        "course/runner/managed-startup-recovery.mjs",
         "course/runner/port.mjs",
         "course/runner/process.mjs",
         "course/runner/project-app-runtime.mjs",
@@ -766,6 +770,7 @@
         "course/runner/managed-process-operation.mjs",
         "course/runner/managed-process-state.mjs",
         "course/runner/managed-process.mjs",
+        "course/runner/managed-startup-recovery.mjs",
         "course/runner/port.mjs",
         "course/runner/process.mjs",
         "course/runner/project-app-runtime.mjs",
@@ -846,6 +851,7 @@
         "course/runner/managed-process-operation.mjs",
         "course/runner/managed-process-state.mjs",
         "course/runner/managed-process.mjs",
+        "course/runner/managed-startup-recovery.mjs",
         "course/runner/port.mjs",
         "course/runner/process.mjs",
         "course/runner/project-app-runtime.mjs",
@@ -931,7 +937,8 @@
         "test/course/managed-compose-ownership.test.js",
         "test/lesson-06/assessment.test.js",
         "test/lesson-06/directory-auth-service.test.js",
-        "test/lesson-06/http-integration.test.js"
+        "test/lesson-06/http-integration.test.js",
+        "test/course/docker-evidence-support.test.js"
       ]
     },
     {
@@ -997,7 +1004,8 @@
         "test/lesson-07/materials.test.js",
         "test/lesson-07/negotiate-header.test.js",
         "test/lesson-07/protocol-adapter.test.js",
-        "test/lesson-07/runtime-scenario.test.js"
+        "test/lesson-07/runtime-scenario.test.js",
+        "test/course/docker-evidence-support.test.js"
       ]
     },
     {
@@ -1027,6 +1035,7 @@
         "course/lessons/08/extension.yaml",
         "course/lessons/08/instructor-guide.md",
         "course/lessons/08/lab-contract.mjs",
+        "course/lessons/shared/compose-identity.mjs",
         "course/lessons/08/protocol-adapter.mjs",
         "course/lessons/08/runner.mjs",
         "course/lessons/08/scenario.mjs",
@@ -1060,7 +1069,9 @@
         "docker/samba-ad/krb5.conf",
         "docker/samba-ad/lesson08-admin",
         "test/lesson-08/assessment.test.js",
-        "test/lesson-08/directory-login-flow.test.js"
+        "test/lesson-08/directory-login-flow.test.js",
+        "test/course/docker-evidence-support.test.js",
+        "test/course/compose-secret-identity.test.js"
       ]
     },
     {
@@ -1091,6 +1102,7 @@
         "course/lessons/09/extension.yaml",
         "course/lessons/09/instructor-guide.md",
         "course/lessons/09/lab-contract.mjs",
+        "course/lessons/shared/compose-identity.mjs",
         "course/lessons/09/protocol-adapter.mjs",
         "course/lessons/09/runner.mjs",
         "course/lessons/09/scenario.mjs",
@@ -1126,7 +1138,9 @@
         "test-integration/09-course-saml.test.js",
         "test/lesson-09/assessment.test.js",
         "test/lesson-09/contracts.test.js",
-        "test/lesson-09/strict-saml.test.js"
+        "test/lesson-09/strict-saml.test.js",
+        "test/course/docker-evidence-support.test.js",
+        "test/course/compose-secret-identity.test.js"
       ]
     },
     {
@@ -1185,6 +1199,7 @@
         "course/runner/managed-process-control.mjs",
         "course/runner/managed-process-inspect.mjs",
         "course/runner/managed-process.mjs",
+        "course/runner/managed-startup-recovery.mjs",
         "course/runner/runtime-lesson.mjs",
         "test/lesson-10-11/actual-http.test.js",
         "test/lesson-10-11/contracts.test.js",
@@ -1247,6 +1262,7 @@
         "course/runner/managed-process-control.mjs",
         "course/runner/managed-process-inspect.mjs",
         "course/runner/managed-process.mjs",
+        "course/runner/managed-startup-recovery.mjs",
         "course/runner/runtime-lesson.mjs",
         "test/lesson-10-11/actual-http.test.js",
         "test/lesson-10-11/contracts.test.js",
@@ -1306,6 +1322,7 @@
         "course/runner/managed-process-operation.mjs",
         "course/runner/managed-process-state.mjs",
         "course/runner/managed-process.mjs",
+        "course/runner/managed-startup-recovery.mjs",
         "course/runner/port.mjs",
         "course/runner/process.mjs",
         "course/runner/project-app-runtime.mjs",
@@ -1478,6 +1495,7 @@
         "course/runner/managed-process-control.mjs",
         "course/runner/managed-process-inspect.mjs",
         "course/runner/managed-process.mjs",
+        "course/runner/managed-startup-recovery.mjs",
         "course/runner/runtime-lesson.mjs",
         "services/project-core/audit-log.mjs",
         "services/project-core/domain.mjs",

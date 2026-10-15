@@ -1,4 +1,5 @@
 import { isAbsolute, relative, sep } from 'node:path';
+import { composeSecretReaderIdentity } from '../shared/compose-identity.mjs';
 
 export const LESSON_08_RESOURCE_ID = 'identity-platform-lab';
 export const LESSON_08_SERVICES = Object.freeze(['app', 'client', 'dc']);
@@ -10,7 +11,7 @@ export const LESSON_08_SECRET_FILES = Object.freeze([
   'stable-id-key',
 ]);
 
-export function lesson08ManagedComposeSpec({ secretDirectory, repoRoot } = {}) {
+export function lesson08ManagedComposeSpec({ secretDirectory, repoRoot, hostIdentity } = {}) {
   if (typeof secretDirectory !== 'string' || !isAbsolute(secretDirectory)
       || typeof repoRoot !== 'string' || !isAbsolute(repoRoot)) {
     throw new TypeError('secretDirectory and repoRoot must be absolute paths');
@@ -33,7 +34,10 @@ export function lesson08ManagedComposeSpec({ secretDirectory, repoRoot } = {}) {
     ]),
     noDependencies: false,
     publishedPorts: Object.freeze([]),
-    composeEnvironment: Object.freeze({ LESSON08_SECRET_DIR: secretDirectory }),
+    composeEnvironment: Object.freeze({
+      LESSON08_SECRET_DIR: secretDirectory,
+      ...composeSecretReaderIdentity(hostIdentity),
+    }),
     supplementalFiles: LESSON_08_SECRET_FILES,
   });
 }

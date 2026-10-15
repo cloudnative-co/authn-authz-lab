@@ -14,6 +14,7 @@ import {
   releaseManagedProcessOperation,
 } from './managed-process-operation.mjs';
 import { assertValidSchema } from './schema.mjs';
+import { retryManagedStartupStop } from './managed-startup-recovery.mjs';
 import { ensureStateDirectory, writeJsonAtomically } from './state.mjs';
 import {
   abortedIntent,
@@ -718,19 +719,20 @@ export async function recoverManagedProcess({
       }
       return { status: 'safe-noop', resourceId, reasonCode: 'PROCESS_ACTIVATION_ABORTED' };
     }
-    return stopCurrentManagedGeneration({
+    // Pointer commit releases the bootstrap, but its HTTP listener may not exist yet.
+    return await retryManagedStartupStop({ timeoutMs, signal, stop: (remaining) => stopCurrentManagedGeneration({
       snapshot,
       context,
       resourceId,
       healthPath,
       shutdownPath,
-      timeoutMs,
+      timeoutMs: remaining,
       signal,
       platformSupport: support,
       now,
       writeImplementation,
       stopImplementation,
-    });
+    }) });
   } finally {
     await releaseManagedProcessOperation(operation);
   }

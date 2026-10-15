@@ -181,13 +181,13 @@ async function runScenario({ foundation, stateRoot, signal } = {}) {
   return runLesson07Scenario({ adapter, password, signal });
 }
 
-async function supportEnvironment(environment) {
+export async function lesson07SupportEnvironment(environment) {
   const detected = environment ?? await detectSupportEnvironment();
   return {
     ...detected,
     containerEngine: detected.os === 'wsl2-linux-filesystem'
       ? 'docker-desktop-wsl-integration'
-      : 'docker-desktop',
+      : (detected.os === 'linux' ? 'docker-engine' : 'docker-desktop'),
   };
 }
 
@@ -210,5 +210,5 @@ export const runLesson07 = createRuntimeLessonRunner({
   ensureExternal,
   resetExternal,
   stopExternal,
-  supportEnvironment,
+  supportEnvironment: lesson07SupportEnvironment,
 });

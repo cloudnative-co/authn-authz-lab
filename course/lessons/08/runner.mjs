@@ -34,6 +34,7 @@ export function lesson08ExecutionPolicy(action) {
 
 function recovery(reasonCode) {
   const commands = {
+    CONTAINER_HOST_IDENTITY_UNSUPPORTED: 'rootではない通常のOSユーザーで実行してください。秘密ファイルの権限は変更しません',
     PREREQUISITE_DOCKER_CLI: 'Docker Desktopを導入し、docker --versionを確認してください',
     PREREQUISITE_DOCKER_DAEMON: 'Docker DesktopまたはDocker daemonを起動してください',
     PREREQUISITE_DOCKER_COMPOSE: 'docker composeが利用できるDocker環境へ更新してください',
@@ -191,13 +192,13 @@ async function runScenario({ foundation, stateRoot, signal } = {}) {
   return runLesson08Scenario({ adapter, password, signal });
 }
 
-async function supportEnvironment(environment) {
+export async function lesson08SupportEnvironment(environment) {
   const detected = environment ?? await detectSupportEnvironment();
   return {
     ...detected,
     containerEngine: detected.os === 'wsl2-linux-filesystem'
       ? 'docker-desktop-wsl-integration'
-      : 'docker-desktop',
+      : (detected.os === 'linux' ? 'docker-engine' : 'docker-desktop'),
   };
 }
 
@@ -220,5 +221,5 @@ export const runLesson08 = createRuntimeLessonRunner({
   ensureExternal,
   resetExternal,
   stopExternal,
-  supportEnvironment,
+  supportEnvironment: lesson08SupportEnvironment,
 });

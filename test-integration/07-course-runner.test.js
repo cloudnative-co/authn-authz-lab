@@ -164,6 +164,8 @@ test('Lesson 07 runner owns the Kerberos lab without touching the configured pro
     assert.equal(checked.result.status, 'pass', JSON.stringify(checked.result));
     assert.deepEqual(checked.result.checkIds, ['AA07-C1', 'AA07-C2']);
     assert.match(checked.result.evidenceId, /^evidence-/u);
+    const checkedState = JSON.parse(await readFile(resolve(root, '.lab/state.json'), 'utf8'));
+    assert.ok(checkedState.lessons.find(({ id }) => id === '07').evidenceIds.includes(checked.result.evidenceId));
     assert.equal(sentinel.connections(), 0, 'check touched the project-app port');
 
     const diagnosed = await command(root, ['lesson', '07', 'diagnose']);

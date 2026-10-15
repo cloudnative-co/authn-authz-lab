@@ -226,6 +226,7 @@ test('Lesson 06 course runner owns a real OpenLDAP lifecycle and protocol', {
     const checked = await command(root, ['lesson', '06', 'check']);
     assert.equal(checked.result.status, 'pass');
     assert.deepEqual(checked.result.checkIds, ['AA06-C1', 'AA06-C2']);
+    assert.match(checked.result.evidenceId, /^evidence-/u);
 
     const record = await managedRecord(root);
     projectName = record.composeProject;

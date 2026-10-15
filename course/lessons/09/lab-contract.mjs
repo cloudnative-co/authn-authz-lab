@@ -1,9 +1,10 @@
 import { isAbsolute, relative, sep } from 'node:path';
+import { composeSecretReaderIdentity } from '../shared/compose-identity.mjs';
 
 export const LESSON_09_RESOURCE_ID = 'saml-lab';
 export const LESSON_09_SERVICES = Object.freeze(['keycloak', 'sp', 'user-agent']);
 
-export function lesson09ManagedComposeSpec({ secretDirectory, repoRoot } = {}) {
+export function lesson09ManagedComposeSpec({ secretDirectory, repoRoot, hostIdentity } = {}) {
   if (typeof secretDirectory !== 'string' || !isAbsolute(secretDirectory)
       || typeof repoRoot !== 'string' || !isAbsolute(repoRoot)) {
     throw new TypeError('secretDirectory and repoRoot must be absolute paths');
@@ -22,7 +23,10 @@ export function lesson09ManagedComposeSpec({ secretDirectory, repoRoot } = {}) {
     expectedVolumes: Object.freeze([]),
     noDependencies: false,
     publishedPorts: Object.freeze([]),
-    composeEnvironment: Object.freeze({ LESSON09_SECRET_DIR: secretDirectory }),
+    composeEnvironment: Object.freeze({
+      LESSON09_SECRET_DIR: secretDirectory,
+      ...composeSecretReaderIdentity(hostIdentity),
+    }),
     supplementalFiles: Object.freeze(['control-token', 'user-password']),
   });
 }

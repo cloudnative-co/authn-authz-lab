@@ -155,6 +155,16 @@ async function stopExternal(options = {}) {
   }
 }
 
+export async function lesson06SupportEnvironment(environment) {
+  const detected = environment ?? await detectSupportEnvironment();
+  return {
+    ...detected,
+    containerEngine: detected.os === 'wsl2-linux-filesystem'
+      ? 'docker-desktop-wsl-integration'
+      : (detected.os === 'linux' ? 'docker-engine' : 'docker-desktop'),
+  };
+}
+
 export const runLesson06 = createRuntimeLessonRunner({
   id: LESSON_06_ID,
   checkIds: LESSON_06_CHECK_IDS,
@@ -173,8 +183,5 @@ export const runLesson06 = createRuntimeLessonRunner({
   ensureExternal,
   resetExternal,
   stopExternal,
-  supportEnvironment: async (environment) => ({
-    ...(environment ?? await detectSupportEnvironment()),
-    containerEngine: 'docker-desktop',
-  }),
+  supportEnvironment: lesson06SupportEnvironment,
 });

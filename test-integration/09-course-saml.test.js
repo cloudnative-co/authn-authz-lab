@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { composeSecretReaderIdentity } from '../course/lessons/shared/compose-identity.mjs';
 import { randomBytes } from 'node:crypto';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -47,7 +48,11 @@ before(async () => {
   secretDirectory = await mkdtemp(join(tmpdir(), 'auth-authz-l09-it-'));
   await writeFile(join(secretDirectory, 'user-password'), 'course-password-for-saml-lab', { mode: 0o600 });
   await writeFile(join(secretDirectory, 'control-token'), randomBytes(32).toString('base64url'), { mode: 0o600 });
-  environment = dockerEnvironment({ COURSE_INSTALL_ID: installId, LESSON09_SECRET_DIR: secretDirectory });
+  environment = dockerEnvironment({
+    ...composeSecretReaderIdentity(),
+    COURSE_INSTALL_ID: installId,
+    LESSON09_SECRET_DIR: secretDirectory,
+  });
   const built = await docker(composeArgs('build', ['keycloak', 'sp', 'user-agent']), {
     timeoutMs: 10 * 60_000,
     maxOutputBytes: 16 * 1024 * 1024,
@@ -108,6 +113,10 @@ test('Lesson 09 Compose is internal, read-only, labeled, and fixed to Keycloak d
   assert.ok(Object.values(config.services).every((service) => !service.ports));
   assert.ok(Object.values(config.services).every((service) => service.read_only === true));
   assert.equal(config.networks.default.internal, true);
+  assert.equal(config.services.keycloak.user, `${process.getuid()}:0`);
+  for (const name of ['sp', 'user-agent']) {
+    assert.equal(config.services[name].user, `${process.getuid()}:${process.getgid()}`);
+  }
   assert.match(
     await readFile(join(REPO_ROOT, 'docker/saml/keycloak/Dockerfile'), 'utf8'),
     /keycloak:26\.7\.0@sha256:2eb3cd316835/u,

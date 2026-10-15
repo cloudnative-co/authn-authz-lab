@@ -40,6 +40,8 @@ services:
       context: app
       dockerfile: Dockerfile
     hostname: app.ad.example.test
+    # File-backed Compose secrets retain their host owner and mode.
+    user: "${COURSE_HOST_UID:?COURSE_HOST_UID is required}:${COURSE_HOST_GID:?COURSE_HOST_GID is required}"
     init: true
     read_only: true
     tmpfs:

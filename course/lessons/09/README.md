@@ -6,6 +6,8 @@
 
 ## 前提
 
+rootではない通常のOSユーザーで実行します。Dockerへ渡す秘密ファイルは所有者だけが読める権限を保ち、秘密ファイルを読むコンテナのUIDを実行ユーザーに合わせます。アクセス拒否を避けるためにファイルを全員が読める権限へ変更しません。
+
 - Node.js 24
 - Docker Desktopまたは互換Docker daemonと`docker compose`
 - Lesson 01と03を読み、認証結果とapp sessionを区別できること

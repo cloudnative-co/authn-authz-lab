@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { composeSecretReaderIdentity } from '../course/lessons/shared/compose-identity.mjs';
 import { randomBytes } from 'node:crypto';
 import { mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
@@ -61,6 +62,7 @@ before(async () => {
     writeFile(join(secretDirectory, name), value, { mode: 0o600 })
   )));
   environment = dockerEnvironment({
+    ...composeSecretReaderIdentity(),
     COURSE_INSTALL_ID: installId,
     LESSON08_SECRET_DIR: secretDirectory,
   });
@@ -141,6 +143,7 @@ test('Lesson 08 Compose is internal, read-only, labeled, and publishes no host p
   assert.ok(Object.values(config.services).every((service) => service.read_only === true));
   assert.ok(Object.values(config.services).every((service) => (service.privileged ?? false) === false));
   assert.equal(config.networks.default.internal, true);
+  assert.equal(config.services.app.user, `${process.getuid()}:${process.getgid()}`);
   for (const service of Object.values(config.services)) {
     assert.equal(service.labels['io.cloudnative.course.resource-id'], 'identity-platform-lab');
     assert.equal(service.labels['io.cloudnative.course.install-id'], installId);

@@ -4,12 +4,14 @@ services:
       context: ../..
       dockerfile: docker/saml/keycloak/Dockerfile
     hostname: keycloak
+    # Keep Keycloak's image group while matching the private secret owner.
+    user: "${COURSE_HOST_UID:?COURSE_HOST_UID is required}:0"
     init: true
     read_only: true
     entrypoint: ["/bin/bash", "/opt/course/entrypoint.sh"]
     tmpfs:
       - /tmp:mode=1777,size=64m
-      - /opt/keycloak/data:mode=0700,size=256m,uid=1000,gid=0
+      - /opt/keycloak/data:mode=0700,size=256m,uid=${COURSE_HOST_UID:?COURSE_HOST_UID is required},gid=0
     labels: &course-labels
       io.cloudnative.course.id: auth-authz
       io.cloudnative.course.install-id: "${COURSE_INSTALL_ID:?COURSE_INSTALL_ID is required}"
@@ -31,10 +33,11 @@ services:
       context: ../..
       dockerfile: docker/saml/sp/Dockerfile
     hostname: sp
+    user: "${COURSE_HOST_UID:?COURSE_HOST_UID is required}:${COURSE_HOST_GID:?COURSE_HOST_GID is required}"
     init: true
     read_only: true
     tmpfs:
-      - /tmp:mode=0700,size=32m,uid=10009,gid=10009
+      - /tmp:mode=0700,size=32m,uid=${COURSE_HOST_UID:?COURSE_HOST_UID is required},gid=${COURSE_HOST_GID:?COURSE_HOST_GID is required}
     labels: *course-labels
     secrets:
       - lesson09_control_token
@@ -53,6 +56,7 @@ services:
       context: ../..
       dockerfile: docker/saml/user-agent/Dockerfile
     hostname: user-agent
+    user: "${COURSE_HOST_UID:?COURSE_HOST_UID is required}:${COURSE_HOST_GID:?COURSE_HOST_GID is required}"
     init: true
     read_only: true
     tmpfs:
