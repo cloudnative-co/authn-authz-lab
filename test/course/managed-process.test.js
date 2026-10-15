@@ -90,7 +90,7 @@ test('managed start/stop persists private split state, retains stopped record, a
     resourceId: RESOURCE_ID,
     allowedResourceIds: ALLOWLIST,
   });
-  assert.equal(stopped.status, 'stopped');
+  assert.equal(stopped.status, 'stopped', JSON.stringify(stopped));
   await waitUntilGone(first.record.pid);
   liveProcesses.delete(first.record.pid);
   const retained = await readCurrentPair(fixture);

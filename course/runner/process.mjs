@@ -213,28 +213,58 @@ async function darwinProcessMaterial(pid) {
   return { profile: 'macos', startedAt: startedBefore, executable, arguments: command };
 }
 
-async function linuxProcessMaterial(pid, profile) {
-  try {
-    const [stat, bootId, executable, commandLine] = await Promise.all([
-      readFile(`/proc/${pid}/stat`, 'utf8'),
-      readFile('/proc/sys/kernel/random/boot_id', 'utf8'),
-      readlink(`/proc/${pid}/exe`),
-      readFile(`/proc/${pid}/cmdline`),
-    ]);
+export async function readLinuxProcessMaterial(pid, profile, {
+  readFile: readProcFile = readFile,
+  readlink: readProcLink = readlink,
+} = {}) {
+  async function snapshot() {
+    let stat;
+    try { stat = await readProcFile(`/proc/${pid}/stat`, 'utf8'); } catch (error) {
+      if (['ENOENT', 'ESRCH'].includes(error.code)) return null;
+      throw error;
+    }
     const close = stat.lastIndexOf(')');
     const fields = close === -1 ? [] : stat.slice(close + 2).trim().split(/\s+/);
-    const startedAt = fields[19];
-    if (!startedAt) throw new Error('missing Linux starttime field');
-    const argv = commandLine.toString('utf8').split('\0').filter(Boolean);
-    if (argv.length === 0) throw new Error('empty Linux command line');
+    if (!/^[A-Za-z]$/.test(fields[0] ?? '') || !/^\d+$/.test(fields[19] ?? '')) {
+      throw new Error('invalid Linux process stat');
+    }
+    return { state: fields[0], starttime: fields[19] };
+  }
+  const exited = (value) => value === null || ['Z', 'X'].includes(value.state);
+  try {
+    const before = await snapshot();
+    if (exited(before)) return null;
+    const [boot, command] = await Promise.allSettled([
+      readProcFile('/proc/sys/kernel/random/boot_id', 'utf8'),
+      readProcFile(`/proc/${pid}/cmdline`),
+    ]);
+    // Read exe after cmdline: exit_mm can clear both before stat becomes Z.
+    const [executable] = await Promise.allSettled([readProcLink(`/proc/${pid}/exe`)]);
+    const after = await snapshot();
+    if (exited(after)) return null;
+    if (before.starttime !== after.starttime) {
+      throw new ProcessControlError('FINGERPRINT_RACE', `pid ${pid} changed while it was inspected`);
+    }
+    if (boot.status === 'rejected') throw boot.reason;
+    if (!boot.value.trim()) throw new Error('empty Linux boot id');
+    const failed = [command, executable].filter((result) => result.status === 'rejected');
+    const permanent = failed.find((result) => !['ENOENT', 'ESRCH'].includes(result.reason.code));
+    if (permanent) throw permanent.reason;
+    if (failed.length > 0) {
+      throw new ProcessControlError('FINGERPRINT_PROCESS_MATERIAL_MISSING', 'live process material is unavailable');
+    }
+    const argv = command.value.toString('utf8').split('\0').filter(Boolean);
+    if (argv.length === 0) {
+      throw new ProcessControlError('FINGERPRINT_COMMAND_LINE_EMPTY', 'live process command line is empty');
+    }
     return {
       profile,
-      startedAt: `${bootId.trim()}:${startedAt}`,
-      executable,
+      startedAt: `${boot.value.trim()}:${before.starttime}`,
+      executable: executable.value,
       arguments: argv,
     };
   } catch (error) {
-    if (error.code === 'ENOENT' || error.code === 'ESRCH') return null;
+    if (error instanceof ProcessControlError) throw error;
     throw new ProcessControlError('FINGERPRINT_UNAVAILABLE', `could not inspect pid ${pid}`, { cause: error });
   }
 }
@@ -250,15 +280,15 @@ export async function captureProcessStartFingerprint(pid, {
   }
   const material = platformSupport.profile === 'macos'
     ? await darwinProcessMaterial(pid)
-    : await linuxProcessMaterial(pid, platformSupport.profile);
+    : await readLinuxProcessMaterial(pid, platformSupport.profile);
   if (material === null) return null;
   const serialized = JSON.stringify({ ...material, instanceId });
   return `sha256:${createHash('sha256').update(serialized).digest('hex')}`;
 }
 
-async function fingerprintMatch(record, platformSupport) {
+async function fingerprintMatch(record, platformSupport, fingerprintCapture = captureProcessStartFingerprint) {
   try {
-    const current = await captureProcessStartFingerprint(record.pid, {
+    const current = await fingerprintCapture(record.pid, {
       instanceId: record.instanceId,
       platformSupport,
     });
@@ -488,16 +518,21 @@ export async function waitForOwnedProcessExit({
   retryIntervalMs = 25,
   signal,
   platformSupport = detectProcessPlatform(),
+  fingerprintCapture = captureProcessStartFingerprint,
 } = {}) {
   if (platformSupport.status !== 'supported') return platformSupport;
   assertRecord(record);
   const scope = createCleanupScope({ timeoutMs, signal });
+  let incompleteMaterial = false;
   try {
     while (!scope.signal.aborted) {
-      const matched = await fingerprintMatch(record, platformSupport);
+      const matched = await fingerprintMatch(record, platformSupport, fingerprintCapture);
       if (matched.status === 'gone') return { status: 'exited' };
       if (matched.status === 'mismatch') return { status: 'exited', reasonCode: 'PID_REUSED' };
-      if (matched.status === 'unverifiable') {
+      incompleteMaterial = matched.status === 'unverifiable' && [
+        'FINGERPRINT_COMMAND_LINE_EMPTY', 'FINGERPRINT_PROCESS_MATERIAL_MISSING',
+      ].includes(matched.error?.reasonCode);
+      if (matched.status === 'unverifiable' && !incompleteMaterial) {
         return { status: 'blocked', reasonCode: 'PROCESS_FINGERPRINT_UNVERIFIABLE' };
       }
       await abortableDelay(retryIntervalMs, { signal: scope.signal });
@@ -507,6 +542,7 @@ export async function waitForOwnedProcessExit({
   } finally {
     scope.cleanup();
   }
+  if (incompleteMaterial) return { status: 'blocked', reasonCode: 'PROCESS_FINGERPRINT_UNVERIFIABLE' };
   return { status: 'timeout', reasonCode: 'PROCESS_EXIT_TIMEOUT' };
 }
 
